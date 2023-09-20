@@ -215,16 +215,10 @@
                                             <xsl:call-template name="locus"/>
                                         </xsl:when>
                                         <xsl:when test="local-name(.) = 'textLang'">
-                                            <xsl:variable name="langCode" select="@otherLangs|@mainLang"/>
-                                            <xsl:choose>
-                                                <xsl:when test="$langCode = 'ar'">Arabic</xsl:when>
-                                                <xsl:when test="$langCode = 'he'">Hebrew</xsl:when>
-                                                <xsl:when test="$langCode = 'en'">English</xsl:when>
-                                                <xsl:when test="$langCode = 'he-Latn'">Hebrew in Latin characters</xsl:when>
-                                                <xsl:when test="$langCode = 'ar-Latn'">Arabic in Latin characters</xsl:when>
-                                                <xsl:when test="$langCode = 'ar-Hebr'">Arabic in Hebrew characters</xsl:when>
-                                                <xsl:otherwise><xsl:value-of select="local:expand-lang($langCode,'')"/></xsl:otherwise>
-                                            </xsl:choose>
+                                            <xsl:for-each select="@otherLangs|@mainLang">
+                                                <xsl:variable name="langCode" select="@otherLangs|@mainLang"/>
+                                                <xsl:value-of select="local:expand-lang($langCode,'')"/>
+                                            </xsl:for-each>
                                         </xsl:when>
                                         <xsl:when test="local-name(.) = ('incipit','explicit')">
                                             <!-- WS:NOTE - not applying locus?? -->
@@ -685,8 +679,10 @@
     </xsl:template>
     
     <xsl:template match="t:textLang">
-        <xsl:variable name="langCode" select="@otherLangs|@mainLang"/>
-        <xsl:value-of select="local:expand-lang($langCode,'')"/>
+        <xsl:for-each select="@otherLangs|@mainLang">
+            <xsl:variable name="langCode" select="@otherLangs|@mainLang"/>
+            <xsl:value-of select="local:expand-lang($langCode,'')"/>
+        </xsl:for-each>
     </xsl:template>
     <xsl:template name="locus">
         <xsl:value-of select="@from"/><xsl:if test="@to != ''"> - <xsl:value-of select="@to"/></xsl:if>
