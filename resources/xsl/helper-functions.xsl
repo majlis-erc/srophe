@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns" exclude-result-prefixes="xs t x saxon local" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:local="http://syriaca.org/ns" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs t x saxon local" version="2.0">
     
     <!-- =================================================================== -->
     <!-- Helper Functions  -->
@@ -350,6 +350,12 @@
             <xsl:when test="$lang='tr'">
                 <xsl:text>Turkish</xsl:text>
             </xsl:when>
+            <xsl:when test="$lang = 'ar'">Arabic</xsl:when>
+            <xsl:when test="$lang = 'he'">Hebrew</xsl:when>
+            <xsl:when test="$lang = 'en'">English</xsl:when>
+            <xsl:when test="$lang = 'he-Latn'">Hebrew in Latin characters</xsl:when>
+            <xsl:when test="$lang = 'ar-Latn'">Arabic in Latin characters</xsl:when>
+            <xsl:when test="$lang = 'ar-Hebr'">Arabic in Hebrew characters</xsl:when>
             <xsl:otherwise/>
         </xsl:choose>
     </xsl:function>
