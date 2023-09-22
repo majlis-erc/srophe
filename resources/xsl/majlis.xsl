@@ -216,7 +216,7 @@
                                         </xsl:when>
                                         <xsl:when test="local-name(.) = 'textLang'">
                                             <xsl:for-each select="@otherLangs|@mainLang">
-                                                <xsl:variable name="langCode" select="@otherLangs|@mainLang"/>
+                                                <xsl:variable name="langCode" select="."/>
                                                 <xsl:value-of select="local:expand-lang($langCode,'')"/>
                                             </xsl:for-each>
                                         </xsl:when>
@@ -680,7 +680,7 @@
     
     <xsl:template match="t:textLang">
         <xsl:for-each select="@otherLangs|@mainLang">
-            <xsl:variable name="langCode" select="@otherLangs|@mainLang"/>
+            <xsl:variable name="langCode" select="."/>
             <xsl:value-of select="local:expand-lang($langCode,'')"/>
         </xsl:for-each>
     </xsl:template>
