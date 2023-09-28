@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns" exclude-result-prefixes="xs t x saxon local" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:local="http://syriaca.org/ns" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs t x saxon local" version="2.0">
 
     <!-- ================================================================== 
        MAJLIS custom srophe XSLT
@@ -54,7 +54,7 @@
             <xsl:for-each select="t:listBibl/t:msDesc[1]">
                 <div class="mainDesc row">
                     <div class="col-md-6">
-                        <xsl:for-each select="t:msContents/t:msItem[1]/t:title[@xml:lang='en'] | t:msContents/t:msItem[1]/t:author | t:msContents/t:msItem[1]/t:textLang ">
+                        <xsl:for-each select="t:msContents/t:msItem[1]/t:title[@xml:lang='en'][. != ''] | t:msContents/t:msItem[1]/t:author[. != ''] | t:msContents/t:msItem[1]/t:textLang[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">
                                     <xsl:choose>
@@ -71,7 +71,7 @@
                            WS: NOTE - missing xpath for script heading
                             -->
                         </xsl:for-each>
-                        <xsl:for-each select="t:history/t:origin/t:persName[@role='scribe']">
+                        <xsl:for-each select="t:history/t:origin/t:persName[@role='scribe'][. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Scribe</span>
                                 <span class="col-md-9">
