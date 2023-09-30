@@ -153,30 +153,91 @@ let $data :=
                local:coordinates(request:get-parameter('type', ''), request:get-parameter('collection', ''))
             else <div>Nothing, check params: {request:get-parameter-names()}</div>
         else
-            let $hits := data:search('','','')
+            let $collection := 
+                if(request:get-parameter('eXistCollection','') != '') then 
+                    if(contains(request:get-parameter('eXistCollection',''),'manuscripts')) then 'manuscripts'
+                    else if(contains(request:get-parameter('eXistCollection',''),'places')) then 'places'
+                    else if(contains(request:get-parameter('eXistCollection',''),'persons')) then 'persons'
+                    else if(contains(request:get-parameter('eXistCollection',''),'works')) then 'works'
+                    else if(contains(request:get-parameter('eXistCollection',''),'relations')) then 'relations'
+                    else if(contains(request:get-parameter('eXistCollection',''),'texts')) then 'texts'
+                    else ()
+                else ()
+            let $hits := data:search($collection,'','')
             return 
                 if(count($hits) gt 0) then 
                     <root>
                         <action>{string-join(
                                     for $param in request:get-parameter-names()
                                     return concat('&amp;',$param, '=',request:get-parameter($param, '')),'')}</action>
-                        <info>hits: {count($hits)}</info>
-                        <start>1</start>
-                        <results>{
-                            let $start := if(request:get-parameter('start', 1)) then request:get-parameter('start', 1) else 1
+                        <info count="{count($hits)}">hits: {count($hits)}</info>
+                        {
+                            let $start := if(request:get-parameter('start','') != '') then request:get-parameter('start','') else '1'
                             let $perpage := if(request:get-parameter('perpage', 10)) then request:get-parameter('perpage', 10) else 10
-                            for $hit in subsequence($hits,$start,$perpage)
-                            let $id := replace($hit/descendant::tei:idno[starts-with(.,$config:base-uri)][1],'/tei','')
-                            let $title := $hit/descendant::tei:titleStmt/tei:title
-                            let $expanded := kwic:expand($hit)
+                            let $next := xs:integer($start) + xs:integer($perpage)
                             return 
-                                <json:value json:array="true">
-                                    <id>{$id}</id>
-                                    {$title}
-                                    <hits>{normalize-space(string-join((tei2html:output-kwic($expanded, $id)),' '))}</hits>
-                                </json:value>
-                            }
-                        </results>
+                                (<start>{$start}</start>,
+                                 if($next lt count($hits)) then
+                                    <next>{$next}</next>
+                                 else (),
+                                <results>{
+
+                                    for $hit in subsequence($hits,$start,$perpage)
+                                    let $id := replace($hit/descendant::tei:idno[starts-with(.,$config:base-uri)][1],'/tei','')
+                                    let $title := $hit/descendant::tei:titleStmt/tei:title
+                                    let $expanded := kwic:expand($hit)
+                                    return 
+                                        <json:value json:array="true">
+                                            {   
+                                                if(request:get-parameter('results', '') = 'manuForma') then 
+                                                    <record src="{document-uri(root($hit))}" name="{$title}" idno="{concat('[',$id,']')}"/>
+                                                else () 
+                                            }
+                                            <id>{$id}</id>
+                                            {$title}
+                                            <hits>{normalize-space(string-join((tei2html:output-kwic($expanded, $id)),' '))}</hits>
+                                        </json:value>
+                                    }
+                                </results>)
+                        }
+                        <facets>
+                            <facetGrp label="country">
+                                {
+                                    let $country := ft:facets($hits, "country")
+                                    return 
+                                        map:for-each($country, function($label, $count) {
+                                        <facet label="{$label}" count="{$count}"></facet>
+                                    })
+                                }
+                            </facetGrp>
+                            <facetGrp label="settlement">
+                                {
+                                    let $settlement := ft:facets($hits, "settlement")
+                                    return 
+                                        map:for-each($settlement, function($label, $count) {
+                                        <facet label="{$label}" count="{$count}"></facet>
+                                    })
+                                }
+                            </facetGrp>
+                            <facetGrp label="repository">
+                                {
+                                    let $repository := ft:facets($hits, "repository")
+                                    return 
+                                        map:for-each($repository, function($label, $count) {
+                                        <facet label="{$label}" count="{$count}"></facet>
+                                    })
+                                }
+                            </facetGrp>
+                            <facetGrp label="collection">
+                                {
+                                    let $collection := ft:facets($hits, "collection")
+                                    return 
+                                        map:for-each($collection, function($label, $count) {
+                                        <facet label="{$label}" count="{$count}"></facet>
+                                    })
+                                }
+                            </facetGrp>
+                        </facets>
                     </root>
                 else 
                     <root>
