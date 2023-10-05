@@ -48,6 +48,25 @@
                 </div>
             </xsl:otherwise>
         </xsl:choose>
+        <script type="text/javascript">
+        <![CDATA[
+        //show or collapse all
+            $('#expand-all').click(function() {
+                var $myGroup = $('#mainMenu');
+                var label = $(this).text()
+                 console.log(label);
+                if (label === "Open All") {
+                    console.log('open');
+                    $myGroup.find('.collapse').collapse('show');
+                    $(this).text("Close All");
+              } else {
+                    console.log('close');
+                    $myGroup.find('.collapse').collapse('hide');
+                    $(this).text("Open All");
+              } 
+            });
+        ]]>
+        </script>
     </xsl:template>
     <xsl:template match="t:body" mode="majlis majlis-mss">
         <xsl:if test="t:listBibl/t:msDesc/t:msContents/t:msItem">
@@ -88,7 +107,7 @@
                             /TEI/text/body/listBibl/msDesc/physDesc/objectDesc/supportDesc/support/material
                             /TEI/text/body/listBibl/msDesc/physDesc/objectDesc/supportDesc/extent/measure
                         -->
-                        <xsl:for-each select="t:history/t:origin/t:origDate">
+                        <xsl:for-each select="t:history/t:origin/t:origDate[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Date</span>
                                 <span class="col-md-9">
@@ -96,7 +115,7 @@
                                 </span>
                             </div>
                         </xsl:for-each>
-                        <xsl:for-each select="t:history/t:origin/t:origPlace">
+                        <xsl:for-each select="t:history/t:origin/t:origPlace[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Place</span>
                                 <span class="col-md-9">
@@ -112,7 +131,7 @@
                                 </span>
                             </div>
                         </xsl:for-each>
-                        <xsl:for-each select="t:physDesc/t:objectDesc/t:supportDesc/t:support/t:material">
+                        <xsl:for-each select="t:physDesc/t:objectDesc/t:supportDesc/t:support/t:material[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Material</span>
                                 <span class="col-md-9">
@@ -120,7 +139,7 @@
                                 </span>
                             </div>
                         </xsl:for-each>
-                        <xsl:for-each select="physDesc/objectDesc/supportDesc/extent/measure">
+                        <xsl:for-each select="physDesc/objectDesc/supportDesc/extent/measure[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Extent</span>
                                 <span class="col-md-9">
@@ -174,6 +193,9 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuCredits" data-toggle="collapse">Credits</button>
                 </div>
+                <div class="btn-group">
+                    <button  id="expand-all" type="button" class="btn btn-default btn-grey btn-lg">Open All</button>
+                </div>
             </div>
             <div class="mainMenuContent">
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:msContents" mode="majlis"/>
@@ -195,39 +217,39 @@
                 <div class="row">
                     <div class="col-md-1"><h4>Text <xsl:value-of select="position()"/></h4></div>
                     <div class="col-md-11">
-                        <xsl:for-each select="child::*">
-                            <div class="row">
-                                <div class="col-md-2 inline-h4 ">
-                                    <xsl:variable name="label" select="local-name(.)"/>
-                                    <xsl:choose>
-                                        <xsl:when test="$label = 'locus'">Folios</xsl:when>
-                                        <xsl:when test="$label = 'title'">Title <xsl:if test="@xml:lang != ''">[<xsl:value-of select="upper-case(@xml:lang)"/>]</xsl:if></xsl:when>
-                                        <xsl:when test="$label = 'textLang'">Language</xsl:when>
-                                        <xsl:when test="$label = 'rubric'">Text Division</xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </div>
-                                <div class="col-md-10">
-                                    <xsl:choose>
-                                        <xsl:when test="local-name(.) = 'locus'">
-                                            <xsl:call-template name="locus"/>
-                                        </xsl:when>
-                                        <xsl:when test="local-name(.) = 'textLang'">
-                                            <xsl:for-each select="@otherLangs|@mainLang">
-                                                <xsl:variable name="langCode" select="."/>
-                                                <xsl:value-of select="local:expand-lang($langCode,'')"/>
-                                            </xsl:for-each>
-                                        </xsl:when>
-                                        <xsl:when test="local-name(.) = ('incipit','explicit')">
-                                            <!-- WS:NOTE - not applying locus?? -->
-                                             <xsl:apply-templates/> 
-                                        </xsl:when>
-                                        <xsl:otherwise><xsl:apply-templates select="."/></xsl:otherwise>
-                                    </xsl:choose>
-                                </div>
-                            </div>    
+                        <xsl:for-each select="child::*[string-length(normalize-space(.)) gt 2]">
+                                <div class="row">
+                                    <div class="col-md-2 inline-h4 ">
+                                        <xsl:variable name="label" select="local-name(.)"/>
+                                        <xsl:choose>
+                                            <xsl:when test="$label = 'locus'">Folios</xsl:when>
+                                            <xsl:when test="$label = 'title'">Title <xsl:if test="@xml:lang != ''">[<xsl:value-of select="upper-case(@xml:lang)"/>]</xsl:if></xsl:when>
+                                            <xsl:when test="$label = 'textLang'">Language</xsl:when>
+                                            <xsl:when test="$label = 'rubric'">Text Division</xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <xsl:choose>
+                                            <xsl:when test="local-name(.) = 'locus'">
+                                                <xsl:call-template name="locus"/>
+                                            </xsl:when>
+                                            <xsl:when test="local-name(.) = 'textLang'">
+                                                <xsl:for-each select="@otherLangs|@mainLang">
+                                                    <xsl:variable name="langCode" select="."/>
+                                                    <xsl:value-of select="local:expand-lang($langCode,'')"/>
+                                                </xsl:for-each>
+                                            </xsl:when>
+                                            <xsl:when test="local-name(.) = ('incipit','explicit')">
+                                                <!-- WS:NOTE - not applying locus?? -->
+                                                <xsl:apply-templates/> 
+                                            </xsl:when>
+                                            <xsl:otherwise><xsl:apply-templates select="."/></xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
+                                </div> 
                         </xsl:for-each>
                     </div>
                 </div>
@@ -245,25 +267,25 @@
                         <div class="col-md-10"><xsl:value-of select="@form"/></div>    
                     </div>                    
                 </xsl:if>
-                <xsl:for-each select="parent::t:physDesc/t:ab/t:objectType">
+                <xsl:for-each select="parent::t:physDesc/t:ab/t:objectType[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4"> Manuscript type </div>
                         <div class="col-md-10"><xsl:apply-templates select="."/></div>        
                     </div>
-                    <xsl:if test="@rend">
+                    <xsl:if test="@rend[. != '']">
                         <div class="row">
                             <div class="col-md-2 inline-h4"> Format </div>
                             <div class="col-md-10"><xsl:apply-templates select="@rend"/></div>        
                         </div>
                     </xsl:if>
-                    <xsl:if test="@style">
+                    <xsl:if test="@style[. != '']">
                         <div class="row">
                             <div class="col-md-2 inline-h4"> Book form </div>
                             <div class="col-md-10"><xsl:apply-templates select="@style"/></div>        
                         </div>
                     </xsl:if>
                 </xsl:for-each>
-                <xsl:if test="parent::t:physDesc/t:ab/t:listBibl/t:bibl">
+                <xsl:if test="parent::t:physDesc/t:ab/t:listBibl/t:bibl[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4"> Manuscript join </div>
                         <div class="col-md-10">
@@ -273,25 +295,25 @@
                         </div>        
                     </div>
                 </xsl:if>              
-                <xsl:for-each select="t:supportDesc/t:support/t:material">
+                <xsl:for-each select="t:supportDesc/t:support/t:material[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Material </div>
                         <div class="col-md-10"><xsl:apply-templates select="."/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:support/t:note">
+                <xsl:for-each select="t:supportDesc/t:support/t:note[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Note </div>
                         <div class="col-md-10"><xsl:apply-templates select="."/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:extent/t:measure">
+                <xsl:for-each select="t:supportDesc/t:extent/t:measure[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Extent </div>
                         <div class="col-md-10"><xsl:apply-templates select="."/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:extent/t:dimensions">
+                <xsl:for-each select="t:supportDesc/t:extent/t:dimensions[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Dimensions <xsl:if test="@type != ''">(<xsl:value-of select="@type"/>)</xsl:if></div>
                         <div class="col-md-10">
@@ -299,7 +321,7 @@
                         </div>    
                     </div>
                 </xsl:for-each>
-                <xsl:if test="t:supportDesc/t:foliation">
+                <xsl:if test="t:supportDesc/t:foliation[string-length(normalize-space(.)) gt 2]">
                     <xsl:variable name="label" select="local-name(.)"/>
                     <div class="row">
                         <div class="col-md-2 inline-h4">Foliation </div>
@@ -310,7 +332,7 @@
                         </div>    
                     </div>
                 </xsl:if>
-                <xsl:for-each select="t:supportDesc/t:collation">
+                <xsl:for-each select="t:supportDesc/t:collation[string-length(normalize-space(.)) gt 2]">
                     <xsl:variable name="label" select="local-name(.)"/>
                     <div class="row">
                         <div class="col-md-2 inline-h4"><xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/> </div>
@@ -321,14 +343,14 @@
                         </div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:condition">
+                <xsl:for-each select="t:supportDesc/t:condition[string-length(normalize-space(.)) gt 2]">
                     <xsl:variable name="label" select="local-name(.)"/>
                     <div class="row">
                         <div class="col-md-2 inline-h4"><xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/> </div>
                         <div class="col-md-10"><xsl:apply-templates select="t:note"/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:condition">
+                <xsl:for-each select="t:supportDesc/t:condition[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">State of writing </div>
                         <div class="col-md-10">
@@ -337,7 +359,7 @@
                         </div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:physDesc/t:objectDesc/t:layoutDesc/t:summary">
+                <xsl:for-each select="t:physDesc/t:objectDesc/t:layoutDesc/t:summary[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Layout summary </div>
                         <div class="col-md-10">
@@ -346,7 +368,7 @@
                         </div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/t:locus">
+                <xsl:for-each select="t:layoutDesc/t:layout/t:locus[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Folio range of layout</div>
                         <div class="col-md-10">
@@ -354,31 +376,31 @@
                         </div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/@writtenLines">
+                <xsl:for-each select="t:layoutDesc/t:layout[@writtenLines != '']/@writtenLines">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Written lines</div>
                         <div class="col-md-10"><xsl:value-of select="."/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/@columns">
+                <xsl:for-each select="t:layoutDesc/t:layout[@columns != '']/@columns">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Columns</div>
                         <div class="col-md-10"><xsl:value-of select="."/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/t:dimensions">
+                <xsl:for-each select="t:layoutDesc/t:layout/t:dimensions[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Text block</div>
                         <div class="col-md-10"><xsl:call-template name="dimensions"/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/t:metamark | t:layoutDesc/t:layout/t:ab">
+                <xsl:for-each select="t:layoutDesc/t:layout/t:metamark[string-length(normalize-space(.)) gt 2] | t:layoutDesc/t:layout/t:ab[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4"/>
                         <div class="col-md-10"><xsl:apply-templates select="."/></div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="../t:physDesc/t:decoDesc">
+                <xsl:for-each select="../t:physDesc/t:decoDesc[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Page layout</div>
                         <div class="col-md-10"><xsl:apply-templates select="."/></div>    
@@ -399,7 +421,7 @@
                         </div>    
                     </div>   
                 </xsl:if>
-                <xsl:for-each select="../t:scriptDesc/t:scriptNote">
+                <xsl:for-each select="../t:scriptDesc/t:scriptNote[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-1 inline-h4">Script</div>
                         <div class="col-md-10">
@@ -411,7 +433,7 @@
                         </div>    
                     </div> 
                 </xsl:for-each>
-               <xsl:for-each select="t:handNote">
+                <xsl:for-each select="t:handNote[string-length(normalize-space(.)) gt 2]">
                    <div class="row">
                        <div class="col-md-1 inline-h4">Hand <xsl:value-of select="position()"/> </div>
                        <div class="col-md-10">
@@ -457,37 +479,36 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuAdditions" data-toggle="collapse">Incodicated Documents</a></h3>
             <div class="collapse" id="mainMenuAdditions">
-                <xsl:for-each select="t:list/t:item">
+                <xsl:for-each select="t:list/t:item[string-length(normalize-space(.)) gt 2]">
                   <div class="row">
                       <div class="col-md-1 inline-h4"> <xsl:value-of select="position()"/> </div>
                       <div class="col-md-10">
                           <xsl:value-of select="t:objectType"/> <xsl:text>, ff. </xsl:text>
                           <xsl:value-of select="t:locus/@from"/><xsl:if test="t:locus/@to != ''"> - <xsl:value-of select="t:locus/@to"/></xsl:if>
-                          <xsl:for-each select="t:persName">    
+                          <xsl:for-each select="t:persName[string-length(normalize-space(.)) gt 2]">    
                             <div class="row">
                                   <div class="col-md-2 inline-h4">Person mentioned </div>
                                   <div class="col-md-10"><xsl:apply-templates select="."/></div>
                               </div>
                           </xsl:for-each>
-                          <xsl:for-each select="t:quote">    
+                          <xsl:for-each select="t:quote[string-length(normalize-space(.)) gt 2]">    
                               <div class="row">
                                   <div class="col-md-2 inline-h4">Transcription </div>
                                   <div class="col-md-10"><xsl:apply-templates select="."/></div>
                               </div>
                           </xsl:for-each>
-                          <xsl:for-each select="t:ab">    
+                          <xsl:for-each select="t:ab[string-length(normalize-space(.)) gt 2]">    
                               <div class="row">
                                   <div class="col-md-2 inline-h4">Translation </div>
                                   <div class="col-md-10"><xsl:apply-templates select="."/></div>
                               </div>
                           </xsl:for-each>
-                          <xsl:for-each select="t:note"> 
+                          <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]"> 
                               <div class="row">
                                   <div class="col-md-2 inline-h4">Note </div>
                                   <div class="col-md-10"><xsl:apply-templates select="."/></div>
                               </div>
                           </xsl:for-each>
-                          
                       </div>    
                   </div> 
             </xsl:for-each>
@@ -498,7 +519,7 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuHistory" data-toggle="collapse">History</a></h3>
             <div class="collapse" id="mainMenuHistory">
-                <xsl:for-each select="t:summary">
+                <xsl:for-each select="t:summary[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-1 inline-h4">Summary </div>
                         <div class="col-md-10">
@@ -506,47 +527,47 @@
                         </div>    
                     </div>    
                 </xsl:for-each>
-                <xsl:for-each select="t:provenance">
+                <xsl:for-each select="t:provenance[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-1 inline-h4">Provenance <xsl:value-of select="position()"/></div>
                         <div class="col-md-10">
-                           <xsl:for-each select="t:date">
+                            <xsl:for-each select="t:date[string-length(normalize-space(.)) gt 2]">
                                <div class="row">
                                    <div class="col-md-2 inline-h4">Date </div>
                                    <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                </div>
                            </xsl:for-each>
-                            <xsl:for-each select="t:placeName">
+                            <xsl:for-each select="t:placeName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Place </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:locus">
+                            <xsl:for-each select="t:locus[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Range of folios  </div>
                                     <div class="col-md-10"><xsl:call-template name="locus"/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:persName">
+                            <xsl:for-each select="t:persName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Owner  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:quote">
+                            <xsl:for-each select="t:quote[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Transcription  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:stamp">
+                            <xsl:for-each select="t:stamp[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Stamp  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:note">
+                            <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Note  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
@@ -555,53 +576,52 @@
                         </div>    
                     </div>    
                 </xsl:for-each>
-                <xsl:for-each select="t:acquisition">
+                <xsl:for-each select="t:acquisition[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-1 inline-h4">Acquisition</div>
                         <div class="col-md-10">
-                            <xsl:for-each select="t:date">
+                            <xsl:for-each select="t:date[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Date </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:placeName">
+                            <xsl:for-each select="t:placeName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Place </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:locus">
+                            <xsl:for-each select="t:locus[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Range of folios  </div>
                                     <div class="col-md-10"><xsl:call-template name="locus"/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:persName">
+                            <xsl:for-each select="t:persName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Owner  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:quote">
+                            <xsl:for-each select="t:quote[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Transcription  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:stamp">
+                            <xsl:for-each select="t:stamp[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Stamp  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:note">
+                            <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Note  </div>
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            
                         </div>    
                     </div>    
                 </xsl:for-each>
@@ -612,29 +632,29 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuHeritage" data-toggle="collapse">Heritage Data</a></h3>
             <div class="collapse" id="mainMenuHeritage">
-            <xsl:for-each select="t:list/t:item">
+                <xsl:for-each select="t:list/t:item[string-length(normalize-space(.)) gt 2]">
                 <div class="row">
                     <div class="col-md-1 inline-h4"> <xsl:value-of select="position()"/> </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="t:note">
+                        <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                             <div class="row">
                                 <div class="col-md-2 inline-h4"> </div>
                                 <div class="col-md-10"><xsl:apply-templates select="."/></div>
                             </div>
                         </xsl:for-each>
-                        <xsl:for-each select="t:persName">
+                        <xsl:for-each select="t:persName[string-length(normalize-space(.)) gt 2]">
                             <div class="row">
                                 <div class="col-md-2 inline-h4">Author </div>
                                 <div class="col-md-10"><xsl:apply-templates select="."/></div>
                             </div>
                         </xsl:for-each>
-                        <xsl:for-each select="t:quote">
+                        <xsl:for-each select="t:quote[string-length(normalize-space(.)) gt 2]">
                             <div class="row">
                                 <div class="col-md-2 inline-h4">Transcription </div>
                                 <div class="col-md-10"><xsl:apply-templates select="."/></div>
                             </div>
                         </xsl:for-each>
-                        <xsl:for-each select="t:bibl">
+                        <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
                             <div class="row">
                                 <div class="col-md-2 inline-h4">Reference </div>
                                 <div class="col-md-10">
@@ -652,7 +672,7 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</a></h3>
             <div class="collapse" id="mainMenuBibliography">
-                <xsl:for-each select="t:bibl">
+                <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-1 inline-h4"> <xsl:value-of select="position()"/> </div>
                         <div class="col-md-10">
