@@ -48,6 +48,25 @@
                 </div>
             </xsl:otherwise>
         </xsl:choose>
+        <script type="text/javascript">
+        <![CDATA[
+        //show or collapse all
+            $('#expand-all').click(function() {
+                var $myGroup = $('#mainMenu');
+                var label = $(this).text()
+                 console.log(label);
+                if (label === "Open All") {
+                    console.log('open');
+                    $myGroup.find('.collapse').collapse('show');
+                    $(this).text("Close All");
+              } else {
+                    console.log('close');
+                    $myGroup.find('.collapse').collapse('hide');
+                    $(this).text("Open All");
+              } 
+            });
+        ]]>
+        </script>
     </xsl:template>
     <xsl:template match="t:body" mode="majlis majlis-mss">
         <xsl:if test="t:listBibl/t:msDesc/t:msContents/t:msItem">
@@ -173,6 +192,9 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuCredits" data-toggle="collapse">Credits</button>
+                </div>
+                <div class="btn-group">
+                    <button  id="expand-all" type="button" class="btn btn-default btn-grey btn-lg">Open All</button>
                 </div>
             </div>
             <div class="mainMenuContent">
