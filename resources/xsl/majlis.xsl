@@ -437,38 +437,54 @@
                    <div class="row">
                        <div class="col-md-1 inline-h4">Hand <xsl:value-of select="position()"/> </div>
                        <div class="col-md-10">
+                           <xsl:for-each select="t:locus[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Range of hand </div>
-                               <div class="col-md-10"><xsl:apply-templates select="t:locus"/></div>
+                               <div class="col-md-10"><xsl:apply-templates select="."/></div>
                            </div>
+                           </xsl:for-each>
+                           <xsl:for-each select="t:persName[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Scribe </div>
-                               <div class="col-md-10"><xsl:apply-templates select="t:persName"/></div>
+                               <div class="col-md-10"><xsl:apply-templates select="."/></div>
                            </div>
+                           </xsl:for-each>
+                           <xsl:for-each select="t:placeName[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Place of origin </div>
-                               <div class="col-md-10"><xsl:apply-templates select="t:placeName"/></div>
+                               <div class="col-md-10"><xsl:apply-templates select="."/></div>
                            </div>
+                           </xsl:for-each>
+                           <xsl:for-each select="t:origDate[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Date of origin </div>
-                               <div class="col-md-10"><xsl:apply-templates select="t:origDate"/></div>
+                               <div class="col-md-10"><xsl:apply-templates select="."/></div>
                            </div>
+                           </xsl:for-each>
+                           <xsl:if test="@script[. != ''] | @mode[. != ''] | @quality[. != '']">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Script </div>
                                <div class="col-md-10"><xsl:value-of select="@script | @mode | @quality"/></div>
                            </div>
+                           </xsl:if>
+                           <xsl:if test="@medium[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Ink </div>
                                <div class="col-md-10"><xsl:value-of select="@medium"/></div>
                            </div>
+                           </xsl:if>
+                           <xsl:for-each select="t:metamark[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4"/>
-                               <div class="col-md-10"><xsl:apply-templates select="t:metamark"/></div>
+                               <div class="col-md-10"><xsl:apply-templates select="."/></div>
                            </div>
+                           </xsl:for-each>
+                           <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                            <div class="row">
                                <div class="col-md-2 inline-h4"/>
-                               <div class="col-md-10"><xsl:apply-templates select="t:note"/></div>
+                               <div class="col-md-10"><xsl:apply-templates select="."/></div>
                            </div>
+                           </xsl:for-each>
                        </div>    
                    </div>    
                </xsl:for-each>
@@ -689,11 +705,37 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuCredits" data-toggle="collapse">Credits</a></h3>
             <div class="collapse" id="mainMenuCredits">
-                <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
-                <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by Ronny Vollandt. Accessed </xsl:text>
-                <xsl:value-of select="current-dateTime()"/>
-                <xsl:text>, </xsl:text>
-                <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
+                        <div class="row">
+                            <div class="col-md-2 inline-h4"> Suggested citation: </div>
+                            <div class="col-md-10">
+                                <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+                                <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by Ronny Vollandt. Accessed </xsl:text>
+                                <xsl:value-of select="current-dateTime()"/>
+                                <xsl:text>, </xsl:text>
+                                <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
+                            </div>
+                        </div>
+                    <xsl:for-each select="//t:change[string-length(normalize-space(.)) gt 2]">
+                        <div class="row">
+                            <div class="col-md-2 inline-h4"> Change log:</div>
+                            <div class="col-md-10">
+                                <xsl:variable name="who" select="replace(@who,'#','')"/>
+                                <xsl:variable name="name">
+                                    <xsl:choose>
+                                        <xsl:when test="//t:editor[@xml:id[. = $who]]">
+                                            <xsl:for-each select="//t:editor[@xml:id[. = $who]][1]">
+                                                <xsl:value-of select="t:persName"/>
+                                                <xsl:if test="t:date"> (<xsl:value-of select="t:date"/>)</xsl:if>
+                                            </xsl:for-each>
+                                        </xsl:when>
+                                        <xsl:otherwise><xsl:value-of select="$who"/></xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
+                                <xsl:value-of select="$name"/><xsl:text>: </xsl:text>
+                                <xsl:value-of select="."/>
+                            </div>
+                        </div>
+                    </xsl:for-each>
             </div>
         </div>
     </xsl:template>
