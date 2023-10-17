@@ -413,7 +413,7 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuPaleography" data-toggle="collapse">Paleography</a></h3>
             <div class="collapse" id="mainMenuPaleography">
-                <xsl:if test="t:summary">
+                <xsl:if test="t:summary[. != '']">
                     <div class="row">
                         <div class="col-md-1 inline-h4">Summary</div>
                         <div class="col-md-10">
@@ -421,14 +421,21 @@
                         </div>    
                     </div>   
                 </xsl:if>
-                <xsl:for-each select="../t:scriptDesc/t:scriptNote[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="../t:scriptDesc/t:scriptNote[@script != '']">
+                    <!-- <scriptNote xml:lang="arabic" script="naskh" style="" rend="calligraphic"> -->
                     <div class="row">
                         <div class="col-md-1 inline-h4">Script</div>
                         <div class="col-md-10">
-                            <xsl:value-of select="local:expand-lang(@xml:lang,'')"/><xsl:text>, </xsl:text>
+                            <xsl:if test="@xml:lang != ''">
+                                <xsl:value-of select="local:expand-lang(@xml:lang,'')"/><xsl:text>, </xsl:text>    
+                            </xsl:if>
                             <xsl:value-of select="@script"/><xsl:text>, </xsl:text>
-                            <xsl:value-of select="@style"/><xsl:text>, </xsl:text>
-                            <xsl:value-of select="@rend"/>
+                            <xsl:if test="@style != ''">
+                                <xsl:value-of select="@style"/><xsl:text>, </xsl:text>
+                            </xsl:if>
+                            <xsl:if test="@rend != ''">
+                                <xsl:value-of select="@rend"/>
+                            </xsl:if>
                             <xsl:apply-templates select="t:note"/>
                         </div>    
                     </div> 
