@@ -732,13 +732,12 @@
                                         <xsl:when test="//t:editor[@xml:id[. = $who]]">
                                             <xsl:for-each select="//t:editor[@xml:id[. = $who]][1]">
                                                 <xsl:value-of select="t:persName"/>
-                                                <xsl:if test="t:date"> (<xsl:value-of select="t:date"/>)</xsl:if>
                                             </xsl:for-each>
                                         </xsl:when>
                                         <xsl:otherwise><xsl:value-of select="$who"/></xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
-                                <xsl:value-of select="$name"/><xsl:text>: </xsl:text>
+                                <xsl:value-of select="$name"/>  <xsl:if test="@when"> (<xsl:value-of select="@when"/>)</xsl:if><xsl:text>: </xsl:text>
                                 <xsl:value-of select="."/>
                             </div>
                         </div>
@@ -752,6 +751,9 @@
             <xsl:variable name="langCode" select="."/>
             <xsl:value-of select="local:expand-lang($langCode,'')"/>
         </xsl:for-each>
+    </xsl:template>
+    <xsl:template match="t:locus">
+        <xsl:call-template name="locus"/>
     </xsl:template>
     <xsl:template name="locus">
         <xsl:value-of select="@from"/><xsl:if test="@to != ''"> - <xsl:value-of select="@to"/></xsl:if>
