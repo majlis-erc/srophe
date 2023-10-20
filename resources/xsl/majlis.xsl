@@ -179,7 +179,7 @@
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuPaleography" data-toggle="collapse">Paleography</button>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuAdditions" data-toggle="collapse">Additions</button>
+                    <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuAdditions" data-toggle="collapse">Incodicated Documents</button>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuHistory" data-toggle="collapse">History</button>
