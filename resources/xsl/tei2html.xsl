@@ -1689,7 +1689,7 @@
    
     <xsl:template match="t:title">
         <xsl:choose>
-            <xsl:when test="@ref">
+            <xsl:when test="@ref[. != '']">
                 <a href="{@ref}">
                     <xsl:sequence select="local:attributes(.)"/>
                     <xsl:apply-templates/>
