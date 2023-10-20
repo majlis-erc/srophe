@@ -794,6 +794,13 @@
                             <div class="col-md-2 inline-h4"> Change log:</div>
                             <div class="col-md-10">
                                 <xsl:variable name="who" select="replace(@who,'#','')"/>
+                                <xsl:variable name="when">
+                                    <xsl:variable name="date" select="substring(@when,1,10)"/>
+                                    <xsl:choose>
+                                        <xsl:when test="$date castable as xs:date"><xsl:value-of select="format-date(xs:date($date),'[D] [MNn] [Y]','en',(),())"/></xsl:when>
+                                        <xsl:otherwise><xsl:value-of select="$date"/></xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
                                 <xsl:variable name="name">
                                     <xsl:choose>
                                         <xsl:when test="//t:editor[@xml:id[. = $who]]">
@@ -804,7 +811,7 @@
                                         <xsl:otherwise><xsl:value-of select="$who"/></xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
-                                <xsl:value-of select="$name"/>  <xsl:if test="@when"> (<xsl:value-of select="@when"/>)</xsl:if><xsl:text>: </xsl:text>
+                                <xsl:value-of select="$name"/>  <xsl:if test="@when[. != '']"> (<xsl:value-of select="$when"/>)</xsl:if><xsl:text>: </xsl:text>
                                 <xsl:value-of select="."/>
                             </div>
                         </div>
