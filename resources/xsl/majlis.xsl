@@ -167,37 +167,103 @@
         </div>
         <!-- Menu items for record contents -->
         <!-- aria-expanded="false" -->
+        <xsl:variable name="Content">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:msContents" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="Codicology">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:objectDesc" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="Paleography">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:handDesc" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="incodicatedDocuments">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:additions" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="History">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:history" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="Heritage">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:accMat" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="Bibliography">
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:additional/t:listBibl" mode="majlis"/>
+        </xsl:variable>
+        <xsl:variable name="Credits">
+            <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt" mode="majlis-credits"/>
+        </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
+                <xsl:if test="$Content/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button aria-expanded="true" type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuContent" data-toggle="collapse">Content</button>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuCodicology">Codicology</button>
-                </div>
+                </xsl:if>
+                <xsl:if test="$Codicology/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuCodicology">Codicology</button>
+                    </div>    
+                </xsl:if>
+                <xsl:if test="$Paleography/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuPaleography" data-toggle="collapse">Paleography</button>
                 </div>
+                </xsl:if>
+                <xsl:if test="$incodicatedDocuments/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuAdditions" data-toggle="collapse">Incodicated Documents</button>
                 </div>
+                </xsl:if>
+                <xsl:if test="$History/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuHistory" data-toggle="collapse">History</button>
                 </div>
+                </xsl:if>
+                <xsl:if test="$Heritage/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuHeritage" data-toggle="collapse">Heritage Data</button>
                 </div>
+                </xsl:if>
+                <xsl:if test="$Bibliography/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</button>
                 </div>
+                </xsl:if>
+                <xsl:if test="$Credits/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuCredits" data-toggle="collapse">Credits</button>
                 </div>
+                </xsl:if>
                 <div class="btn-group">
                     <button id="expand-all" type="button" class="btn btn-default btn-grey btn-lg">Open All</button>
                 </div>
             </div>
             <div class="mainMenuContent">
+                <xsl:if test="$Content/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$Content"/>
+                </xsl:if>
+                <xsl:if test="$Codicology/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$Codicology"/>    
+                </xsl:if>
+                <xsl:if test="$Paleography/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$Paleography"/>
+                </xsl:if>
+                <xsl:if test="$incodicatedDocuments/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$incodicatedDocuments"/>
+                </xsl:if>
+                <xsl:if test="$History/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$History"/>
+                </xsl:if>
+                <xsl:if test="$Heritage/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$Heritage"/>
+                </xsl:if>
+                <xsl:if test="$Bibliography/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$Bibliography"/>
+                </xsl:if>
+                <xsl:if test="$Credits/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(),''))) gt 2]">
+                    <xsl:sequence select="$Credits"/>
+                </xsl:if>
+                
+                <!--
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:msContents" mode="majlis"/>
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:objectDesc" mode="majlis"/>
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:handDesc" mode="majlis"/>
@@ -206,6 +272,7 @@
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:accMat" mode="majlis"/>
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:additional/t:listBibl" mode="majlis"/>
                 <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt" mode="majlis-credits"/>
+                -->
             </div>
         </div>
     </xsl:template>
