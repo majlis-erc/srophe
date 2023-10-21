@@ -94,6 +94,11 @@
     
     <!-- Q -->
     <xsl:template match="t:quote">
+        <div class="tei-quote">
+            <xsl:sequence select="local:attributes(.)"/>
+            <xsl:apply-templates/>
+        </div>
+        <!--
         <xsl:if test=". != ''">
             <span class="tei-quote" dir="ltr" lang="en">
                 <xsl:choose>
@@ -110,7 +115,6 @@
                         </span>
                     </xsl:when>
                     <xsl:when test="parent::*/@xml:lang">
-                        <!-- Quotes need to be outside langattr for Syriac and arabic characters to render correctly.  -->
                         <span dir="ltr">
                             <xsl:text> “</xsl:text>
                         </span>
@@ -129,8 +133,9 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:sequence select="local:add-footnotes(@source,ancestor::t:*[@xml:lang][1])"/> 
-            </span>            
+            </span>  
         </xsl:if>
+        -->
     </xsl:template>
     
     <!-- R -->
