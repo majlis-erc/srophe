@@ -29,11 +29,12 @@ declare variable $data:SORT_FIELDS := $config:get-config//*:sortFields/*:fields;
 :)
 declare function data:get-document() {
     (: Get document by id or tei:idno:)
-    let $id := if(ends-with(request:get-parameter('id', ''),'/tei')) then request:get-parameter('id', '') else concat(request:get-parameter('id', ''),'/tei')
+    let $id := (:if(ends-with(request:get-parameter('id', ''),'/tei')) then request:get-parameter('id', '') else concat(request:get-parameter('id', ''),'/tei'):)request:get-parameter('id', '')
     return 
     if(request:get-parameter('id', '') != '') then  
         if($config:document-id) then 
-           collection($config:data-root)//tei:idno[. = $id][@type='URI']/ancestor::tei:TEI
+           (collection($config:data-root)//tei:idno[. = $id][@type='URI']/ancestor::tei:TEI |
+           collection($config:data-root)//tei:idno[. = concat($id,'/tei')][@type='URI']/ancestor::tei:TEI)[1]
         else collection($config:data-root)/id(request:get-parameter('id', ''))/ancestor::tei:TEI
     (: Get document by document path. :)
     else if(request:get-parameter('doc', '') != '') then 
