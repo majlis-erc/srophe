@@ -327,8 +327,13 @@
                                     </div>
                                     <div class="col-md-10">
                                         <xsl:choose>
-                                            <xsl:when test="local-name(.) = 'locus'">
-                                                <xsl:call-template name="locus"/>
+                                            <xsl:when test="local-name(.) = 'title'">
+                                                <xsl:apply-templates select="."/>
+                                                <xsl:if test="preceding-sibling::t:locus or following-sibling::t:locus">
+                                                    <xsl:for-each select="preceding-sibling::t:locus | following-sibling::t:locus">
+                                                        (<xsl:call-template name="locus"/>)        
+                                                    </xsl:for-each>
+                                                </xsl:if>
                                             </xsl:when>
                                             <xsl:when test="local-name(.) = 'textLang'">
                                                 <xsl:for-each select="@otherLangs|@mainLang">
@@ -462,7 +467,7 @@
                         </div>    
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/t:locus[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="t:layoutDesc/t:layout/t:locus[@from != '' or @to != '']">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Folio range of layout</div>
                         <div class="col-md-10">
@@ -538,7 +543,7 @@
                    <div class="row">
                        <div class="col-md-1 inline-h4">Hand <xsl:value-of select="position()"/> </div>
                        <div class="col-md-10">
-                           <xsl:for-each select="t:locus[string-length(normalize-space(.)) gt 2]">
+                           <xsl:for-each select="t:locus[@from != '' or @to != '']">
                            <div class="row">
                                <div class="col-md-2 inline-h4">Range of hand </div>
                                <div class="col-md-10"><xsl:apply-templates select="."/></div>
@@ -660,7 +665,7 @@
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:locus[string-length(normalize-space(.)) gt 2]">
+                            <xsl:for-each select="t:locus[@from != '' or @to != '']">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Range of folios  </div>
                                     <div class="col-md-10"><xsl:call-template name="locus"/></div>
@@ -709,7 +714,7 @@
                                     <div class="col-md-10"><xsl:apply-templates select="."/></div>
                                 </div>
                             </xsl:for-each>
-                            <xsl:for-each select="t:locus[string-length(normalize-space(.)) gt 2]">
+                            <xsl:for-each select="t:locus[@from != '' or @to != '']">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Range of folios  </div>
                                     <div class="col-md-10"><xsl:call-template name="locus"/></div>
