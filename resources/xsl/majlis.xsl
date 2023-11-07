@@ -73,80 +73,107 @@
             <xsl:for-each select="t:listBibl/t:msDesc[1]">
                 <div class="mainDesc row">
                     <div class="col-md-6">
-                        <xsl:for-each select="t:msContents/t:msItem[1]/t:title[@xml:lang='en'][. != ''] | t:msContents/t:msItem[1]/t:author[. != ''] | t:msContents/t:msItem[1]/t:textLang[. != '']">
+                        <xsl:if test="t:msContents/t:msItem/t:title[@xml:lang='en'][. != '']">
                             <div class="item row">
-                                <span class="inline-h4 col-md-3">
-                                    <xsl:choose>
-                                        <xsl:when test="self::t:title">Title</xsl:when>
-                                        <xsl:when test="self::t:author">Author</xsl:when>
-                                        <xsl:when test="self::t:textLang">Language</xsl:when>
-                                    </xsl:choose>
-                                </span>
+                                <span class="inline-h4 col-md-3">Title</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="t:msContents/t:msItem/t:title[@xml:lang='en'][. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                            <!-- 
-                           WS: NOTE - missing xpath for script heading
-                            -->
-                        </xsl:for-each>
-                        <xsl:for-each select="t:history/t:origin/t:persName[@role='scribe'][. != '']">
+                        </xsl:if>
+                        <xsl:if test="t:msContents/t:msItem/t:author[. != '']">
+                            <div class="item row">
+                                <span class="inline-h4 col-md-3">Author</span>
+                                <span class="col-md-9">
+                                    <xsl:for-each select="t:msContents/t:msItem/t:author[. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
+                                </span>
+                            </div>
+                        </xsl:if>
+                        <xsl:if test="t:msContents/t:msItem/t:textLang[. != '']">
+                            <div class="item row">
+                                <span class="inline-h4 col-md-3">Language</span>
+                                <span class="col-md-9">
+                                    <xsl:for-each select="t:msContents/t:msItem/t:textLang[. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
+                                </span>
+                            </div>
+                        </xsl:if>
+                        <xsl:if test="t:history/t:origin/t:persName[@role='scribe'][. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Scribe</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="t:history/t:origin/t:persName[@role='scribe'][. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                        </xsl:for-each>
+                        </xsl:if>
                     </div>
                     <div class="col-md-6">
-                        <!-- 
-                            /TEI/text/body/listBibl/msDesc/history/origin/origDate
-                            /TEI/text/body/listBibl/msDesc/history/origin/origPlace
-                            /TEI/text/body/listBibl/msDesc/physDesc/objectDesc/@form
-                            /TEI/text/body/listBibl/msDesc/physDesc/objectDesc/supportDesc/support/material
-                            /TEI/text/body/listBibl/msDesc/physDesc/objectDesc/supportDesc/extent/measure
-                        -->
-                        <xsl:for-each select="t:history/t:origin/t:origDate[. != '']">
+                        <xsl:if test="t:history/t:origin/t:origDate[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Date</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="t:history/t:origin/t:origDate[. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                        </xsl:for-each>
-                        <xsl:for-each select="t:history/t:origin/t:origPlace[. != '']">
+                        </xsl:if>
+                        <xsl:if test="t:history/t:origin/t:origPlace[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Place</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="t:history/t:origin/t:origPlace[. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                        </xsl:for-each>
-                        <xsl:for-each select="t:physDesc/t:objectDesc/@form">
+                        </xsl:if>
+                        <xsl:if test="t:physDesc/t:objectDesc/@form[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Object Type</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="t:physDesc/t:objectDesc/@form">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                        </xsl:for-each>
-                        <xsl:for-each select="t:physDesc/t:objectDesc/t:supportDesc/t:support/t:material[. != '']">
+                        </xsl:if>
+                        <xsl:if test="t:physDesc/t:objectDesc/t:supportDesc/t:support/t:material[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Material</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="t:physDesc/t:objectDesc/t:supportDesc/t:support/t:material[. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                        </xsl:for-each>
-                        <xsl:for-each select="physDesc/objectDesc/supportDesc/extent/measure[. != '']">
+                        </xsl:if>
+                        <xsl:if test="physDesc/objectDesc/supportDesc/extent/measure[. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Extent</span>
                                 <span class="col-md-9">
-                                    <xsl:apply-templates select="."/>
+                                    <xsl:for-each select="physDesc/objectDesc/supportDesc/extent/measure[. != '']">
+                                        <xsl:apply-templates select="."/>
+                                        <xsl:if test="position() != last()">, </xsl:if>
+                                    </xsl:for-each>
                                 </span>
                             </div>
-                        </xsl:for-each>
+                        </xsl:if>
                     </div>
                 </div>
             </xsl:for-each>
@@ -879,7 +906,7 @@
             <h4>Works referenced</h4>
             <ul>
                 <xsl:for-each select="//t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']">
-                    <li><xsl:apply-templates select="."  mode="majlis"/></li>    
+                    <li><xsl:apply-templates select="." mode="majlis"/></li>    
                 </xsl:for-each>
             </ul>
             </div>
