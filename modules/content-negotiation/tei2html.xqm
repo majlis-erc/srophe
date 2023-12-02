@@ -308,7 +308,10 @@ declare function tei2html:summary-view-keyword($nodes as node()*, $id as xs:stri
 
 (: Generic short view template :)
 declare function tei2html:summary-view-generic($nodes as node()*, $id as xs:string?) as item()* {
-    let $title := if($nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
+   let $id := if(ends-with($id, '/tei')) then replace(replace($id,$config:base-uri,$config:nav-base),'/tei','') 
+              else if(ends-with($id, '/')) then substring($id, 1, string-length($id) - 1)
+              else $id
+   let $title := if($nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
                     $nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en'][1]/text()
                   else if($nodes/descendant-or-self::tei:title[@level='a']) then
                     $nodes/descendant-or-self::tei:title[1]

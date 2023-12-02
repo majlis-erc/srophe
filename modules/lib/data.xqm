@@ -31,8 +31,9 @@ declare function data:get-document() {
     (: Get document by id or tei:idno:)
     let $id := (:if(ends-with(request:get-parameter('id', ''),'/tei')) then request:get-parameter('id', '') else concat(request:get-parameter('id', ''),'/tei'):)request:get-parameter('id', '')
     return 
-        (collection($config:data-root)//tei:idno[. = $id][@type='URI']/ancestor::tei:TEI | collection($config:data-root)//tei:idno[. = concat($id,'/')][@type='URI']/ancestor::tei:TEI |
-           collection($config:data-root)//tei:idno[. = concat($id,'/tei')][@type='URI']/ancestor::tei:TEI)[1]
+        (collection($config:data-root)//tei:idno[@type='URI'][. = $id]/ancestor::tei:TEI | 
+        collection($config:data-root)//tei:idno[@type='URI'][. = concat($id,'/')]/ancestor::tei:TEI |
+        collection($config:data-root)//tei:idno[@type='URI'][. = concat($id,'/tei')]/ancestor::tei:TEI)[1]
     
 };
 
