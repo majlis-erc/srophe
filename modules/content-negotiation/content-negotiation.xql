@@ -153,16 +153,11 @@ let $data :=
                local:coordinates(request:get-parameter('type', ''), request:get-parameter('collection', ''))
             else <div>Nothing, check params: {request:get-parameter-names()}</div>
         else
-            let $collection := 
-                if(request:get-parameter('eXistCollection','') != '') then 
-                    if(contains(request:get-parameter('eXistCollection',''),'manuscripts')) then 'manuscripts'
-                    else if(contains(request:get-parameter('eXistCollection',''),'places')) then 'places'
-                    else if(contains(request:get-parameter('eXistCollection',''),'persons')) then 'persons'
-                    else if(contains(request:get-parameter('eXistCollection',''),'works')) then 'works'
-                    else if(contains(request:get-parameter('eXistCollection',''),'relations')) then 'relations'
-                    else if(contains(request:get-parameter('eXistCollection',''),'texts')) then 'texts'
-                    else ()
+            let $collectionParam := 
+                if(request:get-parameter('existCollection','') != '') then
+                    tokenize(replace(request:get-parameter('existCollection',''),'/tei',''),'/')[last()]
                 else ()
+let $collection := $collectionParam  
             let $hits := data:search($collection,'','')
             return 
                 if(count($hits) gt 0) then 
@@ -210,9 +205,9 @@ let $data :=
                                     })
                                 }
                             </facetGrp>
-                            <facetGrp label="settlement">
+                            <facetGrp label="city">
                                 {
-                                    let $settlement := ft:facets($hits, "settlement")
+                                    let $settlement := ft:facets($hits, "city")
                                     return 
                                         map:for-each($settlement, function($label, $count) {
                                         <facet label="{$label}" count="{$count}"></facet>
