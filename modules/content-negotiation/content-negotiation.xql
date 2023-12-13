@@ -57,6 +57,7 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                       else if($hit/preceding-sibling::*[contains(@srophe:tags,'#syriaca-headword')]) then
                                         normalize-space(string-join($hit/preceding-sibling::*[contains(@srophe:tags,'#syriaca-headword')][1]//text(),' '))
                                       else normalize-space(string-join($hit/ancestor-or-self::tei:TEI/descendant::tei:title[1]//text(),' '))
+                     let $xmlID := replace(replace(substring-after($id,'://'),'/',''),'\.','-')
                      group by $recID := $id
                      return
                          <json:value json:array="true">
@@ -65,15 +66,16 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                 {
                                 if($element = 'citation') then 
                                     <bibl xmlns="http://www.tei-c.org/ns/1.0">
-                                        <bibl>
+                                        <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
+                                            <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</idno>
                                             <title type="citation">{$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']//text()}</title>
                                             <ptr target="{$recID}"/>
                                         </bibl>
                                         {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
                                     </bibl>
                                 else if($element = 'titleBibl') then 
-                                    <bibl xmlns="http://www.tei-c.org/ns/1.0">
-                                        <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a']//text()}</idno>
+                                    <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
+                                        <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</idno>
                                         <ptr target="{$recID}"/>
                                     </bibl>    
                                 else if(request:get-parameter('wrapElement', '') != '') then
