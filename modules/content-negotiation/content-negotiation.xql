@@ -181,7 +181,7 @@ let $collection := $collectionParam
 
                                     for $hit in subsequence($hits,$start,$perpage)
                                     let $id := replace($hit/descendant::tei:idno[starts-with(.,$config:base-uri)][1],'/tei','')
-                                    let $title := $hit/descendant::tei:titleStmt/tei:title
+                                    let $title := $hit/descendant::tei:titleStmt/tei:title[1]
                                     let $expanded := kwic:expand($hit)
                                     return 
                                         <json:value json:array="true">
@@ -191,7 +191,7 @@ let $collection := $collectionParam
                                                 else () 
                                             }
                                             <id>{$id}</id>
-                                            {$title}
+                                            {$title[1]}
                                             <hits>{normalize-space(string-join((tei2html:output-kwic($expanded, $id)),' '))}</hits>
                                         </json:value>
                                     }
