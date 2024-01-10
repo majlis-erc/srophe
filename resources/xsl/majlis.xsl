@@ -811,16 +811,30 @@
         <div class="whiteBoxwShadow">
             <h3><a aria-expanded="true" href="#mainMenuCredits" data-toggle="collapse">Credits</a></h3>
             <div class="collapse" id="mainMenuCredits">
-                        <div class="row">
-                            <div class="col-md-2 inline-h4"> Suggested citation: </div>
-                            <div class="col-md-10">
-                                <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
-                                <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by Ronny Vollandt. Accessed </xsl:text>
-                                <xsl:value-of select="current-dateTime()"/>
-                                <xsl:text>, </xsl:text>
-                                <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
-                            </div>
-                        </div>
+                <div class="row">
+                    <div class="col-md-2 inline-h4">Project: </div>
+                    <div class="col-md-10">
+                        <xsl:apply-templates select="//t:titleStmt/t:title[@level='m'][1]"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 inline-h4"></div>
+                    <div class="col-md-10">
+                        <xsl:apply-templates select="//t:editionStmt/t:edition[1]"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 inline-h4">Principal investigator: </div>
+                    <div class="col-md-10">
+                        <xsl:apply-templates select="//t:titleStmt/editor[@role='general']"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 inline-h4">Associate researcher: </div>
+                    <div class="col-md-10">
+                        <xsl:apply-templates select="//t:titleStmt/editor[@role='contributor']"/>
+                    </div>
+                </div>
                     <xsl:for-each select="//t:change[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-2 inline-h4"> Change log:</div>
@@ -837,7 +851,14 @@
                                     <xsl:choose>
                                         <xsl:when test="//t:editor[@xml:id[. = $who]]">
                                             <xsl:for-each select="//t:editor[@xml:id[. = $who]][1]">
-                                                <xsl:value-of select="t:persName"/>
+                                                <xsl:choose>
+                                                    <xsl:when test="t:persName">
+                                                        <xsl:value-of select="t:persName"/>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>
+                                                        <xsl:value-of select="string-join(descendant-or-self::text(),' ')"/>        
+                                                    </xsl:otherwise>
+                                                </xsl:choose>
                                             </xsl:for-each>
                                         </xsl:when>
                                         <xsl:otherwise><xsl:value-of select="$who"/></xsl:otherwise>
@@ -850,6 +871,19 @@
                     </xsl:for-each>
             </div>
         </div>
+        <div class="whiteBoxwShadow panel panel-default">
+            <div class="citationPanel">
+                    <h4><span class="glyphicon glyphicon-book"></span> Suggested Citation </h4> 
+                    <p class="citation">
+                    <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+                    <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by Ronny Vollandt. Accessed </xsl:text>
+                    <xsl:value-of select="current-dateTime()"/>
+                    <xsl:text>, </xsl:text>
+                    <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
+                    </p>
+            </div>
+        </div>
+        
     </xsl:template>
     
     <xsl:template match="t:textLang">
