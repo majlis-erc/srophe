@@ -931,7 +931,7 @@
             <div class="whiteBoxwShadow entityList text-left">
             <h4>Persons referenced</h4>
             <ul>
-                <xsl:for-each select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != '']">
+                <xsl:for-each select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
                     <li><xsl:apply-templates select="."/></li>    
                 </xsl:for-each>
             </ul>
