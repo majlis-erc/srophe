@@ -906,8 +906,12 @@
         <xsl:value-of select="@from"/><xsl:if test="@to != ''"> - <xsl:value-of select="@to"/></xsl:if>
     </xsl:template>
     <xsl:template match="t:bibl" mode="majlisCite">
-        <xsl:apply-templates select="t:title"/><xsl:text>, </xsl:text>
+        <xsl:apply-templates select="t:title"/>
+        <xsl:if test="t:citedRange[. != '']"><xsl:text>, </xsl:text></xsl:if>
         <xsl:apply-templates select="t:citedRange" mode="majlis"/><xsl:text> </xsl:text>
+        <xsl:if test="t:ptr/@target[. != '']">
+            [<a href="{t:ptr/@target}" target="_blank"><xsl:apply-templates select="t:ptr/@target"/></a>]
+        </xsl:if>
     </xsl:template>
     <xsl:template match="t:citedRange" mode="majlis">
         <xsl:choose>
