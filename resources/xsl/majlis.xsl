@@ -760,7 +760,7 @@
                     <div class="col-md-10">
                         <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                             <div class="row">
-                                <div class="col-md-2 inline-h4"> </div>
+                                <div class="col-md-2 inline-h4">Note </div>
                                 <div class="col-md-10"><xsl:apply-templates select="."/></div>
                             </div>
                         </xsl:for-each>

@@ -506,7 +506,7 @@ pre {
     padding-right:.5em;    
 }
 .tei-event p {display:inline-block;}
-.tei-note {margin: 1em;}
+.tei-note {margin: 1em 0 ;}
 .tei-quote .tei-placeName {color: #6699cc; font-weight:bold;}
 /*.tei-title > .tei-title {font-style:italic;} */
 .top-padding {margin-top:4.5em !important;}
