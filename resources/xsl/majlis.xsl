@@ -73,11 +73,11 @@
             <xsl:for-each select="t:listBibl/t:msDesc[1]">
                 <div class="mainDesc row">
                     <div class="col-md-6">
-                        <xsl:if test="t:msContents/t:msItem/t:title[@xml:lang='en'][. != '']">
+                        <xsl:if test="t:msContents/t:msItem/t:title[1][. != '']">
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Title</span>
                                 <span class="col-md-9">
-                                    <xsl:for-each select="t:msContents/t:msItem/t:title[@xml:lang='en'][. != '']">
+                                    <xsl:for-each select="t:msContents/t:msItem/t:title[1][. != '']">
                                         <xsl:apply-templates select="."/>
                                         <xsl:if test="position() != last()">, </xsl:if>
                                     </xsl:for-each>
