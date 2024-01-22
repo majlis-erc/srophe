@@ -818,7 +818,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 inline-h4"></div>
+                    <div class="col-md-2 inline-h4"/>
                     <div class="col-md-10">
                         <xsl:apply-templates select="//t:editionStmt/t:edition[1]"/>
                     </div>
@@ -826,13 +826,20 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal investigator: </div>
                     <div class="col-md-10">
-                        <xsl:apply-templates select="//t:titleStmt/editor[@role='general']"/>
+                        <xsl:for-each select="//t:titleStmt/t:editor[@role='general']">
+                            <xsl:apply-templates select="."/>
+                            <xsl:if test="position() != last()">, </xsl:if>
+                        </xsl:for-each>
+                        
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
-                        <xsl:apply-templates select="//t:titleStmt/editor[@role='contributor']"/>
+                        <xsl:for-each select="//t:titleStmt/t:editor[@role='contributor']">
+                            <xsl:apply-templates select="."/>
+                            <xsl:if test="position() != last()">, </xsl:if>
+                        </xsl:for-each>
                     </div>
                 </div>
                     <xsl:for-each select="//t:change[string-length(normalize-space(.)) gt 2]">
@@ -873,7 +880,7 @@
         </div>
         <div class="whiteBoxwShadow panel panel-default">
             <div class="citationPanel">
-                    <h4><span class="glyphicon glyphicon-book"></span> Suggested Citation </h4> 
+                    <h4><span class="glyphicon glyphicon-book"/> Suggested Citation </h4> 
                     <p class="citation">
                     <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
                     <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by Ronny Vollandt. Accessed </xsl:text>
