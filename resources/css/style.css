@@ -278,7 +278,7 @@ img{ margin:0px }
 
 :lang(ar) {
  font-family: arial, sans-serif;
- font-size:1.25em; 
+ /* font-size:1.25em; */
  line-height:1em;
  }
 

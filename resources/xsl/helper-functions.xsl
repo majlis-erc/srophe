@@ -353,9 +353,12 @@
             <xsl:when test="$lang = 'ar'">Arabic</xsl:when>
             <xsl:when test="$lang = 'he'">Hebrew</xsl:when>
             <xsl:when test="$lang = 'en'">English</xsl:when>
-            <xsl:when test="$lang = 'he-Latn'">Hebrew in Latin characters</xsl:when>
+            <xsl:when test="$lang = 'he-Latn'">Hebrew</xsl:when>
+            <xsl:when test="$lang = 'ar-Latn'">Arabic</xsl:when>
+            <xsl:when test="$lang = 'ar-Hebr'">Arabic</xsl:when>
+            <!--<xsl:when test="$lang = 'he-Latn'">Hebrew in Latin characters</xsl:when>
             <xsl:when test="$lang = 'ar-Latn'">Arabic in Latin characters</xsl:when>
-            <xsl:when test="$lang = 'ar-Hebr'">Arabic in Hebrew characters</xsl:when>
+            <xsl:when test="$lang = 'ar-Hebr'">Arabic in Hebrew characters</xsl:when>-->
             <xsl:otherwise/>
         </xsl:choose>
     </xsl:function>
