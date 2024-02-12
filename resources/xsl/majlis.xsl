@@ -438,13 +438,7 @@
         <xsl:variable name="majlisNames">
             <xsl:apply-templates select="t:listPerson/t:person" mode="majlis"/>
         </xsl:variable>
-        <xsl:variable name="canonNames">
-            <xsl:apply-templates select="t:listPerson/t:person" mode="majlis"/>
-        </xsl:variable>
         <xsl:variable name="attestedNames">
-            <xsl:apply-templates select="t:listPerson/t:person" mode="majlis"/>
-        </xsl:variable>
-        <xsl:variable name="alternateNames">
             <xsl:apply-templates select="t:listPerson/t:person" mode="majlis"/>
         </xsl:variable>
         <xsl:variable name="biography">
@@ -469,15 +463,8 @@
                     test="$majlisNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button aria-expanded="true" type="button"
-                            class="btn btn-default btn-grey btn-lg" href="#mainMenuMajlisNames"
-                            data-toggle="collapse">MAJLIS Names</button>
-                    </div>
-                </xsl:if>
-                <xsl:if
-                    test="$canonNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-grey btn-lg"
-                            data-toggle="collapse" href="#mainMenuCanonNames">Canon Names</button>
+                            class="btn btn-default btn-grey btn-lg" href="#mainMenuNames"
+                            data-toggle="collapse">Names</button>
                     </div>
                 </xsl:if>
                 <xsl:if
@@ -485,14 +472,6 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-default btn-grey btn-lg"
                             href="#mainMenuAttestedNames" data-toggle="collapse">Attested
-                            Names</button>
-                    </div>
-                </xsl:if>
-                <xsl:if
-                    test="$alternateNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-grey btn-lg"
-                            href="#mainMenuAlternateNames" data-toggle="collapse">Alternate
                             Names</button>
                     </div>
                 </xsl:if>
@@ -540,13 +519,9 @@
                 </div>
             </div>
             <div class="mainMenuContent">
-                <!--<xsl:if
+                <xsl:if
                     test="$majlisNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$majlisNames"/>
-                </xsl:if>-->
-                <xsl:if
-                    test="$canonNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$canonNames"/>
                 </xsl:if>
                 <!-- <xsl:if
                     test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
@@ -649,29 +624,37 @@
     </xsl:template>
 
     <xsl:template match="t:person" mode="majlis">
-
-        <xsl:if test="t:persName[@type = 'majlis-headword']">
-            <div class="whiteBoxwShadow">
-                <h3>
-                    <a aria-expanded="true" href="#mainMenuMajlisNames" data-toggle="collapse"
-                        >MAJLIS Names</a>
-                </h3>
-                <div class="collapse" id="mainMenuMajlisNames">
-                    <xsl:for-each
-                        select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">
-                                <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-                            </div>
-                            <div class="col-md-10">
-                                <xsl:apply-templates select="t:name"/>
-                            </div>
+        <div class="whiteBoxwShadow">
+            <h3>
+                <a aria-expanded="true" href="#mainMenuNames" data-toggle="collapse">Names</a>
+            </h3>
+            <div class="collapse" id="mainMenuNames">
+                <xsl:for-each
+                    select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
+                    <div class="row">
+                        <div class="col-md-1 inline-h4">
+                            <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
                         </div>
-                    </xsl:for-each>
-                </div>
+                        <div class="col-md-10">
+                            <xsl:apply-templates select="t:name"/>
+                        </div>
+                    </div>
+                </xsl:for-each>
+                <xsl:for-each
+                    select="t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
+                    <div class="row">
+                        <div class="col-md-1 inline-h4">
+                            <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+                        </div>
+                        <div class="col-md-10">
+                            <xsl:apply-templates select="."/>
+                        </div>
+                    </div>
+                </xsl:for-each>
             </div>
-        </xsl:if>
-        <xsl:if test="t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
+        </div>
+
+        <!--<xsl:if test="t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuCanonNames" data-toggle="collapse">Canon
@@ -779,8 +762,8 @@
                     </xsl:for-each>
                 </div>
             </div>
-        </xsl:if>
-        <xsl:if test="t:persName[@type = 'alternate'][string-length(normalize-space(.)) gt 2]">
+        </xsl:if>-->
+        <!--<xsl:if test="t:persName[@type = 'alternate'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuAlternateNames" data-toggle="collapse"
@@ -805,7 +788,7 @@
                     </xsl:for-each>
                 </div>
             </div>
-        </xsl:if>
+        </xsl:if>-->
         <xsl:if test="t:persName[@type = 'attested'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
@@ -820,7 +803,9 @@
                                 <xsl:when test="@xml:lang[. != '']">
                                     <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
                                 </xsl:when>
-                                <xsl:otherwise><xsl:text>Name </xsl:text></xsl:otherwise>
+                                <xsl:otherwise>
+                                    <xsl:text>Name </xsl:text>
+                                </xsl:otherwise>
                             </xsl:choose>
                             <div class="col-md-10">
                                 <xsl:apply-templates select="t:name"/>
@@ -830,13 +815,22 @@
                 </div>
             </div>
         </xsl:if>
-        <xsl:if test="t:birth | t:death | t:floruit | t:sex | t:faith | t:occupation | t:residence">
+        <xsl:if
+            test="t:note | t:birth | t:death | t:floruit | t:sex | t:faith | t:occupation | t:residence">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuBiography" data-toggle="collapse"
                         >Biography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBiography">
+                    <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
+                        <div class="row">
+                            <div class="col-md-1 inline-h4">Description </div>
+                            <div class="col-md-10">
+                                <xsl:apply-templates select="."/>
+                            </div>
+                        </div>
+                    </xsl:for-each>
                     <xsl:for-each select="t:birth/t:date[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Date of birth </div>
@@ -1654,13 +1648,21 @@
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
-
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
                         <xsl:for-each select="//t:titleStmt/t:editor[@role = 'contributor']">
+                            <xsl:apply-templates select="."/>
+                            <xsl:if test="position() != last()">, </xsl:if>
+                        </xsl:for-each>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 inline-h4">Funded through: </div>
+                    <div class="col-md-10">
+                        <xsl:for-each select="//t:titleStmt/t:funder">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -1719,7 +1721,12 @@
                 <h4><span class="glyphicon glyphicon-book"/> Suggested Citation </h4>
                 <p class="citation">
                     <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
-                    <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by Ronny Vollandt. Accessed </xsl:text>
+                    <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by </xsl:text>
+                    <xsl:for-each select="//t:titleStmt/t:editor[@role = 'general']">
+                        <xsl:apply-templates select="."/>
+                        <xsl:if test="position() != last()"> and </xsl:if>
+                    </xsl:for-each>
+                    <xsl:text>. Accessed </xsl:text>
                     <xsl:value-of
                         select="format-date(current-date(),&#34;[D] [MNn] [Y]&#34;, &#34;en&#34;, (), ())"/>
                     <xsl:text>, </xsl:text>
