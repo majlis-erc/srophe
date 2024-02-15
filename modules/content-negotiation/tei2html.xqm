@@ -153,67 +153,41 @@ declare function tei2html:summary-view($nodes as node()*, $lang as xs:string?, $
 
 (: Special short view template for Persons :)
 declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:string?) as item()* {
-    let $title := if($nodes/descendant-or-self::*[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
-                    $nodes/descendant-or-self::*[@syriaca-tags='#syriaca-headword'][@xml:lang='en'][1]
-                  else if($nodes/descendant-or-self::tei:title[@level='a']) then
-                    $nodes/descendant-or-self::tei:title[1]
-                  else $nodes/descendant-or-self::tei:title[1]
-    let $syr-title := 
-                if($nodes/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][matches(@xml:lang,'^syr')][1]) then
-                     <span xml:lang="syr" lang="syr" dir="rtl">{string-join($nodes/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][matches(@xml:lang,'^syr')][1]//text(),' ')}</span>
-                else if($nodes/descendant::*[contains(@syriaca-tags,'#syriaca-headword')]) then 
-                    '[Syriac Not Available]'
-                else () 
+    let $title := ($nodes/descendant-or-self::*[@syriaca-tags='#syriaca-headword'][@xml:lang='en'] | 
+                   $nodes/descendant-or-self::tei:title[@level='a'] |
+                   $nodes/descendant-or-self::tei:title
+                    )[1]
     let $ana := for $a in distinct-values($nodes/descendant::tei:seriesStmt/tei:biblScope/tei:title)
                 return tei2html:translate-series($a)
-    let $birth := if($ana != '') then $nodes/descendant::tei:birth/text() else ()            
-    let $death := if($ana != '') then $nodes/descendant::tei:death/text() else ()
-    let $floruit := string-join($nodes/descendant-or-self::tei:floruit/text(),' ')
-    let $dates := 
-        (
-        if($birth != '') then $birth else (),
-        if($birth != '' and $death != '') then  ' - ' else(),
-        if($death != '') then if($birth = '' or empty($birth)) then ('d. ',$death) else  $death else (),
-        if($floruit != '') then if($birth != '' or $death != '') then (', ',$floruit) else $floruit else ()
-        )                    
+    let $birth := $nodes/descendant::tei:birth/tei:date/text()             
+    let $death := $nodes/descendant::tei:death/tei:date/text()
+    let $birthPlace := $nodes/descendant::tei:death/tei:placeName/text()                  
     return 
         <div class="short-rec-view">
-            <a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}" dir="ltr">{(tei2html:tei2html($title),if($syr-title != '') then (' - ', $syr-title) else())}</a>
+            <a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}" dir="ltr">{tei2html:tei2html($title)}</a>
             <button type="button" class="btn btn-sm btn-default copy-sm clipboard"  
                 data-toggle="tooltip" title="Copies record title &amp; URI to clipboard." 
                 data-clipboard-action="copy" data-clipboard-text="{normalize-space($title[1])} - {normalize-space($id[1])}">
                     <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
             </button>
-            {if($ana != '') then <span class="results-list-desc type" dir="ltr" lang="en">{('(', $ana, if($dates != '') then (', ', $dates) else (),')')}</span>  else()}
-            {if(
-            $nodes/descendant::tei:person/tei:persName[not(contains(@syriaca-tags,'#syriaca-headword'))][not(matches(@xml:lang,('^syr|^ar|^en-xsrp1')))]) then 
-                <span class="results-list-desc names" dir="ltr" lang="en">
-                    Names: {
-                        for $n in $nodes/descendant::tei:person/tei:persName[not(contains(@syriaca-tags,'#syriaca-headword'))][not(matches(@xml:lang,('^syr|^ar|^en-xsrp1')))] 
-                        where $n/position() lt 8
-                        return <span class="pers-label badge">{tei2html:tei2html($n)}</span>
-                    } 
-                </span>
-            else ()}
-            {if($nodes/descendant-or-self::*[starts-with(@xml:id,'abstract')]) then 
-                for $abstract in $nodes/descendant::*[starts-with(@xml:id,'abstract')]
-                let $string := string-join(tei2html:tei2html($abstract)//text(),' ')
-                let $blurb := 
-                    if(count(tokenize($string, '\W+')[. != '']) gt 25) then  
-                        concat(string-join(for $w in tokenize($string, '\W+')[position() lt 25]
-                        return $w,' '),'...')
-                     else $string 
-                return 
-                    <span class="results-list-desc desc" dir="ltr" lang="en">{
-                        if($abstract/descendant-or-self::tei:quote) then concat('"',normalize-space($blurb),'"')
-                        else $blurb
-                    }</span>
-            else()}
-            {
-            if($id != '') then 
-            <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">{replace($id,'/tei','')}</a></span>
-            else()
-            }
+            {(
+                if($birthPlace != '') then
+                    <span class="results-list-desc"><span class="srp-label">Place of birth:</span> {$birthPlace}</span>
+                else (),
+                if($birth != '' or $death != '') then
+                    <span class="results-list-desc">
+                    {if($birth != '') then
+                       (<span class="srp-label">Date of birth: </span>, $birth,' ') 
+                     else ()}
+                    {if($death != '') then
+                       (' ', <span class="srp-label">Date of death: </span>, $death) 
+                     else ()}
+                    </span>
+                else (),
+                if($id != '') then 
+                    <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">{replace($id,'/tei','')}</a></span>
+                else()
+            )}
         </div>   
 };
 
