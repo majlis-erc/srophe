@@ -544,18 +544,46 @@
                 <a aria-expanded="true" href="#mainMenuNames" data-toggle="collapse">Names</a>
             </h3>
             <div class="collapse" id="mainMenuNames">
-                <xsl:for-each select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
-                    <div class="row">
-                        <div class="col-md-1 inline-h4">
-                            <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+                <div class="row">
+                    <script type="text/javascript">
+                        <![CDATA[
+                        $(document).ready(function(){
+                                $("#toggle-english").click(function(){
+                                  $(".englishNames").toggle();
+                                });
+                                $("#toggle-hebrew").click(function(){
+                                  $(".hebrewNames").toggle();
+                                });
+                                $("#toggle-arabic").click(function(){
+                                  $(".arabicNames").toggle();
+                                });
+                            });
+                        ]]></script>
+                    <div class="col-md-12 inline-h4">
+                        <div class="tri-state-toggle">
+                            <span class="tri-state-toggle-button" id="toggle-english" href="#englishNames">
+                                <span lang="en">E</span>
+                            </span>
+                            <span class="tri-state-toggle-button" id="toggle-hebrew" href="#hebrewNames" data-toggle="collapse">
+                                <span lang="he">ע</span>
+                            </span>
+                            <span class="tri-state-toggle-button" id="toggle-arabic" href="#arabicNames" data-toggle="collapse">
+                                <span lang="ar"> ع </span>
+                            </span>
                         </div>
-                        <div class="col-md-10">
-                            <xsl:apply-templates select="t:name"/>
-                        </div>
+                        
                     </div>
-                </xsl:for-each>
-                <xsl:for-each select="t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
-                    <div class="row">
+                    
+                </div>
+                <xsl:for-each select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2] | t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
+                    <xsl:variable name="langClass">
+                        <xsl:choose>
+                            <xsl:when test="contains(@xml:lang,'-Lat') or @xml:lang= 'en'">englishNames</xsl:when>
+                            <xsl:when test="@xml:lang= 'he'">hebrewNames</xsl:when>
+                            <xsl:when test="@xml:lang= 'ar'">arabicNames</xsl:when>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <div class="row {$langClass}">
                         <div class="col-md-1 inline-h4">
                             <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
                         </div>
