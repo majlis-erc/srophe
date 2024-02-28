@@ -144,3 +144,6 @@ h3 a {text-decoration:none; color:black;}
 .srp-label {font-weight:bold;}
 .arabicNames {display:none}
 .hebrewNames {display:none}
+.tooltip-inner {
+    max-width: 100% !important;
+}

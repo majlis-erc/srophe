@@ -59,6 +59,43 @@
         <xsl:param name="refs"/>
         <xsl:param name="lang"/>
         <xsl:if test="$refs != ''">
+            <xsl:variable name="sourceRef">
+                <xsl:choose>
+                    <xsl:when test="starts-with($refs,'#')">
+                        <xsl:variable name="id" select="replace($refs,'#','')"/>
+                        <xsl:choose>
+                            <xsl:when test="$refs/ancestor-or-self::t:TEI/descendant::*[@xml:id = $id]">
+                                <xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::*[@xml:id = $id]"/>
+                            </xsl:when>
+                            <xsl:when test="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]">
+                                <xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]"/>
+                            </xsl:when>
+                            <xsl:otherwise>no</xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise><xsl:value-of select="$refs"/></xsl:otherwise>
+                </xsl:choose>
+                <!--
+                <xsl:choose>
+                    <xsl:when test="starts-with($refs,'#')">
+                        <xsl:variable name="sourceString" select="replace($refs,'#','')"/>
+                        <xsl:choose>
+                            <xsl:when test="//@xml:id = $sourceString">
+                                bibl
+                            </xsl:when>
+                            <xsl:when test="//t:idno[@subtype=$sourceString]">
+                                idno
+                            </xsl:when>
+                        </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise><xsl:value-of select="$refs"/></xsl:otherwise>
+                </xsl:choose>    
+                -->
+            </xsl:variable>
+            <xsl:if test="$sourceRef != ''">
+                <a href="#" data-toggle="tooltip" data-container="body" title="{concat($sourceRef,' ')}"><img src="{$nav-base}/resources/images/book.png" height="18px;" style="margin-left:.5em;"/></a>
+            </xsl:if>
+            <!-- 
             <span class="tei-footnote-refs" dir="ltr">
                 <xsl:if test="$lang != 'en'">
                     <xsl:attribute name="lang">en</xsl:attribute>
@@ -75,6 +112,7 @@
                 </xsl:for-each>
                 <xsl:text> </xsl:text>
             </span>
+            -->
         </xsl:if>
     </xsl:function>
     
