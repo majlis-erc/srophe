@@ -578,9 +578,9 @@
                 <xsl:for-each select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2] | t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
                     <xsl:variable name="langClass">
                         <xsl:choose>
-                            <xsl:when test="contains(@xml:lang,'-Lat') or @xml:lang= 'en'">englishNames</xsl:when>
-                            <xsl:when test="@xml:lang= 'he'">hebrewNames</xsl:when>
-                            <xsl:when test="@xml:lang= 'ar'">arabicNames</xsl:when>
+                            <xsl:when test="contains(@xml:lang,'Latn') or @xml:lang= 'en'">englishNames</xsl:when>
+                            <xsl:when test="@xml:lang= 'he' or contains(@xml:lang,'he') or contains(@xml:lang,'Hebr')">hebrewNames</xsl:when>
+                            <xsl:when test="@xml:lang= 'ar' or contains(@xml:lang,'ar') or contains(@xml:lang,'Arab')">arabicNames</xsl:when>
                         </xsl:choose>
                     </xsl:variable>
                     <div class="row {$langClass}">
