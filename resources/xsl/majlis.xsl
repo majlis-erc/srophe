@@ -690,20 +690,23 @@
                     <script type="text/javascript">
                         <![CDATA[
                         $(document).ready(function(){
-                                $("#toggle-english").click(function(){
-                                  $(".englishNames").toggle();
-                                });
-                                $("#toggle-hebrew").click(function(){
-                                  $(".hebrewNames").toggle();
-                                });
-                                $("#toggle-arabic").click(function(){
-                                  $(".arabicNames").toggle();
-                                });
+                            $( "#toggle-english" ).on( "click", function() {
+                                $( this ).toggleClass( "highlight" );
+                                $(".englishNames").toggle();
                             });
+                            $( "#toggle-hebrew" ).on( "click", function() {
+                                $( this ).toggleClass( "highlight" );
+                                $(".hebrewNames").toggle();
+                            });
+                            $( "#toggle-arabic" ).on( "click", function() {
+                                $( this ).toggleClass( "highlight" );
+                                $(".arabicNames").toggle();
+                            });
+                         });
                         ]]></script>
                     <div class="col-md-12 inline-h4">
                         <div class="tri-state-toggle">
-                            <span class="tri-state-toggle-button" id="toggle-english" href="#englishNames">
+                            <span class="tri-state-toggle-button highlight" id="toggle-english" href="#englishNames">
                                 <span lang="en">E</span>
                             </span>
                             <span class="tri-state-toggle-button" id="toggle-hebrew" href="#hebrewNames" data-toggle="collapse">
