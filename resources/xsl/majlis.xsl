@@ -404,7 +404,7 @@
             <xsl:apply-templates select="//t:standOff/t:list" mode="heritageData"/>
         </xsl:variable>
         <xsl:variable name="bibliography">
-            <xsl:apply-templates select="t:listPerson/t:person" mode="bibliography"/>
+            <xsl:apply-templates select="t:listPerson/t:person" mode="person-bibliography"/>
         </xsl:variable>
         <xsl:variable name="linkedOpenData">
             <xsl:apply-templates select="t:listPerson/t:person" mode="linkedOpenData"/>
@@ -485,41 +485,6 @@
         <xsl:for-each select="t:bibl">
             <div class="mainDesc row">
                 <div class="col-md-6">
-                    <xsl:if test="t:author[1][. != '']">
-                        <div class="item row">
-                            <span class="inline-h4 col-md-3">Author</span>
-                            <span class="col-md-9">
-                                <xsl:for-each select="t:author[1][. != '']">
-                                    <xsl:apply-templates select="."/>
-                                    <xsl:if test="position() != last()">, </xsl:if>
-                                </xsl:for-each>
-                            </span>
-                        </div>
-                    </xsl:if>
-                    <xsl:if test="t:persName[@type='compilator'][. != '']">
-                        <div class="item row">
-                            <span class="inline-h4 col-md-3">Compilator</span>
-                            <span class="col-md-9">
-                                <xsl:for-each select="t:persName[@type='compilator'][. != '']">
-                                    <xsl:apply-templates select="."/>
-                                    <xsl:if test="position() != last()">, </xsl:if>
-                                </xsl:for-each>
-                            </span>
-                        </div>
-                    </xsl:if>
-                    <xsl:if test="t:persName[@type='translator'][. != '']">
-                        <div class="item row">
-                            <span class="inline-h4 col-md-3">Translator</span>
-                            <span class="col-md-9">
-                                <xsl:for-each select="t:persName[@type='translator'][. != '']">
-                                    <xsl:apply-templates select="."/>
-                                    <xsl:if test="position() != last()">, </xsl:if>
-                                </xsl:for-each>
-                            </span>
-                        </div>
-                    </xsl:if>
-                </div>
-                <div class="col-md-6">
                     <xsl:if test="t:date[1][. != '']">
                         <div class="item row">
                             <span class="inline-h4 col-md-3">Date of composition</span>
@@ -543,7 +508,43 @@
                         </div>
                     </xsl:if>
                 </div>
+                <div class="col-md-6">
+                <xsl:if test="t:author[1][. != '']">
+                    <div class="item row">
+                        <span class="inline-h4 col-md-3">Author</span>
+                        <span class="col-md-9">
+                            <xsl:for-each select="t:author[1][. != '']">
+                                <xsl:apply-templates select="."/>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
+                        </span>
+                    </div>
+                </xsl:if>
+                <xsl:if test="t:persName[@type='compilator'][. != '']">
+                    <div class="item row">
+                        <span class="inline-h4 col-md-3">Compilator</span>
+                        <span class="col-md-9">
+                            <xsl:for-each select="t:persName[@type='compilator'][. != '']">
+                                <xsl:apply-templates select="."/>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
+                        </span>
+                    </div>
+                </xsl:if>
+                <xsl:if test="t:persName[@type='translator'][. != '']">
+                    <div class="item row">
+                        <span class="inline-h4 col-md-3">Translator</span>
+                        <span class="col-md-9">
+                            <xsl:for-each select="t:persName[@type='translator'][. != '']">
+                                <xsl:apply-templates select="."/>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
+                        </span>
+                    </div>
+                </xsl:if>
             </div>
+            </div>
+            
         </xsl:for-each>
         <!-- Menu items for record contents -->
         <!-- aria-expanded="false" -->
@@ -560,7 +561,7 @@
             <xsl:apply-templates select="t:bibl" mode="editions"/>
         </xsl:variable>
         <xsl:variable name="bibliography">
-            <xsl:apply-templates select="t:bibl" mode="bibliography"/>
+            <xsl:apply-templates select="t:bibl" mode="work-bibliography"/>
         </xsl:variable>
         <xsl:variable name="credits">
             <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt" mode="majlis-credits"/>
@@ -613,6 +614,9 @@
                 </xsl:if>
                 <xsl:if test="$editions/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$editions"/>
+                </xsl:if>
+                <xsl:if test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$bibliography"/>
                 </xsl:if>
                 <xsl:if test="$credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$credits"/>
@@ -690,23 +694,20 @@
                     <script type="text/javascript">
                         <![CDATA[
                         $(document).ready(function(){
-                            $( "#toggle-english" ).on( "click", function() {
-                                $( this ).toggleClass( "highlight" );
-                                $(".englishNames").toggle();
+                                $("#toggle-english").click(function(){
+                                  $(".englishNames").toggle();
+                                });
+                                $("#toggle-hebrew").click(function(){
+                                  $(".hebrewNames").toggle();
+                                });
+                                $("#toggle-arabic").click(function(){
+                                  $(".arabicNames").toggle();
+                                });
                             });
-                            $( "#toggle-hebrew" ).on( "click", function() {
-                                $( this ).toggleClass( "highlight" );
-                                $(".hebrewNames").toggle();
-                            });
-                            $( "#toggle-arabic" ).on( "click", function() {
-                                $( this ).toggleClass( "highlight" );
-                                $(".arabicNames").toggle();
-                            });
-                         });
                         ]]></script>
                     <div class="col-md-12 inline-h4">
                         <div class="tri-state-toggle">
-                            <span class="tri-state-toggle-button highlight" id="toggle-english" href="#englishNames">
+                            <span class="tri-state-toggle-button" id="toggle-english" href="#englishNames">
                                 <span lang="en">E</span>
                             </span>
                             <span class="tri-state-toggle-button" id="toggle-hebrew" href="#hebrewNames" data-toggle="collapse">
@@ -865,7 +866,7 @@
             </div>
         </xsl:if>
     </xsl:template>
-    <xsl:template match="t:person" mode="bibliography">
+    <xsl:template match="t:person" mode="person-bibliography">
         <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
@@ -922,7 +923,11 @@
                 <div class="collapse" id="mainMenuWork">
                     <xsl:for-each select="t:title[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
-                            <div class="col-md-1 inline-h4">Title </div>
+                            <div class="col-md-1 inline-h4">Title 
+                                <xsl:if test="./@xml:lang[. != '']">
+                                    (<xsl:value-of select="local:expand-lang(./@xml:lang, '')"/>)   
+                                </xsl:if>
+                            </div>
                             <div class="col-md-10">
                                 <xsl:apply-templates select="."/>
                             </div>
@@ -1049,7 +1054,7 @@
             </div>
         </xsl:if>
     </xsl:template>
-    <xsl:template match="t:bibl" mode="bibliography">
+    <xsl:template match="t:bibl" mode="work-bibliography">
         <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
@@ -1070,6 +1075,7 @@
             </div>
         </xsl:if>
     </xsl:template>
+    
     
     <xsl:template match="t:list[string-length(normalize-space(.)) gt 2]" mode="majlis">
         <div class="whiteBoxwShadow">
