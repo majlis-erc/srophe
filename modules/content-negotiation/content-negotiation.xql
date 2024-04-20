@@ -82,6 +82,9 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                     if(request:get-parameter('wrapElement', '') = 'author') then 
                                         element {xs:QName(request:get-parameter('wrapElement', ''))}
                                             {attribute { "ref" } { $recID }, $headword[1]}
+                                    else if(request:get-parameter('wrapElement', '') = 'relation') then 
+                                        element {xs:QName(request:get-parameter('wrapElement', ''))}
+                                            {attribute { "ref" } { $recID }, $headword[1]}                                            
                                     else 
                                         element {xs:QName(request:get-parameter('wrapElement', ''))}
                                             {attribute { "ref" } { $recID }, 
