@@ -575,7 +575,7 @@
                 </xsl:if>
                 <xsl:if test="$quotations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuQuotations" data-toggle="collapse">Quotations</button>
+                        <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuQuotations" data-toggle="collapse">Content description</button>
                     </div>
                 </xsl:if>
                 <xsl:if test="$manuscripts/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
@@ -981,7 +981,7 @@
         <xsl:if test="t:incipit | t:explicit | t:quote">
             <div class="whiteBoxwShadow">
                 <h3>
-                    <a aria-expanded="true" href="#mainMenuQuotations" data-toggle="collapse">Quotations</a>
+                    <a aria-expanded="true" href="#mainMenuQuotations" data-toggle="collapse">Content description</a>
                 </h3>
                 <div class="collapse" id="mainMenuQuotations">
                     <xsl:for-each select="t:incipit[string-length(normalize-space(.)) gt 2]">
