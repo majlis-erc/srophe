@@ -670,12 +670,12 @@
                             <xsl:apply-templates/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <span>
+                            <div>
                                 <xsl:sequence select="local:attributes(.)"/>
                                 <xsl:apply-templates/>
                                 <!-- Check for ending punctuation, if none, add . -->
                                 <!-- Do not have this working -->
-                            </span>
+                            </div>
                         </xsl:otherwise>
                     </xsl:choose>
                     <xsl:sequence select="local:add-footnotes(@source,.)"/>

@@ -54,6 +54,10 @@ $("#email").validate({
 		}
 });
 
+//Tooltips
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+});
 //Expand works authored-by in persons page
 $('a.getData').click(function(event) {
     event.preventDefault();
