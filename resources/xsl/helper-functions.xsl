@@ -93,7 +93,7 @@
                 -->
             </xsl:variable>
             <xsl:if test="$sourceRef != ''">
-                <a href="#" data-toggle="tooltip" data-container="body" title="{concat($sourceRef,' ')}"><img src="{$nav-base}/resources/images/book.png" height="18px;" style="margin-left:.5em;"/></a>
+                <a href="{$refs}" class="expandFromAnchor" data-toggle="tooltip" data-container="body" title="{concat($sourceRef,' ')}"><img src="{$nav-base}/resources/images/book.png" height="18px;" style="margin-left:.5em;"/></a>
             </xsl:if>
             <!-- 
             <span class="tei-footnote-refs" dir="ltr">
