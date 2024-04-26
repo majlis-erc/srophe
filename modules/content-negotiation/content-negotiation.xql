@@ -36,10 +36,16 @@ declare namespace srophe="https://srophe.app";
 :)
 declare function local:search-element($element as xs:string?, $q as xs:string*, $collection as xs:string*){                     
     let $e := if($element = 'citation') then 'biblStruct'
+              else if($element = 'biblWorksCitation') then 'title'
               else if($element = 'titleBibl') then  'title'
               else if($element != '') then $element
               else 'body' 
-    let $hits := data:apiSearch($collection, $e, $q, ())
+    let $hits := 
+                if(contains($collection,',')) then 
+                    for $c in tokenize($collection,',')
+                    return data:apiSearch($c, $e, $q, ())
+                else data:apiSearch($collection, $e, $q, ())
+                
     return 
         if(count($hits) gt 0) then 
             <json:value>
@@ -68,7 +74,7 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                     <bibl xmlns="http://www.tei-c.org/ns/1.0">
                                         <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
                                             <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</idno>
-                                            <title type="citation">{$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']//text()}</title>
+                                            <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']//text()}</title>
                                             <ptr target="{$recID}"/>
                                         </bibl>
                                         {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
@@ -76,8 +82,17 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                 else if($element = 'titleBibl') then 
                                     <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
                                         <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</idno>
+                                        <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</title>
                                         <ptr target="{$recID}"/>
-                                    </bibl>    
+                                    </bibl> 
+                                else if($element = 'biblWorksCitation') then 
+                                   <bibl xmlns="http://www.tei-c.org/ns/1.0">
+                                        <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
+                                            <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[1]//text()}</title>
+                                            <ptr target="{$recID}"/>
+                                        </bibl>
+                                        {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
+                                    </bibl>     
                                 else if(request:get-parameter('wrapElement', '') != '') then
                                     if(request:get-parameter('wrapElement', '') = 'author') then 
                                         element {xs:QName(request:get-parameter('wrapElement', ''))}
@@ -156,7 +171,7 @@ let $data :=
         data:get-document()
     else if(request:get-parameter-names() != '') then 
         if(request:get-parameter('api', '') != '') then
-            if(request:get-parameter('element', '') !='' and request:get-parameter('q', '') != '') then 
+            if(request:get-parameter('element', '') !='' and request:get-parameter('q', '') != '') then
                 local:search-element(request:get-parameter('element', ''), request:get-parameter('q', ''), if(request:get-parameter('collection', '')) then request:get-parameter('collection', '') else ())
             else if(request:get-parameter('geo', '') != '') then
                local:coordinates(request:get-parameter('type', ''), request:get-parameter('collection', ''))
