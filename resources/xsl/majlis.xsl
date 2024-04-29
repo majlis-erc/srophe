@@ -889,18 +889,22 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="person-bibliography">
-        <xsl:if test="t:bibl/@type='bibliography'">
+        <xsl:if test="t:bibl[@type='bibliography']">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBibliography">
-                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]/@type='bibliography'">
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2][@type='bibliography']">
                         <div class="row">
-                            <xsl:if test="@xml:id != ''"><xsl:attribute name="id"><xsl:value-of select="@xml:id"/></xsl:attribute></xsl:if>
-                            <div class="col-md-1 inline-h4">
+                            <xsl:if test="@xml:id != ''">
+                                <xsl:attribute name="id">
+                                    <xsl:value-of select="@xml:id"/>
+                                </xsl:attribute>
+                            </xsl:if>
+                            <!--<div class="col-md-1 inline-h4">
                                 <xsl:value-of select="position()"/>
-                            </div>
+                            </div>-->
                             <div class="col-md-10">
                                 <xsl:apply-templates select="." mode="majlisCite"/>
                             </div>
@@ -911,18 +915,22 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="person-attestations">
-        <xsl:if test="t:bibl/@type='manuscript'">
+        <xsl:if test="t:bibl[@type='manuscript']">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuAttestations" data-toggle="collapse">Attestations</a>
                 </h3>
                 <div class="collapse" id="mainMenuAttestations">
-                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]/@type='manuscript'">
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2][@type='manuscript']">
                         <div class="row">
-                            <xsl:if test="@xml:id != ''"><xsl:attribute name="id"><xsl:value-of select="@xml:id"/></xsl:attribute></xsl:if>
-                            <div class="col-md-1 inline-h4">
+                            <xsl:if test="@xml:id != ''">
+                                <xsl:attribute name="id">
+                                    <xsl:value-of select="@xml:id"/>
+                                </xsl:attribute>
+                            </xsl:if>
+                            <!--<div class="col-md-1 inline-h4">
                                 <xsl:value-of select="position()"/>
-                            </div>
+                            </div>-->
                             <div class="col-md-10">
                                 <xsl:apply-templates select="." mode="majlisCite"/>
                             </div>
