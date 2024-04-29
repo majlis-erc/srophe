@@ -1089,7 +1089,7 @@
     </xsl:template>
     
     
-    <xsl:template match="t:list[string-length(normalize-space(.)) gt 2]" mode="majlis">
+    <xsl:template match="t:list[string-length(normalize-space(.)) gt 2]" mode="heritageData">
         <div class="whiteBoxwShadow">
             <h3>
                 <a aria-expanded="true" href="#mainMenuHeritageData" data-toggle="collapse">Heritage
