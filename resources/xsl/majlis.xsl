@@ -412,6 +412,9 @@
         <xsl:variable name="bibliography">
             <xsl:apply-templates select="t:listPerson/t:person" mode="person-bibliography"/>
         </xsl:variable>
+        <xsl:variable name="attestations">
+            <xsl:apply-templates select="t:listPerson/t:person" mode="person-attestations"/>
+        </xsl:variable>
         <xsl:variable name="linkedOpenData">
             <xsl:apply-templates select="t:listPerson/t:person" mode="linkedOpenData"/>
         </xsl:variable>
@@ -439,6 +442,11 @@
                 <xsl:if test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</button>
+                    </div>
+                </xsl:if>
+                <xsl:if test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-grey btn-lg" href="#mainMenuAttestations" data-toggle="collapse">Attestations</button>
                     </div>
                 </xsl:if>
                 <xsl:if test="$linkedOpenData/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
@@ -474,6 +482,9 @@
                 </xsl:if>
                 <xsl:if test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$bibliography"/>
+                </xsl:if>
+                <xsl:if test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$attestations"/>
                 </xsl:if>
                 <xsl:if test="$linkedOpenData/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$linkedOpenData"/>
@@ -878,13 +889,35 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="person-bibliography">
-        <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2]">
+        <xsl:if test="t:bibl/@type='bibliography'">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBibliography">
-                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]/@type='bibliography'">
+                        <div class="row">
+                            <xsl:if test="@xml:id != ''"><xsl:attribute name="id"><xsl:value-of select="@xml:id"/></xsl:attribute></xsl:if>
+                            <div class="col-md-1 inline-h4">
+                                <xsl:value-of select="position()"/>
+                            </div>
+                            <div class="col-md-10">
+                                <xsl:apply-templates select="." mode="majlisCite"/>
+                            </div>
+                        </div>
+                    </xsl:for-each>
+                </div>
+            </div>
+        </xsl:if>
+    </xsl:template>
+    <xsl:template match="t:person" mode="person-attestations">
+        <xsl:if test="t:bibl/@type='manuscript'">
+            <div class="whiteBoxwShadow">
+                <h3>
+                    <a aria-expanded="true" href="#mainMenuAttestations" data-toggle="collapse">Attestations</a>
+                </h3>
+                <div class="collapse" id="mainMenuAttestations">
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]/@type='manuscript'">
                         <div class="row">
                             <xsl:if test="@xml:id != ''"><xsl:attribute name="id"><xsl:value-of select="@xml:id"/></xsl:attribute></xsl:if>
                             <div class="col-md-1 inline-h4">
