@@ -64,7 +64,7 @@
  <!-- set output so we get (mostly) indented HTML -->
  <!-- =================================================================== -->
     <xsl:output name="html" encoding="UTF-8" method="xhtml" indent="yes" omit-xml-declaration="yes"/>
-
+    <xsl:strip-space elements="editor"/>
  <!-- =================================================================== -->
  <!--  initialize top-level variables and transform parameters -->
  <!-- =================================================================== -->
@@ -1726,7 +1726,7 @@
                    <xsl:when test="self::t:birth">Birth:</xsl:when>
                    <xsl:when test="self::t:death">Death:</xsl:when>
                    <xsl:when test="self::t:floruit">Floruit:</xsl:when>
-                   <xsl:when test="self::t:sex">Sex:</xsl:when>
+                   <xsl:when test="self::t:sex"></xsl:when>
                    <xsl:when test="self::t:langKnowledge">Language Knowledge:</xsl:when>
                    <xsl:when test="@role">
                        <xsl:value-of select="concat(upper-case(substring(@role,1,1)),substring(@role,2))"/>:
