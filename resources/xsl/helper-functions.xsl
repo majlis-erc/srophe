@@ -65,12 +65,14 @@
                         <xsl:variable name="id" select="replace($refs,'#','')"/>
                         <xsl:choose>
                             <xsl:when test="$refs/ancestor-or-self::t:TEI/descendant::*[@xml:id = $id]">
-                                <xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::*[@xml:id = $id]"/>
+                                <xsl:value-of select="$refs/ancestor-or-self::t:TEI/descendant::*[@xml:id = $id]//text()"/>
+                                <!--<xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::*[@xml:id = $id]"/>-->
                             </xsl:when>
                             <xsl:when test="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]">
-                                <xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]"/>
+                                <!--<xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]"/>-->
+                                <xsl:value-of select="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]//text()"/>
                             </xsl:when>
-                            <xsl:otherwise>no</xsl:otherwise>
+                            <xsl:otherwise></xsl:otherwise>
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise><xsl:value-of select="$refs"/></xsl:otherwise>
