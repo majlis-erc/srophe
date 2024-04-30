@@ -58,8 +58,8 @@
                 </div>
             </xsl:otherwise>
         </xsl:choose>
-        <script type="text/javascript">
-        
+        <script type="text/javascript">       
+        <![CDATA[
             //show or collapse all
             $('#expand-all').click(function () {
                 var $myGroup = $('#mainMenu');
@@ -79,7 +79,7 @@
                 var $myGroup = $('#mainMenu');
                 $myGroup.find('.collapse').collapse('show');
             });
-            //
+            //]]>
         </script>
     </xsl:template>
     <xsl:template match="t:body" mode="majlis majlis-mss">
@@ -709,13 +709,13 @@
     <xsl:template match="t:person" mode="names">
         <xsl:if test="t:persName[@type='majlis-headword'] | t:persName[@type ='canon']">
         <div class="whiteBoxwShadow">
-            <h3>
-                <a aria-expanded="true" href="#mainMenuNames" data-toggle="collapse">Names</a>
+            <div class="row">
+              <h3><a aria-expanded="true" href="#mainMenuNames" data-toggle="collapse">Names</a>
             </h3>
             <div class="collapse" id="mainMenuNames">
                 <div class="row">
                     <script type="text/javascript">
-                        
+                        <![CDATA[
                         $(document).ready(function(){
                             $( "#toggle-english" ).on( "click", function() {
                                 $( this ).toggleClass( "highlight" );
@@ -730,7 +730,7 @@
                                 $(".arabicNames").toggle();
                             });
                          });
-                        </script>
+                        ]]></script>
                     <div class="col-md-12 inline-h4">
                         <div class="tri-state-toggle">
                             <span class="tri-state-toggle-button highlight" id="toggle-english" href="#englishNames">
@@ -764,6 +764,7 @@
                         </div>
                     </div>
                 </xsl:for-each>
+            </div>
             </div>
         </div>
         </xsl:if>
@@ -896,13 +897,13 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="person-bibliography">
-        <xsl:if test="t:bibl[@type='bibliography']">
+        <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBibliography">
-                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2][@type='bibliography']">
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <xsl:if test="@xml:id != ''">
                                 <xsl:attribute name="id">
@@ -1796,8 +1797,7 @@
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
                         <xsl:for-each select="//t:titleStmt/t:editor[@role = 'contributor']">
-                            <xsl:apply-templates select="."/>
-                            <xsl:if test="position() != last()">, </xsl:if>
+                            <xsl:apply-templates select="normalize-space(.)"/><xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
                     </div>
                 </div>
