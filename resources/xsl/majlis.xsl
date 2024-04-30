@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns" exclude-result-prefixes="xs t x saxon local" version="2.0">
 
     <!-- ================================================================== 
@@ -60,7 +59,7 @@
             </xsl:otherwise>
         </xsl:choose>
         <script type="text/javascript">
-        <![CDATA[
+        
             //show or collapse all
             $('#expand-all').click(function () {
                 var $myGroup = $('#mainMenu');
@@ -80,7 +79,7 @@
                 var $myGroup = $('#mainMenu');
                 $myGroup.find('.collapse').collapse('show');
             });
-            //]]>
+            //
         </script>
     </xsl:template>
     <xsl:template match="t:body" mode="majlis majlis-mss">
@@ -650,7 +649,8 @@
                 <xsl:for-each select="t:msItem">
                     <div class="row">
                         <div class="col-md-1">
-                            <h4>Text <xsl:value-of select="position()"/></h4>
+                            <h4>Text <xsl:value-of select="position()"/>
+                            </h4>
                         </div>
                         <div class="col-md-11">
                             <xsl:for-each select="child::*[string-length(normalize-space(.)) gt 2]">
@@ -659,7 +659,8 @@
                                         <xsl:variable name="label" select="local-name(.)"/>
                                         <xsl:choose>
                                             <xsl:when test="$label = 'locus'">Folios</xsl:when>
-                                            <xsl:when test="$label = 'title'">Title <xsl:if test="@xml:lang != ''">[<xsl:value-of select="upper-case(@xml:lang)"/>]</xsl:if></xsl:when>
+                                            <xsl:when test="$label = 'title'">Title <xsl:if test="@xml:lang != ''">[<xsl:value-of select="upper-case(@xml:lang)"/>]</xsl:if>
+                                            </xsl:when>
                                             <xsl:when test="$label = 'textLang'">Language</xsl:when>
                                             <xsl:when test="$label = 'rubric'">Text
                                                 Division</xsl:when>
@@ -673,7 +674,9 @@
                                             <xsl:when test="local-name(.) = 'title'">
                                                 <xsl:apply-templates select="."/>
                                                 <xsl:variable name="locus">
-                                                    <xsl:for-each select="preceding-sibling::t:locus | following-sibling::t:locus"><xsl:call-template name="locus"/></xsl:for-each>
+                                                    <xsl:for-each select="preceding-sibling::t:locus | following-sibling::t:locus">
+                                                        <xsl:call-template name="locus"/>
+                                                    </xsl:for-each>
                                                 </xsl:variable>
                                                 <xsl:if test="$locus != ''">
                                                    (<xsl:sequence select="$locus"/>)
@@ -704,6 +707,7 @@
     </xsl:template>
 
     <xsl:template match="t:person" mode="names">
+        <xsl:if test="t:persName[@type='majlis-headword'] | t:persName[@type ='canon']">
         <div class="whiteBoxwShadow">
             <h3>
                 <a aria-expanded="true" href="#mainMenuNames" data-toggle="collapse">Names</a>
@@ -711,7 +715,7 @@
             <div class="collapse" id="mainMenuNames">
                 <div class="row">
                     <script type="text/javascript">
-                        <![CDATA[
+                        
                         $(document).ready(function(){
                             $( "#toggle-english" ).on( "click", function() {
                                 $( this ).toggleClass( "highlight" );
@@ -726,7 +730,7 @@
                                 $(".arabicNames").toggle();
                             });
                          });
-                        ]]></script>
+                        </script>
                     <div class="col-md-12 inline-h4">
                         <div class="tri-state-toggle">
                             <span class="tri-state-toggle-button highlight" id="toggle-english" href="#englishNames">
@@ -761,10 +765,11 @@
                     </div>
                 </xsl:for-each>
             </div>
-        </div>        
+        </div>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="attestedNames">
-        <xsl:if test="t:persName[@type = 'attested'][string-length(normalize-space(.)) gt 2]">
+        <xsl:if test="t:persName[@type='attested']">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuAttestedNames" data-toggle="collapse">Attested Names</a>
@@ -772,6 +777,7 @@
                 <div class="collapse" id="mainMenuAttestedNames">
                     <xsl:for-each select="t:persName[@type = 'attested'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
+                            <div class="col-md-1 inline-h4">
                             <xsl:choose>
                                 <xsl:when test="@xml:lang[. != '']">
                                     <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
@@ -780,6 +786,7 @@
                                     <xsl:text>Name </xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
+                            </div>
                             <div class="col-md-10">
                                 <xsl:apply-templates select="t:name"/>
                             </div>
@@ -1226,7 +1233,10 @@
                         <div class="col-md-2 inline-h4"> Manuscript join </div>
                         <div class="col-md-10">
                             <xsl:for-each select="parent::t:physDesc/t:ab/t:listBibl/t:bibl">
-                                <p><xsl:value-of select="t:idno"/> ff. <xsl:value-of select="t:citedRange"/> [<a href="t:ptr/@target"><xsl:value-of select="t:ptr/@target"/></a>]</p>
+                                <p>
+                                    <xsl:value-of select="t:idno"/> ff. <xsl:value-of select="t:citedRange"/> [<a href="t:ptr/@target">
+                                        <xsl:value-of select="t:ptr/@target"/>
+                                    </a>]</p>
                             </xsl:for-each>
                         </div>
                     </div>
@@ -1257,7 +1267,8 @@
                 </xsl:for-each>
                 <xsl:for-each select="t:supportDesc/t:extent/t:dimensions[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
-                        <div class="col-md-2 inline-h4">Dimensions <xsl:if test="@type != ''">(<xsl:value-of select="@type"/>)</xsl:if></div>
+                        <div class="col-md-2 inline-h4">Dimensions <xsl:if test="@type != ''">(<xsl:value-of select="@type"/>)</xsl:if>
+                        </div>
                         <div class="col-md-10">
                             <xsl:call-template name="dimensions"/>
                         </div>
@@ -1498,7 +1509,8 @@
                             <xsl:value-of select="t:objectType"/>
                             <xsl:text>, ff. </xsl:text>
                             <xsl:value-of select="t:locus/@from"/>
-                            <xsl:if test="t:locus/@to != ''"> - <xsl:value-of select="t:locus/@to"/></xsl:if>
+                            <xsl:if test="t:locus/@to != ''"> - <xsl:value-of select="t:locus/@to"/>
+                            </xsl:if>
                             <xsl:for-each select="t:persName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Person mentioned </div>
@@ -1553,7 +1565,8 @@
                 </xsl:for-each>
                 <xsl:for-each select="t:provenance[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
-                        <div class="col-md-1 inline-h4">Provenance <xsl:value-of select="position()"/></div>
+                        <div class="col-md-1 inline-h4">Provenance <xsl:value-of select="position()"/>
+                        </div>
                         <div class="col-md-10">
                             <xsl:for-each select="t:date[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
@@ -1843,7 +1856,8 @@
         </div>
         <div class="whiteBoxwShadow panel panel-default">
             <div class="citationPanel">
-                <h4><span class="glyphicon glyphicon-book"/> Suggested Citation </h4>
+                <h4>
+                    <span class="glyphicon glyphicon-book"/> Suggested Citation </h4>
                 <p class="citation">
                     <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
                     <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by </xsl:text>
@@ -1872,7 +1886,8 @@
     </xsl:template>
     <xsl:template name="locus">
         <xsl:value-of select="@from"/>
-        <xsl:if test="@to != ''"> - <xsl:value-of select="@to"/></xsl:if>
+        <xsl:if test="@to != ''"> - <xsl:value-of select="@to"/>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="t:bibl" mode="majlisCite">
         <xsl:if test="t:ptr/@target[. != '']">
