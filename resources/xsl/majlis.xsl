@@ -914,7 +914,15 @@
                                 <xsl:value-of select="position()"/>
                             </div>-->
                             <div class="col-md-10">
-                                <xsl:apply-templates select="." mode="majlisCite"/>
+                                <!--<ptr target="https://jalit.org/bibl/H2RX9HN2"/> -->
+                                <xsl:choose>
+                                    <xsl:when test="t:bibl/t:ptr[starts-with(@target, 'https://jalit.org/')]">
+                                        <xsl:apply-templates select="." mode="majlisCite"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:apply-templates select="."/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             </div>
                         </div>
                     </xsl:for-each>
