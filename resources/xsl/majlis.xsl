@@ -897,13 +897,13 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="person-bibliography">
-        <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2]">
+        <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2][@type='bibliography']">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBibliography">
-                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2][@type='bibliography']">
                         <div class="row">
                             <xsl:if test="@xml:id != ''">
                                 <xsl:attribute name="id">
