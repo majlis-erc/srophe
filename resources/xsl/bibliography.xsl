@@ -1187,6 +1187,9 @@
                 <xsl:when test="self::t:ref/@target">
                     <xsl:value-of select="@target"/>
                 </xsl:when>
+                <xsl:when test="self::t:idno[starts-with(.,$base-uri)]">
+                    <xsl:value-of select="replace(.,$base-uri, $nav-base)"/>
+                </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="text()"/>
                 </xsl:otherwise>

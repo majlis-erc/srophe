@@ -72,6 +72,7 @@
             <collection name="works" title="Works" app-root="/works/" data-root="works" record-URI-pattern="https://jalit.org/work/"/>
             <collection name="relations" title="Relations" app-root="/relations/" data-root="relations" record-URI-pattern="https://jalit.org/relation/"/>
             <collection name="texts" title="Texts" app-root="/texts/" data-root="texts" record-URI-pattern="https://jalit.org/text/"/>
+            <collection name="bibl" title="Bibliography" app-root="/bibl/" data-root="bibl" record-URI-pattern="https://jalit.org/bibl/"/>
         </collections>
         <!-- Configure Sort fields for the whole app. 
             Sort fields are used for sorting in browse and search. Facets should be defined separately in a facet-conf.xml document.
