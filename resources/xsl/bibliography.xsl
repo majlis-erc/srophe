@@ -1204,6 +1204,10 @@
     </xsl:template>
 
     <!-- Templates for adding links and icons to uris -->
+    <!--We are deactivating links to Zotero and the references in Srophé for now-->
+    
+    <xsl:template match="t:idno[@type = 'zotero' or contains(., 'zotero.org/') or contains(., 'jalit.org/')]" mode="links"/>
+    
     <xsl:template match="t:idno | t:ref | t:ptr" mode="links">
         <xsl:variable name="ref">
             <xsl:choose>
@@ -1223,9 +1227,9 @@
                 <xsl:value-of select="preceding-sibling::t:title[1]//text()"/>
             </xsl:variable>
             <xsl:choose>
-                <xsl:when test="@type='zotero'">
+                <!--<xsl:when test="@type='zotero'">
                     <xsl:text>Link to Zotero Bibliographic record</xsl:text>
-                </xsl:when>
+                </xsl:when>-->
                 <xsl:when test="starts-with($ref,$base-uri)">
                     <xsl:value-of select="concat('Link to ',$repository-title,' Bibliographic Record for', $title-string)"/>
                 </xsl:when>
@@ -1248,7 +1252,7 @@
             </xsl:choose>
         </xsl:variable>
         <span class="footnote-icon">
-            <a href="{$ref}" title="{$title}" data-toggle="tooltip" data-placement="top" class="bibl-links">
+            <a href="{$ref}" target="_blank" title="{$title}" data-toggle="tooltip" data-placement="top" class="bibl-links">
                 <xsl:call-template name="ref-icons">
                     <xsl:with-param name="ref" select="$ref"/>
                 </xsl:call-template>
@@ -1258,9 +1262,9 @@
     <xsl:template name="ref-icons">
         <xsl:param name="ref"/>
         <xsl:choose>
-            <xsl:when test="@type='zotero' or contains($ref,'zotero.org/')">
+            <!--<xsl:when test="@type='zotero' or contains($ref,'zotero.org/')">
                 <img src="{$nav-base}/resources/images/zotero.png" alt="Link to Zotero Bibliographic Record" height="18px"/>
-            </xsl:when>
+            </xsl:when>-->
             <xsl:when test="starts-with($ref,$base-uri)">
                 <img src="{$nav-base}/resources/images/icons-syriaca-sm.png" alt="{concat('Link to ',$repository-title,' Bibliographic Record.')}" height="18px"/>
             </xsl:when>
