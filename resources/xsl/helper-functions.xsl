@@ -72,8 +72,11 @@
                                 <!--<xsl:apply-templates select="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]"/>-->
                                 <xsl:value-of select="$refs/ancestor-or-self::t:TEI/descendant::t:idno[@subtype = $id]//text()"/>
                             </xsl:when>
-                            <xsl:otherwise></xsl:otherwise>
+                            <xsl:otherwise/>
                         </xsl:choose>
+                    </xsl:when>
+                    <xsl:when test="starts-with($refs,$base-uri)">
+                        <xsl:value-of select="replace($refs,$base-uri,$nav-base)"/>
                     </xsl:when>
                     <xsl:otherwise><xsl:value-of select="$refs"/></xsl:otherwise>
                 </xsl:choose>
@@ -559,9 +562,18 @@
                 <xsl:apply-templates/>
             </xsl:when>
             <xsl:when test="@ref[. != '']">
-                <a href="{@ref}">
-                    <xsl:apply-templates/>
-                </a>
+                <xsl:choose>
+                    <xsl:when test="starts-with(@ref,$base-uri)">
+                        <a href="{replace(@ref,$base-uri,$nav-base)}">
+                            <xsl:apply-templates/>
+                        </a> 
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <a href="{@ref}">
+                            <xsl:apply-templates/>
+                        </a> 
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates/>
