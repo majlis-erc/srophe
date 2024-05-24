@@ -1,6 +1,6 @@
 <facets xmlns="http://expath.org/ns/facet">
     <facet-definition name="repository" label="Repository">
-        <group-by>
+        <group-by function="repository">
             <sub-path>descendant::tei:msIdentifier/tei:repository</sub-path>
         </group-by>
         <max-values show="5">10</max-values>

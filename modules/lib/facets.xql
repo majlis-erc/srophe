@@ -592,3 +592,10 @@ declare function sf:facet-biblAuthors($element as item()*, $facet-definition as 
         $element/ancestor-or-self::tei:TEI/descendant::tei:biblStruct/descendant::tei:author | $element/ancestor-or-self::tei:TEI/descendant::tei:biblStruct/descendant::tei:editor
     else $element/ancestor-or-self::tei:TEI/descendant::tei:titleStmt/descendant::tei:author
 }; 
+
+(:~
+ : TEI author facet, specific to bibl module
+ :)
+declare function sf:facet-repository($element as item()*, $facet-definition as item(), $name as xs:string){
+    normalize-space($element/descendant::tei:msIdentifier/tei:repository)
+}; 
