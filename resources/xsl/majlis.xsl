@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns" exclude-result-prefixes="xs t x saxon local" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:local="http://syriaca.org/ns" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs t x saxon local" version="2.0">
 
     <!-- ================================================================== 
        MAJLIS custom srophe XSLT
@@ -227,7 +227,7 @@
             <xsl:apply-templates select="t:listBibl/t:msDesc/t:physDesc/t:accMat" mode="majlis"/>
         </xsl:variable>
         <xsl:variable name="Bibliography">
-            <xsl:apply-templates select="t:listBibl/t:msDesc/t:additional/t:listBibl" mode="majlis"/>
+            <xsl:apply-templates select="t:listBibl/t:msDesc/t:additional[descendant-or-self::t:listBibl]" mode="majlisAdditional"/>
         </xsl:variable>
         <xsl:variable name="Credits">
             <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt" mode="majlis-credits"/>
@@ -1755,21 +1755,37 @@
             </div>
         </div>
     </xsl:template>
-    <xsl:template match="t:listBibl" mode="majlis">
+    <!--WS:Note Adjust ListBibl majlisAdditional -->
+    
+    <xsl:template match="t:additional" mode="majlisAdditional">
         <div class="whiteBoxwShadow">
             <h3>
                 <a aria-expanded="true" href="#mainMenuBibliography" data-toggle="collapse">Bibliography</a>
             </h3>
             <div class="collapse" id="mainMenuBibliography">
-                <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="descendant-or-self::t:listBibl">
                     <div class="row">
-                        <div class="col-md-1 inline-h4">
-                            <xsl:value-of select="position()"/>
-                        </div>
-                        <div class="col-md-10">
-                            <xsl:apply-templates select="." mode="majlisCite"/>
+                        <div class="col-md-12 inline-h4">
+                            <xsl:choose>
+                                <xsl:when test="parent::t:surrogates">
+                                    <h4>Reproductions</h4>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <h4>General bibliography</h4>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </div>
                     </div>
+                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
+                        <div class="row">
+                            <div class="col-md-1 inline-h4">
+                                <xsl:value-of select="position()"/>
+                            </div>
+                            <div class="col-md-10">
+                                <xsl:apply-templates select="." mode="majlisCite"/>
+                            </div>
+                        </div>
+                    </xsl:for-each>
                 </xsl:for-each>
                 <!-- 
 /TEI/text/body/listBibl/additional/listBibl/bibl        -->
