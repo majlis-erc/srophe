@@ -37,6 +37,7 @@ declare namespace srophe="https://srophe.app";
 declare function local:search-element($element as xs:string?, $q as xs:string*, $collection as xs:string*){                     
     let $e := if($element = 'citation') then 'biblStruct'
               else if($element = 'biblWorksCitation') then 'title'
+              else if($element = 'biblWorksAuthor') then 'persName'
               else if($element = 'titleBibl') then  'title'
               else if($element != '') then $element
               else 'body' 
@@ -84,6 +85,17 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                         <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</idno>
                                         <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</title>
                                         <ptr target="{$recID}"/>
+                                    </bibl> 
+                                else if($element = 'biblWorksAuthor') then 
+                                   <bibl xmlns="http://www.tei-c.org/ns/1.0">
+                                        <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
+                                            {
+                                            element {xs:QName(request:get-parameter('wrapElement', ''))}
+                                            {attribute { "ref" } { $recID }, $headword[1]}
+                                            }
+                                            <ptr target="{$recID}"/>
+                                        </bibl>
+                                        {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
                                     </bibl> 
                                 else if($element = 'biblWorksCitation') then 
                                    <bibl xmlns="http://www.tei-c.org/ns/1.0">
