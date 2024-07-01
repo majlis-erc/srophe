@@ -147,3 +147,7 @@ h3 a {text-decoration:none; color:black;}
 .tooltip-inner {
     max-width: 100% !important;
 }
+
+.tei-em {
+  font-style: italic;
+}
