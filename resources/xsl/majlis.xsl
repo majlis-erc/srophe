@@ -1944,11 +1944,11 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Persons referenced</h4>
                 <ul>
-                    <xsl:for-each select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
+                    <xsl:for-each-group select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
                         <li>
                             <xsl:apply-templates select="."/>
                         </li>
-                    </xsl:for-each>
+                    </xsl:for-each-group>
                 </ul>
             </div>
         </div>
@@ -1958,11 +1958,11 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Places referenced</h4>
                 <ul>
-                    <xsl:for-each select="//t:msDesc/descendant-or-self::t:placeName[descendant-or-self::text() != '']">
+                    <xsl:for-each-group select="//t:msDesc/descendant-or-self::t:placeName[descendant-or-self::text() != '']" group-by="text()">
                         <li>
                             <xsl:apply-templates select="." mode="majlis"/>
                         </li>
-                    </xsl:for-each>
+                    </xsl:for-each-group>
                 </ul>
             </div>
         </div>
@@ -1972,11 +1972,11 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Works referenced</h4>
                 <ul>
-                    <xsl:for-each select="//t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']">
+                    <xsl:for-each-group select="//t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']" group-by="text()">
                         <li>
                             <xsl:apply-templates select="." mode="majlis"/>
                         </li>
-                    </xsl:for-each>
+                    </xsl:for-each-group>
                 </ul>
             </div>
         </div>
