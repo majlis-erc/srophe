@@ -1245,9 +1245,17 @@
                         <div class="col-md-10">
                             <xsl:for-each select="parent::t:physDesc/t:ab/t:listBibl/t:bibl">
                                 <p>
-                                    <xsl:value-of select="t:idno"/> ff. <xsl:value-of select="t:citedRange"/> [<a href="t:ptr/@target">
-                                        <xsl:value-of select="t:ptr/@target"/>
-                                    </a>]</p>
+                                    <xsl:choose>
+                                        <xsl:when test="t:ptr/@target">
+                                            <a href="{t:ptr/@target}"><xsl:value-of select="t:idno"/></a>
+                                        </xsl:when>
+                                        <xsl:otherwise><xsl:value-of select="t:idno"/></xsl:otherwise>
+                                    </xsl:choose>
+                                    <xsl:choose>
+                                        <xsl:when test="t:locus/@from and t:locus/@to"><xsl:text> ff. </xsl:text></xsl:when>
+                                        <xsl:otherwise><xsl:text> f. </xsl:text></xsl:otherwise>
+                                    </xsl:choose> 
+                                    <xsl:value-of select="t:citedRange"/></p>
                             </xsl:for-each>
                         </div>
                     </div>
