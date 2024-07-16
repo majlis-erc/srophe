@@ -1526,7 +1526,11 @@
                         </div>
                         <div class="col-md-10">
                             <xsl:value-of select="t:objectType"/>
-                            <xsl:text>, ff. </xsl:text>
+                            <xsl:text>, </xsl:text>
+                            <xsl:choose>
+                                <xsl:when test="t:locus/@from and t:locus/@to"><xsl:text>ff. </xsl:text></xsl:when>
+                                <xsl:otherwise><xsl:text>f. </xsl:text></xsl:otherwise>
+                            </xsl:choose>
                             <xsl:value-of select="t:locus/@from"/>
                             <xsl:if test="t:locus/@to != ''"> - <xsl:value-of select="t:locus/@to"/>
                             </xsl:if>
