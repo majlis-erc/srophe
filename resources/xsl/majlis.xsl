@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:local="http://syriaca.org/ns" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs t x saxon local" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns" exclude-result-prefixes="xs t x saxon local" version="2.0">
 
     <!-- ================================================================== 
        MAJLIS custom srophe XSLT
@@ -1956,11 +1956,18 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Persons referenced</h4>
                 <ul>
-                    <xsl:for-each-group select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
+                    <xsl:for-each-group select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']" group-by="text()">
+                        <li>
+                            <xsl:apply-templates select="."/>
+                        </li>               
+                    </xsl:for-each-group>
+                    <!--
+                    <xsl:for-each select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
                         <li>
                             <xsl:apply-templates select="."/>
                         </li>
-                    </xsl:for-each-group>
+                    </xsl:for-each>
+                    -->
                 </ul>
             </div>
         </div>
