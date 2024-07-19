@@ -92,7 +92,7 @@
                                 <span class="inline-h4 col-md-3">Title</span>
                                 <span class="col-md-9">
                                     <xsl:for-each select="t:msContents/t:msItem/t:title[1][. != '']">
-                                        <xsl:apply-templates select="."/>
+                                        <xsl:apply-templates select="." mode="majlis"/>
                                         <xsl:if test="position() != last()">, </xsl:if>
                                     </xsl:for-each>
                                 </span>
@@ -1999,5 +1999,22 @@
                 </ul>
             </div>
         </div>
+    </xsl:template>
+    <xsl:template match="t:title" mode="majlis">
+        <!-- <title ref="https://jalit.org/work/12">Introduction to the Commentary on the Book of Deuteronomy</title>
+        concat($nav-base,substring-after(/descendant::t:idno[@type='URI'][1], $base-uri))
+        -->
+        <xsl:choose>
+            <xsl:when test="@ref">
+                <xsl:variable name="link">
+                    <xsl:choose>
+                        <xsl:when test="starts-with(@ref,$base-uri)"><xsl:value-of select="replace(@ref,$base-uri,$nav-base)"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="@ref"/></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <a href="{$link}"><xsl:apply-templates/></a>
+            </xsl:when>
+            <xsl:otherwise><a href="{@ref}"><xsl:apply-templates/></a></xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 </xsl:stylesheet>
