@@ -1929,9 +1929,11 @@
     </xsl:template>
     <xsl:template match="t:bibl" mode="majlisCite">
         <xsl:if test="t:ptr/@target[. != '']">
-            <a href="{t:ptr/@target}" target="_blank">
+           <!-- <a href="{t:ptr/@target}" target="_blank">
                 <xsl:apply-templates select="t:title"/>
             </a>
+            -->
+            <xsl:apply-templates select="t:title"/>
         </xsl:if>
         <xsl:if test="t:citedRange[. != '']">
             <xsl:text>, </xsl:text>
