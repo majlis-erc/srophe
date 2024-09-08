@@ -1983,6 +1983,7 @@
                 <h4>Persons referenced</h4>
                 <ul>
                     <xsl:for-each-group group-by="text()" select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
+                        <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates select="."/>
                         </li>
@@ -2004,6 +2005,7 @@
                 <h4>Places referenced</h4>
                 <ul>
                     <xsl:for-each-group group-by="text()" select="//t:msDesc/descendant-or-self::t:placeName[descendant-or-self::text() != '']">
+                        <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates mode="majlis" select="."/>
                         </li>
@@ -2018,6 +2020,7 @@
                 <h4>Works referenced</h4>
                 <ul>
                     <xsl:for-each-group group-by="text()" select="//t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']">
+                        <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates mode="majlis" select="."/>
                         </li>
