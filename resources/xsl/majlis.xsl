@@ -98,10 +98,10 @@
                             <div class="item row">
                                 <span class="inline-h4 col-md-3">Author</span>
                                 <span class="col-md-9">
-                                    <xsl:for-each select="t:msContents/t:msItem/t:author[. != '']">
+                                    <xsl:for-each-group group-by="text()" select="t:msContents/t:msItem/t:author[. != '']">
                                         <xsl:apply-templates select="."/>
                                         <xsl:if test="position() != last()">, </xsl:if>
-                                    </xsl:for-each>
+                                    </xsl:for-each-group>
                                 </span>
                             </div>
                         </xsl:if>
