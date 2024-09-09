@@ -151,3 +151,7 @@ h3 a {text-decoration:none; color:black;}
 .tei-em {
   font-style: italic;
 }
+footer {border-top:4px solid #00883A; text-align:center;}
+footer .poweredby { margin: 33px 10px 0 0;}
+footer .poweredby img {}
+.jalitLogoText {font-size: 18px; font-weight:bold; line-height:18px; text-align:left; display:inline-block;maring-top:.5em;}
