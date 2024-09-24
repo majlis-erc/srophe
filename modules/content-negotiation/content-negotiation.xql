@@ -39,8 +39,10 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
               else if($element = 'biblWorksCitation') then 'title'
               else if($element = 'biblWorksAuthor') then 'persName'
               else if($element = 'titleBibl') then  'title'
+              else if($element = 'mutual' or $element = 'active' or $element = 'passive') then  ()
+              else if($element = 'search') then ()
               else if($element != '') then $element
-              else 'body' 
+              else ()
     let $hits := 
                 if(contains($collection,',')) then 
                     for $c in tokenize($collection,',')
@@ -104,7 +106,29 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                             <ptr target="{$recID}"/>
                                         </bibl>
                                         {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
-                                    </bibl>     
+                                    </bibl>   
+                                else if($element = 'mutual' or $element = 'active' or $element = 'passive') then 
+                                    let $type := if(contains($recID,'person')) then '[person] '
+                                                 else if(contains($recID,'place')) then '[place] '
+                                                 else if(contains($recID,'manuscript')) then '[manuscript] '
+                                                 else if(contains($recID,'relation')) then '[relation] '
+                                                 else if(contains($recID,'work')) then '[work] '
+                                                 else if(contains($recID,'bibl')) then ' [citation] '
+                                                 else ()
+                                   return   
+                                        if($element = 'mutual') then 
+                                            <mutual xmlns="http://www.tei-c.org/ns/1.0">
+                                                {attribute { "ref" } { $recID }, concat($type,$headword[1]) }
+                                            </mutual>  
+                                        else if($element = 'active') then
+                                            <active xmlns="http://www.tei-c.org/ns/1.0">
+                                                {attribute { "ref" } { $recID }, concat($type,$headword[1]) }
+                                            </active>  
+                                        else if($element = 'passive') then
+                                            <passive xmlns="http://www.tei-c.org/ns/1.0">
+                                                {attribute { "ref" } { $recID }, concat($type,$headword[1]) }
+                                            </passive>
+                                        else ()                                       
                                 else if(request:get-parameter('wrapElement', '') != '') then
                                     if(request:get-parameter('wrapElement', '') = 'author') then 
                                         element {xs:QName(request:get-parameter('wrapElement', ''))}
