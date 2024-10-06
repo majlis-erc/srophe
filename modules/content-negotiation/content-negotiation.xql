@@ -48,8 +48,14 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     for $c in tokenize($collection,',')
                     return data:apiSearch($c, $e, $q, ())
                 else data:apiSearch($collection, $e, $q, ())
-                
-    return 
+   (: let $hits := if(request:get-parameter('limit', '') != '') then
+                    for $hit in $hits
+                    let $id := replace($hit/ancestor-or-self::tei:TEI/descendant::tei:publicationStmt/tei:idno[@type='URI'][1],'/tei','')
+                    where contains($id,request:get-parameter('limit', ''))
+                    return $hit 
+                 else $hits
+                 :)
+    return
         if(count($hits) gt 0) then 
             <json:value>
                 <action>{$q} in {$element}</action>
@@ -113,9 +119,11 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                                  else if(contains($recID,'manuscript')) then '[manuscript] '
                                                  else if(contains($recID,'relation')) then '[relation] '
                                                  else if(contains($recID,'work')) then '[work] '
-                                                 else if(contains($recID,'bibl')) then ' [citation] '
+                                                 else if(contains($recID,'bibl')) then '[citation]'
                                                  else ()
-                                   return   
+                                   return  
+                                    if($type = '[citation]') then () 
+                                    else 
                                         if($element = 'mutual') then 
                                             <mutual xmlns="http://www.tei-c.org/ns/1.0">
                                                 {attribute { "ref" } { $recID }, concat($type,$headword[1]) }
@@ -178,7 +186,7 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     <info>No results</info>
                     <start>1</start>
                 </json:value>
-            </json:value>           
+            </json:value>  
 };
 
 (:~

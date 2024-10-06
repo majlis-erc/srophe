@@ -215,7 +215,7 @@ declare function data:apiSearch($collection as xs:string*, $element as xs:string
                 if(exists($element) and $element != '') then  
                     for $e in $element
                     return concat("/descendant::tei:",$element,"[ft:query(.,'",data:clean-string($queryString),"',data:search-options())]")            
-                else ()                        
+                else concat('[descendant::tei:body[ft:query(.,"',$queryString,'",sf:facet-query())]]')
     let $eval-string := concat(data:build-collection-path($collection), $elementSearch)
     let $hits := util:eval($eval-string)     
     let $sort := if($sort-element != '') then 
