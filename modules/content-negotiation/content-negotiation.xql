@@ -48,13 +48,12 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     for $c in tokenize($collection,',')
                     return data:apiSearch($c, $e, $q, ())
                 else data:apiSearch($collection, $e, $q, ())
-   (: let $hits := if(request:get-parameter('limit', '') != '') then
+   let $hits := if(request:get-parameter('limit', '') != '') then
                     for $hit in $hits
                     let $id := replace($hit/ancestor-or-self::tei:TEI/descendant::tei:publicationStmt/tei:idno[@type='URI'][1],'/tei','')
                     where contains($id,request:get-parameter('limit', ''))
                     return $hit 
                  else $hits
-                 :)
     return
         if(count($hits) gt 0) then 
             <json:value>
