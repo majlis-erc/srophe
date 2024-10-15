@@ -1915,7 +1915,7 @@
                         <xsl:apply-templates select="."/>
                         <xsl:if test="position() != last()"> and </xsl:if>
                     </xsl:for-each>
-                    <xsl:text>. Accessed </xsl:text>
+                    <xsl:text> et. al. Accessed </xsl:text>
                     <xsl:value-of select="format-date(current-date(),&#34;[D] [MNn] [Y]&#34;, &#34;en&#34;, (), ())"/>
                     <xsl:text>, </xsl:text>
                     <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
