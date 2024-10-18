@@ -1037,7 +1037,7 @@
         <xsl:if test="t:title[@type !='attested'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuWork">Title</a>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuTitle">Title</a>
                 </h3>
                 <div class="collapse" id="mainMenuTitle">
                     <xsl:for-each select="t:title[@type !='attested'][string-length(normalize-space(.)) gt 2]">
@@ -1075,9 +1075,9 @@
         <xsl:if test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainContentInformation">Content Information</a>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuContentInformation">Content Information</a>
                 </h3>
-                <div class="collapse" id="mainContentInformation">
+                <div class="collapse" id="mainMenuContentInformation">
                     <xsl:for-each select="t:incipit[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Incipit </div>
