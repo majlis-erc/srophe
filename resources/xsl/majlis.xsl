@@ -491,30 +491,17 @@
         <xsl:for-each select="t:bibl">
             <div class="mainDesc row">
                 <div class="col-md-6">
-                    <xsl:if test="t:date[1][. != '']">
+                    <xsl:if test="t:title[@type='canon'][@xml:lang='ar' or @xml:lang='he'][1][. != '']">
                         <div class="item row">
-                            <span class="inline-h4 col-md-3">Date of composition</span>
+                            <span class="inline-h4 col-md-3">Original title</span>
                             <span class="col-md-9">
-                                <xsl:for-each select="t:date[1][. != '']">
+                                <xsl:for-each select="t:title[@type='canon'][@xml:lang='ar' or @xml:lang='he'][1][. != '']">
                                     <xsl:apply-templates select="."/>
                                     <xsl:if test="position() != last()">, </xsl:if>
                                 </xsl:for-each>
                             </span>
                         </div>
                     </xsl:if>
-                    <xsl:if test="t:textLang/@mainLang[. != '']">
-                        <div class="item row">
-                            <span class="inline-h4 col-md-3">Language</span>
-                            <span class="col-md-9">
-                                <xsl:for-each select="t:textLang/@mainLang[. != '']">
-                                    <xsl:value-of select="local:expand-lang(., '')"/>
-                                    <xsl:if test="position() != last()">, </xsl:if>
-                                </xsl:for-each>
-                            </span>
-                        </div>
-                    </xsl:if>
-                </div>
-                <div class="col-md-6">
                     <xsl:if test="t:author[1][. != '']">
                         <div class="item row">
                             <span class="inline-h4 col-md-3">Author</span>
@@ -548,49 +535,101 @@
                             </span>
                         </div>
                     </xsl:if>
+                    <xsl:if test="ancestor::t:TEI//t:list/t:item[. != '']">
+                        <div class="item row">
+                            <span class="inline-h4 col-md-3">Disciplines</span>
+                            <span class="col-md-9">
+                                <xsl:for-each select="ancestor::t:TEI//t:list/t:item[. != '']">
+                                    <xsl:apply-templates select="."/>
+                                    <xsl:if test="position() != last()">, </xsl:if>
+                                </xsl:for-each>
+                            </span>
+                        </div>
+                    </xsl:if>
+                </div>
+                <div class="col-md-6">
+                    <xsl:if test="t:date[1][. != '']">
+                        <div class="item row">
+                            <span class="inline-h4 col-md-3">Date of composition</span>
+                            <span class="col-md-9">
+                                <xsl:for-each select="t:date[1][. != '']">
+                                    <xsl:apply-templates select="."/>
+                                    <xsl:if test="position() != last()">, </xsl:if>
+                                </xsl:for-each>
+                            </span>
+                        </div>
+                    </xsl:if>
+                    <xsl:if test="t:term[1][. != '']">
+                        <div class="item row">
+                            <span class="inline-h4 col-md-3">Attested in script</span>
+                            <span class="col-md-9">
+                                <xsl:for-each select="t:term[1][. != '']">
+                                    <xsl:apply-templates select="."/>
+                                    <xsl:if test="position() != last()">, </xsl:if>
+                                </xsl:for-each>
+                            </span>
+                        </div>
+                    </xsl:if>
+                    <xsl:if test="t:textLang/@mainLang[. != '']">
+                        <div class="item row">
+                            <span class="inline-h4 col-md-3">Text language</span>
+                            <span class="col-md-9">
+                                <xsl:for-each select="t:textLang/@mainLang[. != '']">
+                                    <xsl:value-of select="local:expand-lang(., '')"/>
+                                    <xsl:if test="position() != last()">, </xsl:if>
+                                </xsl:for-each>
+                            </span>
+                        </div>
+                    </xsl:if>
                 </div>
             </div>
         </xsl:for-each>
         <!-- Menu items for record contents -->
         <!-- aria-expanded="false" -->
-        <xsl:variable name="work">
-            <xsl:apply-templates mode="work" select="t:bibl"/>
+        <xsl:variable name="title">
+            <xsl:apply-templates mode="work-title" select="t:bibl"/>
         </xsl:variable>
-        <xsl:variable name="quotations">
-            <xsl:apply-templates mode="quotations" select="t:bibl"/>
+        <xsl:variable name="attestedTitles">
+            <xsl:apply-templates mode="work-attestedTitles" select="t:bibl"/>
         </xsl:variable>
-        <xsl:variable name="manuscripts">
-            <xsl:apply-templates mode="manuscripts" select="t:bibl"/>
-        </xsl:variable>
-        <xsl:variable name="editions">
-            <xsl:apply-templates mode="editions" select="t:bibl"/>
+        <!--<xsl:variable name="attestations">
+            <xsl:apply-templates mode="work-attestations" select="t:bibl"/>
+        </xsl:variable>-->
+        <xsl:variable name="translations">
+            <xsl:apply-templates mode="work-translations" select="t:bibl"/>
         </xsl:variable>
         <xsl:variable name="bibliography">
             <xsl:apply-templates mode="work-bibliography" select="t:bibl"/>
         </xsl:variable>
+        <xsl:variable name="contentInformation">
+            <xsl:apply-templates mode="work-content" select="t:bibl"/>
+        </xsl:variable>
+        <!--<xsl:variable name="edition">
+            <xsl:apply-templates mode="work-edition" select="t:bibl"/>
+        </xsl:variable>-->
         <xsl:variable name="credits">
             <xsl:apply-templates mode="majlis-credits" select="//t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
-                <xsl:if test="$work/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                <xsl:if test="$title/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
-                        <button aria-expanded="true" class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuWork" type="button">Work</button>
+                        <button aria-expanded="true" class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuTitle" type="button">Title</button>
                     </div>
                 </xsl:if>
-                <xsl:if test="$quotations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                <xsl:if test="$attestedTitles/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuQuotations" type="button">Content description</button>
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuAttestedTitles" type="button">Attested Titles</button>
                     </div>
                 </xsl:if>
-                <xsl:if test="$manuscripts/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                <!--<xsl:if test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuManuscripts" type="button">Manuscripts</button>
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuAttestations" type="button">Attestations in Manuscripts</button>
                     </div>
-                </xsl:if>
-                <xsl:if test="$editions/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                </xsl:if>-->
+                <xsl:if test="$translations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuEditions" type="button">Editions</button>
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuTranslations" type="button">Translations</button>
                     </div>
                 </xsl:if>
                 <xsl:if test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
@@ -598,6 +637,16 @@
                         <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuBibliography" type="button">Bibliography</button>
                     </div>
                 </xsl:if>
+                <xsl:if test="$contentInformation/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuContentInformation" type="button">Content Information</button>
+                    </div>
+                </xsl:if>
+                <!--<xsl:if test="$edition/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuEdition" type="button">Edition</button>
+                    </div>
+                </xsl:if>-->
                 <xsl:if test="$credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuCredits" type="button">Credits</button>
@@ -608,21 +657,27 @@
                 </div>
             </div>
             <div class="mainMenuContent">
-                <xsl:if test="$work/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$work"/>
+                <xsl:if test="$title/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$title"/>
                 </xsl:if>
-                <xsl:if test="$quotations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$quotations"/>
+                <xsl:if test="$attestedTitles/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$attestedTitles"/>
                 </xsl:if>
-                <xsl:if test="$manuscripts/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$manuscripts"/>
-                </xsl:if>
-                <xsl:if test="$editions/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$editions"/>
+                <!--<xsl:if test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$attestations"/>
+                </xsl:if>-->
+                <xsl:if test="$translations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$translations"/>
                 </xsl:if>
                 <xsl:if test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$bibliography"/>
                 </xsl:if>
+                <xsl:if test="$contentInformation/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$contentInformation"/>
+                </xsl:if>
+                <!--<xsl:if test="$edition/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$edition"/>
+                </xsl:if>-->
                 <xsl:if test="$credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$credits"/>
                 </xsl:if>
@@ -978,14 +1033,14 @@
             </div>
         </xsl:if>
     </xsl:template>
-    <xsl:template match="t:bibl" mode="work">
-        <xsl:if test="t:title[string-length(normalize-space(.)) gt 2]">
+    <xsl:template match="t:bibl" mode="work-title">
+        <xsl:if test="t:title[@type !='attested'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuWork">Work</a>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuWork">Title</a>
                 </h3>
-                <div class="collapse" id="mainMenuWork">
-                    <xsl:for-each select="t:title[string-length(normalize-space(.)) gt 2]">
+                <div class="collapse" id="mainMenuTitle">
+                    <xsl:for-each select="t:title[@type !='attested'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Title <xsl:if test="./@xml:lang[. != '']"> (<xsl:value-of select="local:expand-lang(./@xml:lang, '')"/>) </xsl:if> </div>
                             <div class="col-md-10">
@@ -993,43 +1048,22 @@
                             </div>
                         </div>
                     </xsl:for-each>
-                    <xsl:for-each select="t:author[string-length(normalize-space(.)) gt 2]">
+                </div>
+            </div>
+        </xsl:if>
+    </xsl:template>
+    <xsl:template match="t:bibl" mode="work-attestedTitles">
+        <xsl:if test="t:title[@type='attested'][string-length(normalize-space(.)) gt 2]">
+            <div class="whiteBoxwShadow">
+                <h3>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestedTitles">Attested Titles</a>
+                </h3>
+                <div class="collapse" id="mainMenuAttestedTitles">
+                    <xsl:for-each select="t:title[@type='attested'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
-                            <div class="col-md-1 inline-h4">Author </div>
+                            <div class="col-md-1 inline-h4">Title <xsl:if test="./@xml:lang[. != '']"> (<xsl:value-of select="local:expand-lang(./@xml:lang, '')"/>) </xsl:if> </div>
                             <div class="col-md-10">
                                 <xsl:apply-templates select="."/>
-                            </div>
-                        </div>
-                    </xsl:for-each>
-                    <xsl:for-each select="t:persName[@type = 'compilator'][string-length(normalize-space(.)) gt 2]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">Compilator </div>
-                            <div class="col-md-10">
-                                <xsl:apply-templates select="."/>
-                            </div>
-                        </div>
-                    </xsl:for-each>
-                    <xsl:for-each select="t:persName[@type = 'translator'][string-length(normalize-space(.)) gt 2]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">Translator </div>
-                            <div class="col-md-10">
-                                <xsl:apply-templates select="."/>
-                            </div>
-                        </div>
-                    </xsl:for-each>
-                    <xsl:for-each select="t:textLang/@mainLang[string-length(normalize-space(.)) gt 1]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">Main language </div>
-                            <div class="col-md-10">
-                                <xsl:value-of select="local:expand-lang(., '')"/>
-                            </div>
-                        </div>
-                    </xsl:for-each>
-                    <xsl:for-each select="t:textLang/@otherLangs[string-length(normalize-space(.)) gt 1]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">Other language </div>
-                            <div class="col-md-10">
-                                <xsl:value-of select="local:expand-lang(., '')"/>
                             </div>
                         </div>
                     </xsl:for-each>
@@ -1037,13 +1071,13 @@
             </div>
         </xsl:if>
     </xsl:template>
-    <xsl:template match="t:bibl" mode="quotations">
-        <xsl:if test="t:incipit | t:explicit | t:quote">
+    <xsl:template match="t:bibl" mode="work-content">
+        <xsl:if test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuQuotations">Content description</a>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainContentInformation">Content Information</a>
                 </h3>
-                <div class="collapse" id="mainMenuQuotations">
+                <div class="collapse" id="mainContentInformation">
                     <xsl:for-each select="t:incipit[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Incipit </div>
@@ -1068,24 +1102,11 @@
                             </div>
                         </div>
                     </xsl:for-each>
-                </div>
-            </div>
-        </xsl:if>
-    </xsl:template>
-    <xsl:template match="t:bibl" mode="manuscripts">
-        <xsl:if test="t:note[@type = 'manuscript'][string-length(normalize-space(.)) gt 2]">
-            <div class="whiteBoxwShadow">
-                <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuManuscripts">Manuscripts</a>
-                </h3>
-                <div class="collapse" id="mainMenuManuscripts">
-                    <xsl:for-each select="t:note[@type = 'manuscript']/t:bibl[string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
-                            <div class="col-md-1 inline-h4">
-                                <xsl:value-of select="position()"/>
-                            </div>
+                            <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
-                                <xsl:apply-templates mode="majlisCite" select="."/>
+                                <xsl:value-of select="."/>
                             </div>
                         </div>
                     </xsl:for-each>
@@ -1093,14 +1114,14 @@
             </div>
         </xsl:if>
     </xsl:template>
-    <xsl:template match="t:bibl" mode="editions">
-        <xsl:if test="t:note[@type = 'edition'][string-length(normalize-space(.)) gt 2]">
+    <xsl:template match="t:bibl" mode="work-translations">
+        <xsl:if test="t:bibl[@type='translated'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuEditions">Editions</a>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuTranslations">Translations</a>
                 </h3>
-                <div class="collapse" id="mainMenuEditions">
-                    <xsl:for-each select="t:note[@type = 'edition']/t:bibl[string-length(normalize-space(.)) gt 2]">
+                <div class="collapse" id="mainMenuTranslations">
+                    <xsl:for-each select="t:bibl[@type='translated'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">
                                 <xsl:value-of select="position()"/>
@@ -1115,13 +1136,13 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:bibl" mode="work-bibliography">
-        <xsl:if test="t:bibl[string-length(normalize-space(.)) gt 2]">
+        <xsl:if test="t:bibl[@type !='translated'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" data-toggle="collapse" href="#mainMenuBibliography">Bibliography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBibliography">
-                    <xsl:for-each select="t:bibl[string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each select="t:bibl[@type !='translated'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">
                                 <xsl:value-of select="position()"/>
