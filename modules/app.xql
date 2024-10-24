@@ -122,13 +122,22 @@ function app:google-analytics($node as node(), $model as map(*)){
 :)
 declare function app:display-nodes($node as node(), $model as map(*), $paths as xs:string?, $collection as xs:string?){
     let $record := $model("hits")
+    let $works := if($record/descendant::tei:body/tei:listPerson/tei:person) then
+                    collection('/db/apps/majlis-data/data/works/')//tei:TEI[descendant::tei:author[@ref = request:get-parameter('id', '')]]
+                  else ()
     let $nodes := if($paths != '') then 
                     for $p in $paths
                     return util:eval(concat('$record/',$p))
                   else $record/descendant::tei:text
+    let $doc := if(count($works) gt 0 and count($works) lt 10) then
+                    <result>
+                        <record>{$record}</record>
+                        <works>{$works}</works>
+                    </result>
+                else $record
     return 
         if($config:get-config//repo:html-render/@type='xslt') then
-            global:tei2html($nodes, $collection)
+            global:tei2html($doc, $collection)
         else tei2html:tei2html($nodes)
 }; 
 

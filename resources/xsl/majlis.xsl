@@ -4,16 +4,7 @@
        For main record display, manuscript
        
        ================================================================== -->
-    <!-- 
-    <xsl:choose>
-            <xsl:when test="//t:text/t:body/t:listBibl/t:msDesc">
-                <xsl:apply-templates mode="majlis"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    -->
+
     <xsl:template match="t:TEI" mode="majlis">
         <!-- teiHeader -->
         <div class="row titleStmt">
@@ -30,8 +21,8 @@
                 </h1>
             </div>
             <div class="col-md-4 actionButtons">
-                <xsl:if test="//t:TEI/t:facsimile/t:graphic/@url">
-                    <a class="btn btn-default btn-grey btn-sm" href="{//t:TEI/t:facsimile/t:graphic/@url}" target="_blank" type="button">Scan</a>
+                <xsl:if test="t:TEI/t:facsimile/t:graphic/@url">
+                    <a class="btn btn-default btn-grey btn-sm" href="{t:TEI/t:facsimile/t:graphic/@url}" target="_blank" type="button">Scan</a>
                 </xsl:if>
                 <a class="btn btn-default btn-grey btn-sm" href="" type="button">Feedback</a>
                 <a class="btn btn-default btn-grey btn-sm" href="{concat($nav-base,substring-after(/descendant::t:idno[@type='URI'][1], $base-uri))}">XML</a>
@@ -39,19 +30,19 @@
             </div>
         </div>
         <xsl:choose>
-            <xsl:when test="//t:text/t:body/t:listBibl/t:msDesc">
-                <xsl:apply-templates mode="majlis-mss" select="//t:body"/>
+            <xsl:when test="descendant::t:text/t:body/t:listBibl/t:msDesc">
+                <xsl:apply-templates mode="majlis-mss" select="descendant::t:body"/>
             </xsl:when>
-            <xsl:when test="//t:text/t:body/t:listPerson">
-                <xsl:apply-templates mode="majlis-person" select="//t:body"/>
+            <xsl:when test="descendant::t:text/t:body/t:listPerson">
+                <xsl:apply-templates mode="majlis-person" select="descendant::t:body"/>
             </xsl:when>
-            <xsl:when test="//t:text/t:body/t:bibl">
-                <xsl:apply-templates mode="majlis-work" select="//t:body"/>
+            <xsl:when test="descendant::t:text/t:body/t:bibl">
+                <xsl:apply-templates mode="majlis-work" select="descendant::t:body"/>
             </xsl:when>
             <xsl:otherwise>
                 <div class="whiteBoxwShadow">
-                    <xsl:apply-templates select="//t:body"/>
-                    <xsl:apply-templates select="//t:teiHeader"/>
+                    <xsl:apply-templates select="descendant::t:body"/>
+                    <xsl:apply-templates select="descendant::t:teiHeader"/>
                 </div>
             </xsl:otherwise>
         </xsl:choose>
@@ -226,7 +217,7 @@
             <xsl:apply-templates mode="majlisAdditional" select="t:listBibl/t:msDesc/t:additional[descendant-or-self::t:listBibl]"/>
         </xsl:variable>
         <xsl:variable name="Credits">
-            <xsl:apply-templates mode="majlis-credits" select="//t:teiHeader/t:fileDesc/t:titleStmt"/>
+            <xsl:apply-templates mode="majlis-credits" select="/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
@@ -399,7 +390,7 @@
             <xsl:apply-templates mode="biography" select="t:listPerson/t:person"/>
         </xsl:variable>
         <xsl:variable name="heritageData">
-            <xsl:apply-templates mode="heritageData" select="//t:standOff/t:list"/>
+            <xsl:apply-templates mode="heritageData" select="ancestor::t:TEI/descendant::t:standOff/t:list"/>
         </xsl:variable>
         <xsl:variable name="bibliography">
             <xsl:apply-templates mode="person-bibliography" select="t:listPerson/t:person"/>
@@ -411,13 +402,22 @@
             <xsl:apply-templates mode="linkedOpenData" select="t:listPerson/t:person"/>
         </xsl:variable>
         <xsl:variable name="credits">
-            <xsl:apply-templates mode="majlis-credits" select="//t:teiHeader/t:fileDesc/t:titleStmt"/>
+            <xsl:apply-templates mode="majlis-credits" select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
+        </xsl:variable>
+        <!-- Add works -->
+        <xsl:variable name="works">
+            <xsl:apply-templates mode="relatedWorks" select="ancestor::*:result/*:works"/>
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
                 <xsl:if test="$majlisNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button aria-expanded="true" class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuNames" type="button">Names</button>
+                    </div>
+                </xsl:if>
+                <xsl:if test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button aria-expanded="true" class="btn btn-default btn-grey btn-lg" data-toggle="collapse" href="#mainMenuRelatedWorks" type="button">Works</button>
                     </div>
                 </xsl:if>
                 <xsl:if test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
@@ -462,6 +462,9 @@
             <div class="mainMenuContent">
                 <xsl:if test="$majlisNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$majlisNames"/>
+                </xsl:if>
+                <xsl:if test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$works"/>
                 </xsl:if>
                 <xsl:if test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$attestedNames"/>
@@ -535,11 +538,11 @@
                             </span>
                         </div>
                     </xsl:if>
-                    <xsl:if test="ancestor::t:TEI//t:list/t:item[. != '']">
+                    <xsl:if test="ancestor::t:TEI/descendant::t:list/t:item[. != '']">
                         <div class="item row">
                             <span class="inline-h4 col-md-3">Disciplines</span>
                             <span class="col-md-9">
-                                <xsl:for-each select="ancestor::t:TEI//t:list/t:item[. != '']">
+                                <xsl:for-each select="ancestor::t:TEI/descendant::t:list/t:item[. != '']">
                                     <xsl:apply-templates select="."/>
                                     <xsl:if test="position() != last()">, </xsl:if>
                                 </xsl:for-each>
@@ -608,7 +611,7 @@
             <xsl:apply-templates mode="work-edition" select="t:bibl"/>
         </xsl:variable>-->
         <xsl:variable name="credits">
-            <xsl:apply-templates mode="majlis-credits" select="//t:teiHeader/t:fileDesc/t:titleStmt"/>
+            <xsl:apply-templates mode="majlis-credits" select="descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
@@ -1026,6 +1029,40 @@
                                     </xsl:attribute>
                                     <xsl:value-of select="tokenize(., '/')[last()]"/>
                                 </a>
+                            </div>
+                        </div>
+                    </xsl:for-each>
+                </div>
+            </div>
+        </xsl:if>
+    </xsl:template>
+    <!-- majlis-works -->
+    <xsl:template match="*:works" mode="relatedWorks">
+        <xsl:if test="descendant::t:title[string-length(normalize-space(.)) gt 2]">
+            <div class="whiteBoxwShadow">
+                <h3>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuRelatedWorks">Works</a>
+                </h3>
+                <div class="collapse" id="mainMenuRelatedWorks">
+                    <xsl:for-each select="descendant::t:body/t:bibl">
+                        <div class="row">
+                            <div class="col-md-1 inline-h4">Title </div>
+                            <div class="col-md-10">
+                                <xsl:choose>
+                                    <xsl:when test="t:title[@type='majlis-headword'][@xml:lang != 'en'][. != '']">
+                                        <a href="{concat($nav-base,substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}">
+                                            <xsl:apply-templates select="t:title[@type='majlis-headword'][@xml:lang != 'en']"/><xsl:text> </xsl:text>
+                                            <xsl:if test="t:title[@type='majlis-headword'][@xml:lang = 'en']">
+                                                [<xsl:apply-templates select="t:title[@type='majlis-headword'][@xml:lang = 'en']"/>]<xsl:text> </xsl:text>
+                                            </xsl:if>
+                                        </a>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:for-each select="t:title">
+                                            <a href="{concat($nav-base,substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}"><xsl:apply-templates/></a><xsl:text> </xsl:text>
+                                        </xsl:for-each>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             </div>
                         </div>
                     </xsl:for-each>
@@ -1846,19 +1883,19 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Project: </div>
                     <div class="col-md-10">
-                        <xsl:apply-templates select="//t:titleStmt/t:title[@level = 'm'][1]"/>
+                        <xsl:apply-templates select="descendant::t:titleStmt/t:title[@level = 'm'][1]"/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4"/>
                     <div class="col-md-10">
-                        <xsl:apply-templates select="//t:editionStmt/t:edition[1]"/>
+                        <xsl:apply-templates select="descendant::t:editionStmt/t:edition[1]"/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal investigator: </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="//t:titleStmt/t:editor[@role = 'general']">
+                        <xsl:for-each select="descendant::t:titleStmt/t:editor[@role = 'general']">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -1867,7 +1904,7 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="//t:titleStmt/t:editor[@role = 'contributor']">
+                        <xsl:for-each select="descendant::t:titleStmt/t:editor[@role = 'contributor']">
                             <xsl:apply-templates select="normalize-space(.)"/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -1876,13 +1913,13 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Funded through: </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="//t:titleStmt/t:funder">
+                        <xsl:for-each select="descendant::t:titleStmt/t:funder">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
                     </div>
                 </div>
-                <xsl:for-each select="//t:change[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="descendant::t:change[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4"> Change log:</div>
                         <div class="col-md-10">
@@ -1900,8 +1937,8 @@
                             </xsl:variable>
                             <xsl:variable name="name">
                                 <xsl:choose>
-                                    <xsl:when test="//t:editor[@xml:id[. = $who]]">
-                                        <xsl:for-each select="//t:editor[@xml:id[. = $who]][1]">
+                                    <xsl:when test="descendant::t:editor[@xml:id[. = $who]]">
+                                        <xsl:for-each select="descendant::t:editor[@xml:id[. = $who]][1]">
                                             <xsl:choose>
                                                 <xsl:when test="t:persName">
                                                   <xsl:value-of select="t:persName"/>
@@ -1930,16 +1967,16 @@
             <div class="citationPanel">
                 <h4> <span class="glyphicon glyphicon-book"/> Suggested Citation </h4>
                 <p class="citation">
-                    <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+                    <xsl:apply-templates select="descendant::t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
                     <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by </xsl:text>
-                    <xsl:for-each select="//t:titleStmt/t:editor[@role = 'general']">
+                    <xsl:for-each select="descendant::t:titleStmt/t:editor[@role = 'general']">
                         <xsl:apply-templates select="."/>
                         <xsl:if test="position() != last()"> and </xsl:if>
                     </xsl:for-each>
                     <xsl:text> et. al. Accessed </xsl:text>
                     <xsl:value-of select="format-date(current-date(),&#34;[D] [MNn] [Y]&#34;, &#34;en&#34;, (), ())"/>
                     <xsl:text>, </xsl:text>
-                    <xsl:apply-templates select="//t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
+                    <xsl:apply-templates select="descendant::t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
                 </p>
             </div>
         </div>
@@ -2003,7 +2040,7 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Persons referenced</h4>
                 <ul>
-                    <xsl:for-each-group group-by="text()" select="//t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | //t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
+                    <xsl:for-each-group group-by="text()" select="descendant::t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | descendant::t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
                         <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates select="."/>
@@ -2025,7 +2062,7 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Places referenced</h4>
                 <ul>
-                    <xsl:for-each-group group-by="text()" select="//t:msDesc/descendant-or-self::t:placeName[descendant-or-self::text() != '']">
+                    <xsl:for-each-group group-by="text()" select="descendant::t:msDesc/descendant-or-self::t:placeName[descendant-or-self::text() != '']">
                         <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates mode="majlis" select="."/>
@@ -2040,7 +2077,7 @@
             <div class="whiteBoxwShadow entityList text-left">
                 <h4>Works referenced</h4>
                 <ul>
-                    <xsl:for-each-group group-by="text()" select="//t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']">
+                    <xsl:for-each-group group-by="text()" select="descendant::t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']">
                         <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates mode="majlis" select="."/>

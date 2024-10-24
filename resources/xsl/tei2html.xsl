@@ -145,7 +145,14 @@
     <!-- =================================================================== -->
     <!-- Root -->
     <xsl:template match="/">
-        <xsl:apply-templates mode="majlis"/>
+        <xsl:choose>
+            <xsl:when test="descendant::*:record">
+                 <xsl:apply-templates select="descendant::*:record/t:TEI" mode="majlis"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates mode="majlis"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <!-- =================================================================== -->
