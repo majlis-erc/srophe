@@ -217,7 +217,7 @@
             <xsl:apply-templates mode="majlisAdditional" select="t:listBibl/t:msDesc/t:additional[descendant-or-self::t:listBibl]"/>
         </xsl:variable>
         <xsl:variable name="Credits">
-            <xsl:apply-templates mode="majlis-credits" select="/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
+            <xsl:apply-templates mode="majlis-credits" select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
@@ -1883,19 +1883,19 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Project: </div>
                     <div class="col-md-10">
-                        <xsl:apply-templates select="descendant::t:titleStmt/t:title[@level = 'm'][1]"/>
+                        <xsl:apply-templates select="t:title[@level = 'm'][1]"/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4"/>
                     <div class="col-md-10">
-                        <xsl:apply-templates select="descendant::t:editionStmt/t:edition[1]"/>
+                        <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal investigator: </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="descendant::t:titleStmt/t:editor[@role = 'general']">
+                        <xsl:for-each select="t:editor[@role = 'general']">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -1904,7 +1904,7 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="descendant::t:titleStmt/t:editor[@role = 'contributor']">
+                        <xsl:for-each select="t:editor[@role = 'contributor']">
                             <xsl:apply-templates select="normalize-space(.)"/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -1913,13 +1913,13 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Funded through: </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="descendant::t:titleStmt/t:funder">
+                        <xsl:for-each select="t:funder">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
                     </div>
                 </div>
-                <xsl:for-each select="descendant::t:change[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="ancestor::t:teiHeader/descendant::t:change[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4"> Change log:</div>
                         <div class="col-md-10">
@@ -1967,16 +1967,16 @@
             <div class="citationPanel">
                 <h4> <span class="glyphicon glyphicon-book"/> Suggested Citation </h4>
                 <p class="citation">
-                    <xsl:apply-templates select="descendant::t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+                    <xsl:apply-templates select="ancestor-or-self::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
                     <xsl:text>. In Digital Handbook of Jewish Authors Writing in Arabic, edited by </xsl:text>
-                    <xsl:for-each select="descendant::t:titleStmt/t:editor[@role = 'general']">
+                    <xsl:for-each select="ancestor-or-self::t:TEI/descendant::t:titleStmt/t:editor[@role = 'general']">
                         <xsl:apply-templates select="."/>
                         <xsl:if test="position() != last()"> and </xsl:if>
                     </xsl:for-each>
                     <xsl:text> et. al. Accessed </xsl:text>
                     <xsl:value-of select="format-date(current-date(),&#34;[D] [MNn] [Y]&#34;, &#34;en&#34;, (), ())"/>
                     <xsl:text>, </xsl:text>
-                    <xsl:apply-templates select="descendant::t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
+                    <xsl:apply-templates select="ancestor-or-self::t:TEI/descendant::t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"/>
                 </p>
             </div>
         </div>
