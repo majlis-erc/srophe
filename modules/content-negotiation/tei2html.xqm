@@ -161,7 +161,8 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
                 return tei2html:translate-series($a)
     let $birth := $nodes/descendant::tei:birth/tei:date/text()             
     let $death := $nodes/descendant::tei:death/tei:date/text()
-    let $birthPlace := $nodes/descendant::tei:death/tei:placeName/text()                  
+    let $birthPlace := $nodes/descendant::tei:birth/tei:placeName/text()
+    let $roles := $nodes/descendant::tei:state/tei:label/text()
     return 
         <div class="short-rec-view">
             <a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}" dir="ltr">{tei2html:tei2html($title)}</a>
@@ -171,6 +172,14 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
                     <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
             </button>
             {(
+                if($roles != '') then
+                    <span class="results-list-desc"><span class="srp-label">Role:</span> {
+                    for $role at $pos in $roles
+                    return
+                        ($role,
+                        if ($pos != count($roles)) then text {", "} else ())
+                    }</span>
+                else (),
                 if($birthPlace != '') then
                     <span class="results-list-desc"><span class="srp-label">Place of birth:</span> {$birthPlace}</span>
                 else (),
