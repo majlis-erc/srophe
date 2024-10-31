@@ -173,7 +173,7 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
             </button>
             {(
                 if($roles != '') then
-                    <span class="results-list-desc"><span class="srp-label">Role:</span> {
+                    <span class="results-list-desc"><span class="srp-label">Role: </span> {
                     for $role at $pos in $roles
                     return
                         ($role,
@@ -181,7 +181,7 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
                     }</span>
                 else (),
                 if($birthPlace != '') then
-                    <span class="results-list-desc"><span class="srp-label">Place of birth:</span> {$birthPlace}</span>
+                    <span class="results-list-desc"><span class="srp-label">Place of birth: </span> {$birthPlace}</span>
                 else (),
                 if($birth != '' or $death != '') then
                     <span class="results-list-desc">
