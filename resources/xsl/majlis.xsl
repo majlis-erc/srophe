@@ -307,6 +307,17 @@
         <xsl:for-each select="t:listPerson/t:person">
             <div class="mainDesc row">
                 <div class="col-md-6">
+                    <xsl:if test="t:state/t:label[1][. != '']">
+                        <div class="item row">
+                            <span class="inline-h4 col-md-3">Role</span>
+                            <span class="col-md-9">
+                                <xsl:for-each select="t:state/t:label[. != '']">
+                                    <xsl:apply-templates select="."/>
+                                    <xsl:if test="position() != last()">, </xsl:if>
+                                </xsl:for-each>
+                            </span>
+                        </div>
+                    </xsl:if>
                     <xsl:if test="t:birth/t:placeName[1][. != '']">
                         <div class="item row">
                             <span class="inline-h4 col-md-3">Place of birth</span>
