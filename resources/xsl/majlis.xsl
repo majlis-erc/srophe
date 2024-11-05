@@ -872,6 +872,21 @@
                             <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
                                 <xsl:apply-templates select="."/>
+                                <xsl:choose>
+                                    <xsl:when test="@resp = 'gschwarb'">
+                                        <xsl:text>(By Gregor Schwarb)</xsl:text>
+                                    </xsl:when>
+                                    <xsl:when test="@resp = 'rvollandt'">
+                                        <xsl:text>(By Ronny Vollandt)</xsl:text>
+                                    </xsl:when>
+                                    <xsl:when test="@resp = 'ptarras'">
+                                        <xsl:text>(By Peter Tarras)</xsl:text>
+                                    </xsl:when>
+                                    <xsl:when test="@resp = 'nurbiczek'">
+                                        <xsl:text>(By Nadine Urbiczek)</xsl:text>
+                                    </xsl:when>
+                                    <xsl:otherwise/>
+                                </xsl:choose>
                             </div>
                         </div>
                     </xsl:for-each>
