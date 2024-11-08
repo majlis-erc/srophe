@@ -123,8 +123,11 @@
 .quinconce .row:nth-child(2n+1) > div:first-child {
     float:left;
 }
+a {
+    color: #00883a;
+}
 #body img {
-    max-width:100%;
+    max-width:66%;
 }
 #body .nav-tabs>li>a {
     margin: 0;
