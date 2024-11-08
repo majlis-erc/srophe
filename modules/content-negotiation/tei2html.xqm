@@ -223,15 +223,6 @@ declare function tei2html:summary-view-places($nodes as node()*, $id as xs:strin
                 data-clipboard-action="copy" data-clipboard-text="{normalize-space($title[1])} - {normalize-space($id[1])}">
                     <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
             </button>
-            (:{if($nodes/descendant-or-self::tei:place/tei:placeName[not(contains(@syriaca-tags,'#syriaca-headword'))][not(matches(@xml:lang,('^syr|^ar|^en-xsrp1')))]) then 
-                <span class="results-list-desc names" dir="ltr" lang="en">
-                    Name: {
-                        for $n in $nodes/descendant::tei:place/tei:placeName[@type='majlis-headword'] 
-                        where $n/position() lt 8
-                        return <span class="pers-label badge">{tei2html:tei2html($n)}</span>
-                    } 
-                </span>
-             else ()}:)
             {if($nodes/descendant-or-self::*[starts-with(@xml:id,'abstract')]) then 
                 for $abstract in $nodes/descendant::*[starts-with(@xml:id,'abstract')]
                 let $string := normalize-space(string-join(tei2html:tei2html($abstract),' '))
