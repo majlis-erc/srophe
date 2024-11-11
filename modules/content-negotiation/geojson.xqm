@@ -59,8 +59,8 @@ let $title := if($node/descendant::*[@srophe:tags="#headword"]) then $node/desce
               else if($node/descendant::*[@syriaca-tags="#syriaca-headword"]) then $node/descendant::*[@syriaca-tags="#syriaca-headword"][1] 
               else $node/descendant::tei:title[1]
 let $desc := if($node/descendant::tei:desc[1]/tei:quote) then 
-                concat('"',$node/descendant::tei:desc[1]/tei:quote,'"')
-             else $node/descendant::tei:desc[1]
+               $node/descendant::tei:desc[1]/tei:quote/text()
+             else $node/descendant::tei:desc[1]/text()
 let $type := if($node/descendant::tei:relationType != '') then 
                 string($node/descendant::tei:relationType)
               else if($node/descendant::tei:place/@type) then 
