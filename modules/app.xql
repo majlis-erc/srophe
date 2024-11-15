@@ -60,7 +60,7 @@ declare function app:get-work($node as node(), $model as map(*)) {
                 (:('No record found. ',request:get-parameter('id', '')):)
                 (:  ('No record found. ',xmldb:encode-uri($config:data-root || "/" || request:get-parameter('id', '') || '.xml')):)
                (:response:redirect-to(xs:anyURI(concat($config:nav-base, '/404.html'))):)
-            else map {"hits" : $rec }
+            else  map {"hits" : $rec }
     else map {"hits" : 'Output plain HTML page'}
 };
 
@@ -125,14 +125,32 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
     let $works := if($record/descendant::tei:body/tei:listPerson/tei:person) then
                     collection('/db/apps/majlis-data/data/works/')//tei:TEI[descendant::tei:author[@ref = request:get-parameter('id', '')]]
                   else ()
+    let $mss := if($record/descendant::tei:body/tei:bibl) then
+                    collection('/db/apps/majlis-data/data/manuscripts/')//tei:TEI[descendant::tei:title[@ref = request:get-parameter('id', '')]]
+                  else ()                  
     let $nodes := if($paths != '') then 
                     for $p in $paths
                     return util:eval(concat('$record/',$p))
                   else $record/descendant::tei:text
-    let $doc := if(count($works) gt 0 and count($works) lt 10) then
+    let $doc := if(count($works) gt 0 and count($works) lt 20) then
                     <result>
                         <record>{$record}</record>
-                        <works>{$works}</works>
+                        <works>
+                        {
+                        for $m in $works
+                        order by $m/descendant::tei:title[1]
+                        return $m
+                        }
+                        </works>
+                    </result>
+                else if(count($mss) gt 0 and count($mss) lt 20) then 
+                    <result>
+                        <record>{$record}</record>
+                        <mss>{
+                        for $m in $mss
+                        order by $m/descendant::tei:title[1]
+                        return $m
+                        }</mss>
                     </result>
                 else $record
     return 
