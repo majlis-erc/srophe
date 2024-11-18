@@ -29,19 +29,7 @@ declare function maps:build-leaflet-map($nodes as node()*, $total-count as xs:in
     <div id="map-data" style="margin-bottom:3em;">
         <script type="text/javascript" src="{$config:nav-base}/resources/leaflet/leaflet.js"/>
         <script type="text/javascript" src="{$config:nav-base}/resources/leaflet/leaflet.awesome-markers.min.js"/>
-        <!--
-        <script src="http://isawnyu.github.com/awld-js/lib/requirejs/require.min.js" type="text/javascript"/>
-        <script src="http://isawnyu.github.com/awld-js/awld.js?autoinit" type="text/javascript"/>
-        -->
         <div id="map"/>
-        {
-            if($total-count gt 0) then 
-               <div class="hint map pull-right small">
-                * This map displays {count($nodes)} records. Only places with coordinates are displayed. 
-                     <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#map-selection" id="mapFAQ">See why?</button>
-               </div>
-            else ()
-            }
         <script type="text/javascript">
             <![CDATA[
             var terrain = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
@@ -57,7 +45,7 @@ declare function maps:build-leaflet-map($nodes as node()*, $total-count as xs:in
                                             options: {
                                                 iconSize:     [35, 35],
                                                 iconAnchor:   [22, 94],
-                                                popupAnchor:  [-3, -76]
+                                                popupAnchor:  [-5, -76]
                                                 }
                                             });
                                             var redIcon =
@@ -103,11 +91,12 @@ declare function maps:build-leaflet-map($nodes as node()*, $total-count as xs:in
                             })
         var map = L.map('map',{scrollWheelZoom:false}).fitBounds(geojson.getBounds(),{maxZoom: 5}).setZoom(5);    
         terrain.addTo(map);
-                                        
+        /*                                  
         L.control.layers({
                         "Terrain (default)": terrain,
                         "Streets": streets,
                         "Imperium": imperium }).addTo(map);
+        */                
         geojson.addTo(map);     
         ]]>
         </script>
