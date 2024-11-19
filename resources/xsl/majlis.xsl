@@ -1969,6 +1969,14 @@
                     <div class="row">
                         <div class="col-md-1 inline-h4">Acquisition</div>
                         <div class="col-md-10">
+                            <xsl:for-each select="ancestor::t:msDesc/descendant::t:altIdentifier[@type='bundle']/t:idno[string-length(normalize-space(.)) gt 2]">
+                                <div class="row">
+                                    <div class="col-md-2 inline-h4">Bundle number </div>
+                                    <div class="col-md-10">
+                                        <xsl:apply-templates select="."/>
+                                    </div>
+                                </div>
+                            </xsl:for-each>
                             <xsl:for-each select="t:date[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Date </div>
