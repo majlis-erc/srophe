@@ -1604,7 +1604,10 @@
                         <div class="col-md-2 inline-h4">Foliation </div>
                         <div class="col-md-10">
                             <xsl:for-each select="t:supportDesc/t:foliation">
-                                <xsl:value-of select="@rendition"/>
+                                <xsl:if test="@rendition[. != '']">
+                                    <xsl:value-of select="concat(upper-case(substring(@rendition, 1, 1)), substring(@rendition, 2))"/>
+                                    <xsl:text> foliation. </xsl:text>
+                                </xsl:if>
                                 <xsl:apply-templates select="."/>
                             </xsl:for-each>
                         </div>
@@ -1618,31 +1621,33 @@
                         </div>
                         <div class="col-md-10">
                             <xsl:value-of select="t:formula"/>
-                            <xsl:text> per quire. </xsl:text>
-                            <xsl:value-of select="t:catchwords"/>
+                            <xsl:text> folios per quire. </xsl:text>
+                            <xsl:for-each select="t:catchwords">
+                                <xsl:value-of select="."/>
                             <xsl:text>. </xsl:text>
+                            </xsl:for-each>
                             <xsl:apply-templates select="t:note"/>
                         </div>
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:condition[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="t:supportDesc/t:condition/t:note[string-length(normalize-space(.)) gt 2]">
                     <xsl:variable name="label" select="local-name(.)"/>
                     <div class="row">
                         <div class="col-md-2 inline-h4">
                             <xsl:value-of select="concat(upper-case(substring($label, 1, 1)), substring($label, 2))"/>
                         </div>
                         <div class="col-md-10">
-                            <xsl:apply-templates select="t:note"/>
+                            <xsl:apply-templates select="."/>
                         </div>
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:supportDesc/t:condition[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="t:supportDesc/t:condition/t:ab[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">State of writing </div>
                         <div class="col-md-10">
-                            <xsl:value-of select="t:ab/@rend"/>
+                            <xsl:value-of select="@rend"/>
                             <xsl:text>. </xsl:text>
-                            <xsl:value-of select="t:ab"/>
+                            <xsl:value-of select="."/>
                         </div>
                     </div>
                 </xsl:for-each>
@@ -1682,15 +1687,31 @@
                 </xsl:for-each>
                 <xsl:for-each select="t:layoutDesc/t:layout/t:dimensions[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
-                        <div class="col-md-2 inline-h4">Text block</div>
+                        <div class="col-md-2 inline-h4">Text block </div>
                         <div class="col-md-10">
                             <xsl:call-template name="dimensions"/>
                         </div>
                     </div>
                 </xsl:for-each>
-                <xsl:for-each select="t:layoutDesc/t:layout/t:metamark[string-length(normalize-space(.)) gt 2] | t:layoutDesc/t:layout/t:ab[string-length(normalize-space(.)) gt 2]">
+                <xsl:for-each select="t:layoutDesc/t:layout/t:metamark[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
-                        <div class="col-md-2 inline-h4"/>
+                        <div class="col-md-2 inline-h4">Line justification </div>
+                        <div class="col-md-10">
+                            <xsl:apply-templates select="."/>
+                        </div>
+                    </div>
+                </xsl:for-each>
+                <xsl:for-each select="t:layoutDesc/t:layout/t:ab[@type='ruling'][string-length(normalize-space(.)) gt 2]">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Ruling </div>
+                        <div class="col-md-10">
+                            <xsl:apply-templates select="."/>
+                        </div>
+                    </div>
+                </xsl:for-each>
+                <xsl:for-each select="t:layoutDesc/t:layout/t:ab[@type='pricking'][string-length(normalize-space(.)) gt 2]">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Pricking </div>
                         <div class="col-md-10">
                             <xsl:apply-templates select="."/>
                         </div>
