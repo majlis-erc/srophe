@@ -1521,7 +1521,7 @@
                         <div class="row">
                             <div class="col-md-2 inline-h4"> Book form </div>
                             <div class="col-md-10">
-                                <xsl:apply-templates select="@style"/>
+                                <xsl:value-of select="concat(upper-case(substring(@style, 1, 1)), substring(@style, 2))"/>
                             </div>
                         </div>
                     </xsl:if>
@@ -1586,6 +1586,14 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Extent </div>
                         <div class="col-md-10">
+                            <xsl:choose>
+                                <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
+                                    <xsl:text> ff. </xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text> f. </xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
                             <xsl:apply-templates select="."/>
                         </div>
                     </div>
@@ -1608,6 +1616,14 @@
                                     <xsl:value-of select="concat(upper-case(substring(@rendition, 1, 1)), substring(@rendition, 2))"/>
                                     <xsl:text> foliation. </xsl:text>
                                 </xsl:if>
+                                <xsl:choose>
+                                    <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
+                                        <xsl:text> ff. </xsl:text>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:text> f. </xsl:text>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                                 <xsl:apply-templates select="."/>
                             </xsl:for-each>
                         </div>
@@ -1673,7 +1689,18 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Written lines</div>
                         <div class="col-md-10">
-                            <xsl:value-of select="."/>
+                            <xsl:choose>
+                                <xsl:when test="@writtenLines[contains(., ' ')]">
+                                    <xsl:value-of select="substring-before(., ' ')"/>
+                                    <xsl:text> to </xsl:text>
+                                    <xsl:value-of select="substring-after(., ' ')"/>
+                                    <xsl:text> lines. </xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="."/>
+                                    <xsl:text> lines. </xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </div>
                     </div>
                 </xsl:for-each>
@@ -1698,6 +1725,7 @@
                         <div class="col-md-2 inline-h4">Line justification </div>
                         <div class="col-md-10">
                             <xsl:apply-templates select="."/>
+                            <xsl:text>.</xsl:text>
                         </div>
                     </div>
                 </xsl:for-each>
@@ -1706,6 +1734,7 @@
                         <div class="col-md-2 inline-h4">Ruling </div>
                         <div class="col-md-10">
                             <xsl:apply-templates select="."/>
+                            <xsl:text>.</xsl:text>
                         </div>
                     </div>
                 </xsl:for-each>
@@ -1714,6 +1743,7 @@
                         <div class="col-md-2 inline-h4">Pricking </div>
                         <div class="col-md-10">
                             <xsl:apply-templates select="."/>
+                            <xsl:text>.</xsl:text>
                         </div>
                     </div>
                 </xsl:for-each>
