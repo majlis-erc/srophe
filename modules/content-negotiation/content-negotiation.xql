@@ -54,7 +54,7 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     where contains($id,request:get-parameter('limit', ''))
                     return $hit 
                  else $hits
-    return
+    return 
         if(count($hits) gt 0) then 
             <json:value>
                 <action>{$q} in {$element}</action>
@@ -89,7 +89,6 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                     </bibl>
                                 else if($element = 'titleBibl') then 
                                     <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
-                                        <idno>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</idno>
                                         <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</title>
                                         <ptr target="{$recID}"/>
                                     </bibl> 
@@ -185,7 +184,7 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     <info>No results</info>
                     <start>1</start>
                 </json:value>
-            </json:value>  
+            </json:value>              
 };
 
 (:~
