@@ -119,6 +119,13 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
     return 
         if(request:get-parameter('view', '') = 'map') then $hits  
         else if(request:get-parameter('view', '') = 'timeline') then $hits
+        else if($collection = 'manuscripts') then
+            for $hit in $hits
+            let $root := $hit/ancestor-or-self::tei:TEI
+            let $s := ft:field($hit, "mssSort")[1] 
+            order by number($s[1]) ascending  
+            (:where matches($s[1],global:get-alpha-filter()):)
+            return $root
         else if(request:get-parameter('alpha-filter', '') != '' 
             and request:get-parameter('alpha-filter', '') != 'All'
             and request:get-parameter('alpha-filter', '') != 'ALL'
