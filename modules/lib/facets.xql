@@ -609,5 +609,21 @@ declare function sf:field-mssSort($element as item()*, $name as xs:string){
             xs:integer($num)
         else if($num castable as xs:double) then 
             xs:double($num)
-        else 0  
+        else 0         
 };
+
+(:~
+ : Document type based on idno
+ :)
+declare function sf:facet-type($element as item()*, $facet-definition as item(), $name as xs:string){
+    let $idno := $element/ancestor-or-self::tei:TEI/descendant::tei:publicationStmt/tei:idno[1]
+    return  
+        if(contains($idno,'/manuscript/')) then 'Manuscript' 
+        else if(contains($idno,'/place/')) then 'Place'
+        else if(contains($idno,'/person/')) then 'Person' 
+        else if(contains($idno,'/work/')) then 'Work'
+        else if(contains($idno,'/relation/')) then 'Relation'
+        else if(contains($idno,'/text/')) then 'Text'
+        else if(contains($idno,'/bibl/')) then 'Bibliography'
+        else 'test'
+}; 
