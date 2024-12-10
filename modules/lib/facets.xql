@@ -605,10 +605,8 @@ declare function sf:facet-repository($element as item()*, $facet-definition as i
 declare function sf:field-mssSort($element as item()*, $name as xs:string){
     let $num := $element/descendant::tei:msIdentifier/tei:idno/text()
     return 
-        if($num castable as xs:integer) then 
-            xs:integer($num)
-        else if($num castable as xs:double) then 
-            xs:double($num)
+        if($num castable as xs:double) then 
+            number($num)
         else 0         
 };
 

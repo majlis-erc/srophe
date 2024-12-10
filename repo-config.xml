@@ -95,10 +95,11 @@
         
         -->
         <sortFields>
-            <fields function="title">title</fields>
+            <fields function="mssSort">mssSort</fields>
             <fields function="titleSyriac">titleSyriac</fields>
             <fields function="titleArabic">titleArabic</fields>
             <fields function="author">author</fields>
+            <fields function="title">title</fields>
             <fields xpath="tei:TEI/descendant::tei:sourceDesc/tei:bibl/tei:date/@when">publicationDate</fields>
         </sortFields>
     </config>
