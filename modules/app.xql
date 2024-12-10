@@ -129,13 +129,7 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
                     let $c1 := collection('/db/apps/majlis-data/data/manuscripts/')//tei:TEI[descendant::tei:body[ft:query(., (),sf:facet-query())]]
                     for $c in $c1[descendant::tei:title[@ref = request:get-parameter('id', '')]]
                     let $num :=  ft:field($c, "mssSort")
-                    let $sort := 
-                        if($num castable as xs:integer) then 
-                            xs:integer($num)
-                        else if($num castable as xs:double) then 
-                            xs:double($num)
-                        else 0 
-                    order by number($sort) ascending
+                    order by number($num) ascending
                     return $c
                   else ()                  
     let $nodes := if($paths != '') then 
