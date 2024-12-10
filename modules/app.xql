@@ -126,7 +126,17 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
                     collection('/db/apps/majlis-data/data/works/')//tei:TEI[descendant::tei:author[@ref = request:get-parameter('id', '')]]
                   else ()
     let $mss := if($record/descendant::tei:body/tei:bibl) then
-                    collection('/db/apps/majlis-data/data/manuscripts/')//tei:TEI[descendant::tei:title[@ref = request:get-parameter('id', '')]]
+                    let $c1 := collection('/db/apps/majlis-data/data/manuscripts/')//tei:TEI[descendant::tei:body[ft:query(., (),sf:facet-query())]]
+                    for $c in $c1[descendant::tei:title[@ref = request:get-parameter('id', '')]]
+                    let $num :=  ft:field($c, "mssSort")
+                    let $sort := 
+                        if($num castable as xs:integer) then 
+                            xs:integer($num)
+                        else if($num castable as xs:double) then 
+                            xs:double($num)
+                        else 0 
+                    order by number($sort) ascending
+                    return $c
                   else ()                  
     let $nodes := if($paths != '') then 
                     for $p in $paths
@@ -146,17 +156,15 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
                 else if(count($mss) gt 0 and count($mss) lt 20) then 
                     <result>
                         <record>{$record}</record>
-                        <mss>{
-                        for $m in $mss
-                        order by $m/descendant::tei:title[1]
-                        return $m
-                        }</mss>
+                        <mss>
+                            {$mss}
+                        </mss>
                     </result>
                 else $record
     return 
         if($config:get-config//repo:html-render/@type='xslt') then
             global:tei2html($doc, $collection)
-        else tei2html:tei2html($nodes)
+        else tei2html:tei2html($nodes)   
 }; 
 
 (:~  
