@@ -599,3 +599,15 @@ declare function sf:facet-biblAuthors($element as item()*, $facet-definition as 
 declare function sf:facet-repository($element as item()*, $facet-definition as item(), $name as xs:string){
     normalize-space($element/descendant::tei:msIdentifier/tei:repository)
 }; 
+
+(: Maljlis manuscript sort:)
+(: Author field :)
+declare function sf:field-mssSort($element as item()*, $name as xs:string){
+    let $num := $element/descendant::tei:msIdentifier/tei:idno/text()
+    return 
+        if($num castable as xs:integer) then 
+            xs:integer($num)
+        else if($num castable as xs:double) then 
+            xs:double($num)
+        else 0  
+};

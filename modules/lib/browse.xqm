@@ -104,7 +104,7 @@ declare function browse:display-hits($hits){
                 if($browse:lang = 'syr') then ft:field($hit, "titleSyriac")[1]
                 else if($browse:lang = 'ar') then ft:field($hit, "titleArabic")[1]
                 else ()
-            )}</span> 
+            )}</span>      
         else () 
     let $uri := replace($hit/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
     return 
