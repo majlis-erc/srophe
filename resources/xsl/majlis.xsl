@@ -1091,8 +1091,11 @@
                                                 select="replace(t:addName[@type = 'nasab'], 'ابن', 'بن')"/>
                                             <xsl:text> </xsl:text>
                                             <xsl:value-of select="t:addName[@type = 'nisbah']"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="t:addName[@type = 'laqab']"/>
+                                            <xsl:if
+                                                test="t:addName[@type = 'laqab'][string-length(normalize-space(.)) gt 2]">
+                                                <xsl:text>, </xsl:text>
+                                                <xsl:value-of select="t:addName[@type = 'laqab']"/>
+                                            </xsl:if>
                                             <xsl:if
                                                 test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
                                                 <br/>
