@@ -34,7 +34,7 @@ declare function geojson:json-wrapper($nodes as node()*) as element()*{
         <type>FeatureCollection</type>
         <features>
             {
-            let $nodes := $nodes[descendant-or-self::tei:geo]
+            let $nodes := $nodes[descendant-or-self::tei:geo[. != '']]
             let $count := count($nodes)
             for $n in $nodes
             return geojson:geojson-object($n, $count)}
