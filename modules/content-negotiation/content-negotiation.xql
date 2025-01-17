@@ -35,7 +35,7 @@ declare namespace srophe="https://srophe.app";
  : @param $author accepts string value. May only be used when $element = 'title'    
 :)
 declare function local:search-element($element as xs:string?, $q as xs:string*, $collection as xs:string*){                     
-    let $e := if($element = 'citation') then 'biblStruct'
+    let $e := if($element = 'citation' or $element = 'simpleCite') then 'biblStruct'
               else if($element = 'biblWorksCitation') then 'title'
               else if($element = 'biblWorksAuthor') then 'persName'
               else if($element = 'titleBibl') then  'title'
@@ -87,6 +87,14 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                         </bibl>
                                         {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
                                     </bibl>
+                                else if($element = 'simpleCite') then 
+                                    <bibl xmlns="http://www.tei-c.org/ns/1.0">
+                                        <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
+                                            <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']//text()}</title>
+                                            <ptr target="{$recID}"/>
+                                        </bibl>
+                                        {$hit/ancestor-or-self::tei:TEI/descendant::tei:bibl[@type='formatted'][@subtype='citation']}
+                                    </bibl>  
                                 else if($element = 'titleBibl') then 
                                     <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
                                         <title>{$hit/ancestor-or-self::tei:TEI/descendant::tei:title[@level='a'][1]//text()}</title>
