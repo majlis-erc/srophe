@@ -299,7 +299,7 @@
             <xsl:when test="parent::t:note">
                 <xsl:choose>
                     <xsl:when test="t:ptr[contains(@target,'/work/')]">
-                        <a href="{t:ptr/@target}">
+                        <a href="{t:ptr/@target}" target="_blank">
                             <xsl:apply-templates mode="inline"/>
                         </a>
                     </xsl:when>
@@ -341,7 +341,7 @@
                     </xsl:if>
                     <!-- Button trigger corrections email modal -->
                     <button class="btn btn-info" data-toggle="modal" data-target="#feedback">Corrections/Additions?</button> 
-                    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
+                    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection" target="_blank">
                         Is this record complete?
                     </a>
                 </div>
@@ -382,7 +382,7 @@
                         <xsl:apply-templates select="descendant-or-self::t:teiHeader/t:fileDesc/t:publicationStmt/t:availability/t:licence"/>
                     </div>
                 </div>
-                <a class="togglelink pull-right btn-link" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation">Show full citation information...</a>
+                <a class="togglelink pull-right btn-link" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation" target="_blank">Show full citation information...</a>
             </div>
         </div>
     </xsl:template>
@@ -438,26 +438,26 @@
                 <ul>
                     <xsl:for-each select="//t:idno[contains(.,'csc.org.il')]">
                         <li>
-                            <a href="{normalize-space(.)}"> "
+                            <a target="_blank" href="{normalize-space(.)}"> "
                                 <xsl:value-of select="substring-before(substring-after(normalize-space(.),'sK='),'&amp;sT=')"/>" in the Comprehensive Bibliography on Syriac Christianity</a>
                         </li>
                     </xsl:for-each>
                     <!-- WorldCat Identities -->
                     <xsl:for-each select="//t:idno[contains(.,'http://worldcat.org/identities')]">
                         <li>
-                            <a href="{normalize-space(.)}"> "<xsl:value-of select="substring-after(.,'http://worldcat.org/identities/')"/>" in WorldCat Identities</a>
+                            <a target="_blank" href="{normalize-space(.)}"> "<xsl:value-of select="substring-after(.,'http://worldcat.org/identities/')"/>" in WorldCat Identities</a>
                         </li>
                     </xsl:for-each>
                     <!-- VIAF -->
                     <xsl:for-each select="//t:idno[contains(.,'http://viaf.org/')]">
                         <li>
-                            <a href="{normalize-space(.)}">VIAF</a>
+                            <a target="_blank" href="{normalize-space(.)}">VIAF</a>
                         </li>
                     </xsl:for-each>
                     <!-- Pleiades links -->
                     <xsl:for-each select="//t:idno[contains(.,'pleiades')]">
                         <li>
-                            <a href="{normalize-space(.)}">
+                            <a target="_blank" href="{normalize-space(.)}">
                                 <img src="{$nav-base}/resources/images/circle-pi-25.png" alt="Image of the Greek letter pi in blue; small icon of the Pleiades project" title="click to view {$title} in Pleiades"/> View in Pleiades</a>
                         </li>
                     </xsl:for-each>
@@ -470,7 +470,7 @@
                                 <xsl:text>, </xsl:text>
                                 <xsl:value-of select="$coords[2]"/>
                             </xsl:variable>
-                            <a href="https://maps.google.com/maps?q={$geoRef}+(name)&amp;z=10&amp;ll={$geoRef}">
+                            <a target="_blank" href="https://maps.google.com/maps?q={$geoRef}+(name)&amp;z=10&amp;ll={$geoRef}">
                                 <img src="{$nav-base}/resources/images/gmaps-25.png" alt="The Google Maps icon" title="click to view {$title} on Google Maps"/> View in Google Maps
                             </a>
                         </li>
@@ -1300,7 +1300,7 @@
             </xsl:if>
             <!-- Button trigger corrections email modal -->
             <button class="btn btn-info" data-toggle="modal" data-target="#feedback">Corrections/Additions?</button> 
-            <a href="#" class="btn btn-info" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
+            <a target="_blank" href="#" class="btn btn-info" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
                 Is this record complete?
             </a>
         </div>
@@ -1439,7 +1439,7 @@
                                 <xsl:apply-templates select="t:fileDesc/t:publicationStmt/t:availability/t:licence"/>
                             </div>
                         </div>
-                        <a class="btn-sm btn-info togglelink pull-right" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation">Show full citation information...</a>
+                        <a target="_blank" class="btn-sm btn-info togglelink pull-right" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation">Show full citation information...</a>
                     </div>
                 </div>
             </xsl:otherwise>
@@ -1489,7 +1489,7 @@
             <small>
                 <span class="uri">
                     <xsl:if test="starts-with($nav-base,'/exist/apps')">
-                        <a href="{replace($prev-uri,$base-uri,$nav-base)}">
+                        <a target="_blank" href="{replace($prev-uri,$base-uri,$nav-base)}">
                             <span class="glyphicon glyphicon-backward" aria-hidden="true"/>
                         </a>
                     </xsl:if>
@@ -1513,7 +1513,7 @@
                     </script>
                     <xsl:text> </xsl:text>
                     <xsl:if test="starts-with($nav-base,'/exist/apps')">
-                        <a href="{replace($next-uri,$base-uri,$nav-base)}">
+                        <a target="_blank" href="{replace($next-uri,$base-uri,$nav-base)}">
                             <span class="glyphicon glyphicon-forward" aria-hidden="true"/>
                         </a>
                     </xsl:if>
@@ -1526,7 +1526,7 @@
                                 <xsl:when test=". = 'The Syriac Biographical Dictionary'"/>
                                 <xsl:when test=". = 'A Guide to Syriac Authors'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/authors/index.html">
+                                    <a target="_blank" href="{$nav-base}/authors/index.html">
                                         <span class="syriaca-icon syriaca-authors" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -1538,7 +1538,7 @@
                                 </xsl:when>
                                 <xsl:when test=". = 'Qadishe: A Guide to the Syriac Saints'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/q/index.html">
+                                    <a target="_blank" href="{$nav-base}/q/index.html">
                                         <span class="syriaca-icon syriaca-q" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -1550,7 +1550,7 @@
                                 </xsl:when>
                                 <xsl:when test=". = 'Bibliotheca Hagiographica Syriaca Electronica'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/bhse/index.html">
+                                    <a target="_blank" href="{$nav-base}/bhse/index.html">
                                         <span class="syriaca-icon syriaca-bhse" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -1562,7 +1562,7 @@
                                 </xsl:when>
                                 <xsl:when test=". = 'New Handbook of Syriac Literature'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/nhsl/index.html">
+                                    <a target="_blank" href="{$nav-base}/nhsl/index.html">
                                         <span class="syriaca-icon syriaca-nhsl" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -1770,7 +1770,7 @@
             <div id="sources">
                 <h3>Works Cited</h3>
                 <p>
-                    <small>Any information without attribution has been created following the Syriaca.org <a href="http://syriaca.org/documentation/">editorial guidelines</a>.</small>
+                    <small>Any information without attribution has been created following the Syriaca.org <a href="http://syriaca.org/documentation/" target="_blank">editorial guidelines</a>.</small>
                 </p>
                 <ul>
                     <!-- Bibliography elements are processed by bibliography.xsl -->
@@ -2152,7 +2152,7 @@
                     <xsl:text> </xsl:text>
                     <xsl:value-of select="$name-string"/>
                     <xsl:text> </xsl:text>
-                    <a href="{concat('/place/',@id,'.html')}">
+                    <a target="_blank" href="{concat('/place/',@id,'.html')}">
                         <xsl:value-of select="t:placeName"/>
                     </a>
                     <xsl:text> (</xsl:text>
@@ -2259,7 +2259,7 @@
                         <xsl:sequence select="local:add-footnotes(child::*[1]/@source,.)"/>
                     </xsl:if>
                     <!-- toggle to full list, grouped by type -->
-                    <a class="togglelink btn-link" data-toggle="collapse" data-target="#relatedlist" data-text-swap="(hide list)">(see list)</a>
+                    <a target="_blank" class="togglelink btn-link" data-toggle="collapse" data-target="#relatedlist" data-text-swap="(hide list)">(see list)</a>
                     <dl class="collapse" id="relatedlist">
                         <xsl:for-each-group select="t:mutual" group-by="@type">
                             <xsl:sort select="count(current-group()/child::*)" order="descending"/>
@@ -2292,7 +2292,7 @@
                             </dt>
                             <xsl:for-each select="current-group()">
                                 <dd>
-                                    <a href="{concat('/place/',@id,'.html')}">
+                                    <a target="_blank" href="{concat('/place/',@id,'.html')}">
                                         <xsl:value-of select="t:placeName"/>
                                         <xsl:value-of select="concat(' (',string(@type),', place/',@id,')')"/>
                                     </a>
@@ -2305,7 +2305,7 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="t:relation" mode="relation">
-        <a href="{@uri}">
+        <a target="_blank" href="{@uri}">
             <xsl:choose>
                 <xsl:when test="child::*/t:place">
                     <xsl:value-of select="child::*/t:place/t:placeName"/>

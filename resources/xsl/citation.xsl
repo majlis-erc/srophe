@@ -56,7 +56,7 @@
         <xsl:text>,</xsl:text>
         
         <xsl:text> </xsl:text>
-        <a href="{$uri}">
+        <a target="_blank" href="{$uri}">
             <xsl:value-of select="$uri"/>
         </a>
         <xsl:text>.</xsl:text>
@@ -127,7 +127,7 @@
         <xsl:text>.</xsl:text>
         
         <xsl:text> </xsl:text>
-        <a href="{$uri}">
+        <a target="_blank" href="{$uri}">
             <xsl:value-of select="$uri"/>
         </a>
         <xsl:text>.</xsl:text>

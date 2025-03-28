@@ -2747,7 +2747,7 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
-                <a href="{$link}">
+                <a href="{$link}" target="_blank">
                     <xsl:apply-templates/>
                 </a>
             </xsl:when>

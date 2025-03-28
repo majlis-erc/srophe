@@ -140,7 +140,7 @@
     
     <!-- R -->
     <xsl:template match="t:ref | t:ptr">
-        <a href="{@target}">
+        <a href="{@target}" target="_blank">
             <xsl:apply-templates/>
         </a>
     </xsl:template>

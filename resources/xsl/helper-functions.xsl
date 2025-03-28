@@ -564,12 +564,12 @@
             <xsl:when test="@ref[. != '']">
                 <xsl:choose>
                     <xsl:when test="starts-with(@ref,$base-uri)">
-                        <a href="{replace(@ref,$base-uri,$nav-base)}">
+                        <a href="{replace(@ref,$base-uri,$nav-base)}" target="_blank">
                             <xsl:apply-templates/>
                         </a> 
                     </xsl:when>
                     <xsl:otherwise>
-                        <a href="{@ref}">
+                        <a href="{@ref}" target="_blank">
                             <xsl:apply-templates/>
                         </a> 
                     </xsl:otherwise>
