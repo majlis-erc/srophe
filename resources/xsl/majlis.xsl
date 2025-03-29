@@ -32,11 +32,11 @@
                         href="{t:TEI/t:facsimile/t:graphic/@url}" target="_blank" type="button"
                         >Scan</a>
                 </xsl:if>
-                <a class="btn btn-default btn-grey btn-sm" href="" type="button">Feedback</a>
-                <a class="btn btn-default btn-grey btn-sm"
+                <a target="_blank" class="btn btn-default btn-grey btn-sm" href="" type="button">Feedback</a>
+                <a target="_blank" class="btn btn-default btn-grey btn-sm"
                     href="{concat($nav-base,substring-after(/descendant::t:idno[@type='URI'][1], $base-uri))}"
                     >XML</a>
-                <a class="btn btn-default btn-grey btn-sm" href="javascript:window.print();"
+                <a target="_blank" class="btn btn-default btn-grey btn-sm" href="javascript:window.print();"
                     >Print</a>
             </div>
         </div>
@@ -906,7 +906,7 @@
                 <xsl:for-each select="t:TEI">
                     <div class="item row">
                         <div class="col-md-12">
-                            <a
+                            <a targe="_blank"
                                 href="{concat($nav-base,substring-after(descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}">
                                 <xsl:apply-templates select="descendant::t:titleStmt/t:title[1]"/>
                             </a>
@@ -1513,7 +1513,7 @@
                                 <xsl:choose>
                                     <xsl:when
                                         test="t:title[@type = 'majlis-headword'][@xml:lang != 'en'][. != '']">
-                                        <a
+                                        <a targe="_blank"
                                             href="{concat($nav-base,substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}">
                                             <xsl:apply-templates
                                                 select="t:title[@type = 'majlis-headword'][@xml:lang != 'en']"/>
@@ -1819,7 +1819,7 @@
                                                   </xsl:otherwise>
                                                 </xsl:choose>
                                             </xsl:variable>
-                                            <a href="{$link}">
+                                            <a target="_blank" href="{$link}">
                                                 <xsl:value-of select="t:idno"/>
                                             </a>
                                         </xsl:when>
@@ -2645,7 +2645,7 @@
                         <xsl:apply-templates select="t:title"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <a href="{t:ptr/@target}">
+                        <a target="_blank" href="{t:ptr/@target}">
                             <xsl:apply-templates select="t:title"/>
                         </a>
                     </xsl:otherwise>

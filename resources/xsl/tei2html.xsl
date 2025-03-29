@@ -382,7 +382,7 @@
                         <xsl:apply-templates select="descendant-or-self::t:teiHeader/t:fileDesc/t:publicationStmt/t:availability/t:licence"/>
                     </div>
                 </div>
-                <a class="togglelink pull-right btn-link" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation" target="_blank">Show full citation information...</a>
+                <a class="togglelink pull-right btn-link" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation">Show full citation information...</a>
             </div>
         </div>
     </xsl:template>
@@ -482,7 +482,7 @@
                             <xsl:value-of select="replace(tokenize(.,'/')[last()],'_',' ')"/>
                         </xsl:variable>
                         <li>
-                            <a href="{.}">
+                            <a target="_blank" href="{.}">
                                 <img src="{$nav-base}/resources/images/Wikipedia-25.png" alt="The Wikipedia icon" title="click to view {$get-title} in Wikipedia"/> "<xsl:value-of select="$get-title"/>" in Wikipedia</a>
                         </li>
                     </xsl:for-each>
@@ -1052,7 +1052,7 @@
                     <xsl:for-each select="t:idno[contains(.,$base-uri)]">
                         <xsl:choose>
                             <xsl:when test="@type='URI'">
-                                <a href="{.}">
+                                <a target="_blank" href="{.}">
                                     <xsl:value-of select="."/>
                                 </a>
                             </xsl:when>
@@ -1300,7 +1300,7 @@
             </xsl:if>
             <!-- Button trigger corrections email modal -->
             <button class="btn btn-info" data-toggle="modal" data-target="#feedback">Corrections/Additions?</button> 
-            <a target="_blank" href="#" class="btn btn-info" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
+            <a href="#" class="btn btn-info" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
                 Is this record complete?
             </a>
         </div>
@@ -1439,7 +1439,7 @@
                                 <xsl:apply-templates select="t:fileDesc/t:publicationStmt/t:availability/t:licence"/>
                             </div>
                         </div>
-                        <a target="_blank" class="btn-sm btn-info togglelink pull-right" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation">Show full citation information...</a>
+                        <a class="btn-sm btn-info togglelink pull-right" data-toggle="collapse" data-target="#showcit" data-text-swap="Hide citation">Show full citation information...</a>
                     </div>
                 </div>
             </xsl:otherwise>
@@ -1697,7 +1697,7 @@
     <xsl:template match="t:title">
         <xsl:choose>
             <xsl:when test="@ref[. != '']">
-                <a href="{@ref}">
+                <a target="_blank" href="{@ref}">
                     <xsl:sequence select="local:attributes(.)"/>
                     <xsl:apply-templates/>
                     [<xsl:value-of select="@ref"/>]
@@ -1811,7 +1811,7 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
-                    <a href="#bibl{$label}" class="btn btn-default">
+                    <a target="_blank" href="#bibl{$label}" class="btn btn-default">
                         <xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/>
                     </a> 
                 </xsl:for-each-group>            
@@ -2132,7 +2132,7 @@
             <xsl:when test="@id=concat('#place-',$resource-id)"/>
             <xsl:when test="@varient='active'">
                 <li>
-                    <a href="{concat('/place/',@id,'.html')}">
+                    <a target="_blank" href="{concat('/place/',@id,'.html')}">
                         <xsl:value-of select="t:placeName"/>
                     </a>
                     <xsl:text> </xsl:text>
@@ -2259,7 +2259,7 @@
                         <xsl:sequence select="local:add-footnotes(child::*[1]/@source,.)"/>
                     </xsl:if>
                     <!-- toggle to full list, grouped by type -->
-                    <a target="_blank" class="togglelink btn-link" data-toggle="collapse" data-target="#relatedlist" data-text-swap="(hide list)">(see list)</a>
+                    <a class="togglelink btn-link" data-toggle="collapse" data-target="#relatedlist" data-text-swap="(hide list)">(see list)</a>
                     <dl class="collapse" id="relatedlist">
                         <xsl:for-each-group select="t:mutual" group-by="@type">
                             <xsl:sort select="count(current-group()/child::*)" order="descending"/>
