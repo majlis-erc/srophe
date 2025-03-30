@@ -906,7 +906,7 @@
                 <xsl:for-each select="t:TEI">
                     <div class="item row">
                         <div class="col-md-12">
-                            <a targe="_blank"
+                            <a target="_blank"
                                 href="{concat($nav-base,substring-after(descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}">
                                 <xsl:apply-templates select="descendant::t:titleStmt/t:title[1]"/>
                             </a>
@@ -1513,7 +1513,7 @@
                                 <xsl:choose>
                                     <xsl:when
                                         test="t:title[@type = 'majlis-headword'][@xml:lang != 'en'][. != '']">
-                                        <a targe="_blank"
+                                        <a target="_blank"
                                             href="{concat($nav-base,substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}">
                                             <xsl:apply-templates
                                                 select="t:title[@type = 'majlis-headword'][@xml:lang != 'en']"/>
