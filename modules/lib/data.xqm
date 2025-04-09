@@ -178,11 +178,18 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
 :)
 declare function data:search($collection as xs:string*, $queryString as xs:string?, $sort-element as xs:string?) {                      
     let $eval-string := if($queryString != '') then $queryString 
-                        else concat(data:build-collection-path($collection), data:create-query($collection),slider:date-filter(()))
+                        else concat(data:build-collection-path($collection), data:create-query($collection), slider:date-filter(()))
     let $hits :=
             if(request:get-parameter-names() = '' or empty(request:get-parameter-names())) then 
-                collection($config:data-root || '/' || $collection)//tei:body[ft:query(., (),sf:facet-query())]
-            else util:eval($eval-string)//tei:body[ft:query(., (),sf:facet-query())]      
+                if($collection = 'bibl') then
+                    collection($config:data-root || '/' || $collection)//tei:body[ft:query(., (), sf:facet-query())]
+                else
+                    collection($config:data-root || '/' || $collection)[not(contains(document-uri(root(.)), '/bibl/tei/'))]//tei:body[ft:query(., (), sf:facet-query())]
+            else
+                if($collection = 'bibl') then
+                    util:eval($eval-string)//tei:body[ft:query(., (), sf:facet-query())]
+                else
+                    util:eval($eval-string)[not(contains(document-uri(root(.)), '/bibl/tei/'))]//tei:body[ft:query(., (), sf:facet-query())]      
     let $sort := if($sort-element != '') then 
                     $sort-element
                  else if(request:get-parameter('sort-element', '') != '') then
