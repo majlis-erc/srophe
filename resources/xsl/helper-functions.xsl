@@ -98,7 +98,7 @@
                 -->
             </xsl:variable>
             <xsl:if test="$sourceRef != ''">
-                <a href="{$refs}" class="expandFromAnchor" data-toggle="tooltip" data-container="body" title="{concat($sourceRef,' ')}"><img src="{$nav-base}/resources/images/book.png" height="18px;" style="margin-left:.5em;"/></a>
+                <a target="_blank" href="{$refs}" class="expandFromAnchor" data-toggle="tooltip" data-container="body" title="{concat($sourceRef,' ')}"><img src="{$nav-base}/resources/images/book.png" height="18px;" style="margin-left:.5em;"/></a>
             </xsl:if>
             <!-- 
             <span class="tei-footnote-refs" dir="ltr">
@@ -564,12 +564,12 @@
             <xsl:when test="@ref[. != '']">
                 <xsl:choose>
                     <xsl:when test="starts-with(@ref,$base-uri)">
-                        <a href="{replace(@ref,$base-uri,$nav-base)}">
+                        <a href="{replace(@ref,$base-uri,$nav-base)}" target="_blank">
                             <xsl:apply-templates/>
                         </a> 
                     </xsl:when>
                     <xsl:otherwise>
-                        <a href="{@ref}">
+                        <a href="{@ref}" target="_blank">
                             <xsl:apply-templates/>
                         </a> 
                     </xsl:otherwise>

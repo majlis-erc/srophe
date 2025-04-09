@@ -154,7 +154,7 @@
             <xsl:when test="parent::t:note">
                 <xsl:choose>
                     <xsl:when test="t:ptr[contains(@target,'/work/')]">
-                        <a href="{t:ptr/@target}">
+                        <a target="_blank" href="{t:ptr/@target}">
                             <xsl:apply-templates mode="footnote"/>
                         </a>
                     </xsl:when>
@@ -1120,7 +1120,7 @@
         </xsl:choose>
         <xsl:choose>
             <xsl:when test="@target">
-                <a href="{@target}">
+                <a target="_blank" href="{@target}">
                     <xsl:choose>
                         <xsl:when test="@unit='ff'">
                             <xsl:text>, f. </xsl:text>
@@ -1299,7 +1299,7 @@
             </span>
             <xsl:choose>
                 <xsl:when test="@type='URI'">
-                    <a href="{text()}">
+                    <a target="_blank" href="{text()}">
                         <xsl:value-of select="text()"/>  <xsl:call-template name="ref-icons">
                             <xsl:with-param name="ref" select="text()"/>
                         </xsl:call-template>
@@ -1314,7 +1314,7 @@
     <xsl:template match="t:ref" mode="full">
         <p>
             <span class="tei-label">See Also: </span>
-            <a href="{@target}">
+            <a target="_blank" href="{@target}">
                 <xsl:choose>
                     <xsl:when test="text()">
                         <xsl:value-of select="text()"/>
@@ -1342,7 +1342,7 @@
                     <xsl:sequence select="local:attributes(.)"/>
                     <xsl:choose>
                         <xsl:when test="@ref">
-                            <a href="{@ref}">
+                            <a target="_blank" href="{@ref}">
                                 <xsl:apply-templates/>
                             </a>
                         </xsl:when>
@@ -1432,7 +1432,7 @@
     <xsl:template match="t:bibl" mode="footnote-ref">
         <xsl:param name="footnote-number">1</xsl:param>
         <span class="tei-footnote-ref">
-            <a href="#{@xml:id}">
+            <a target="_blank" href="#{@xml:id}">
                 <xsl:value-of select="$footnote-number"/>
             </a>
         </span>

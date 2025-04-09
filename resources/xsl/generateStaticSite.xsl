@@ -253,7 +253,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <a class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
+                                                <a target="_blank" class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
@@ -363,7 +363,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <a class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
+                                    <a target="_blank" class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
@@ -431,7 +431,7 @@
             <small>
                 <span class="uri">
                     <xsl:if test="starts-with($nav-base,'/exist/apps')">
-                        <a href="{replace($prev-uri,$base-uri,$nav-base)}">
+                        <a target="_blank" href="{replace($prev-uri,$base-uri,$nav-base)}">
                             <span class="glyphicon glyphicon-backward" aria-hidden="true"/>
                         </a>
                     </xsl:if>
@@ -455,7 +455,7 @@
                     </script>
                     <xsl:text> </xsl:text>
                     <xsl:if test="starts-with($nav-base,'/exist/apps')">
-                        <a href="{replace($next-uri,$base-uri,$nav-base)}">
+                        <a target="_blank" href="{replace($next-uri,$base-uri,$nav-base)}">
                             <span class="glyphicon glyphicon-forward" aria-hidden="true"/>
                         </a>
                     </xsl:if>
@@ -468,7 +468,7 @@
                                 <xsl:when test=". = 'The Syriac Biographical Dictionary'"/>
                                 <xsl:when test=". = 'A Guide to Syriac Authors'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/authors/index.html">
+                                    <a target="_blank" href="{$nav-base}/authors/index.html">
                                         <span class="syriaca-icon syriaca-authors" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -480,7 +480,7 @@
                                 </xsl:when>
                                 <xsl:when test=". = 'Qadishe: A Guide to the Syriac Saints'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/q/index.html">
+                                    <a target="_blank" href="{$nav-base}/q/index.html">
                                         <span class="syriaca-icon syriaca-q" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -492,7 +492,7 @@
                                 </xsl:when>
                                 <xsl:when test=". = 'Bibliotheca Hagiographica Syriaca Electronica'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/bhse/index.html">
+                                    <a  target="_blank" href="{$nav-base}/bhse/index.html">
                                         <span class="syriaca-icon syriaca-bhse" style="font-size:1.35em; vertical-align: middle;">
                                             <span class="path1"/>
                                             <span class="path2"/>
@@ -504,8 +504,8 @@
                                 </xsl:when>
                                 <xsl:when test=". = 'New Handbook of Syriac Literature'">
                                     <xsl:text> </xsl:text>
-                                    <a href="{$nav-base}/nhsl/index.html">
-                                        <span class="syriaca-icon syriaca-nhsl" style="font-size:1.35em; vertical-align: middle;">
+                                    <a target="_blank" href="{$nav-base}/nhsl/index.html">
+                                        <span class="syriaca-icon syriaca-nhsl" style="font-size:1.35em; vertical-align: middle;"> 
                                             <span class="path1"/>
                                             <span class="path2"/>
                                             <span class="path3"/>
@@ -540,7 +540,7 @@
                             <div class="info-btns">  
                                 <!-- Button trigger corrections email modal -->
                                 <button class="btn btn-default" data-toggle="modal" data-target="#feedback">Corrections/Additions?</button> 
-                                <a href="#" class="btn btn-default" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
+                                <a class="btn btn-default" data-toggle="modal" data-target="#selection" data-ref="../documentation/faq.html" id="showSection">
                                     Is this record complete?
                                 </a>
                             </div>
@@ -573,7 +573,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <a class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
+                            <a target="_blank" class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -651,7 +651,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <a class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
+                            <a target="_blank" class="btn" href="../documentation/faq.html" aria-hidden="true">See all FAQs</a>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -689,7 +689,7 @@
         <div class="clearfix">
             <div id="type">
                 <p><strong>Place Type: </strong>
-                    <a href="../documentation/place-types.html#{normalize-space($type)}" class="no-print-link"><xsl:value-of select="$type"/></a>
+                    <a target="_blank" href="../documentation/place-types.html#{normalize-space($type)}" class="no-print-link"><xsl:value-of select="$type"/></a>
                 </p>
             </div>
             <xsl:if test="//t:place/t:location">
