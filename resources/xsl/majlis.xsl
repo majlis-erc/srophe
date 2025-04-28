@@ -2588,6 +2588,15 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-2 inline-h4">General Editor: </div>
+                    <div class="col-md-10">
+                        <xsl:for-each select="t:editor[@role = 'general']">
+                            <xsl:apply-templates select="."/>
+                            <xsl:if test="position() != last()">, </xsl:if>
+                        </xsl:for-each>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
                         <xsl:for-each select="t:editor[@role = 'contributor']">
