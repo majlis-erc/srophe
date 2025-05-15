@@ -299,7 +299,27 @@ declare function tei2html:summary-view-generic($nodes as node()*, $id as xs:stri
                 else replace(replace($id,$config:base-uri,$config:nav-base),'/tei','') 
     
     (: new author binding, grabs first <author> under text/body/bibl :)
-    let $author := string($nodes/descendant::tei:body/tei:bibl/tei:author[1])  
+    (:let $author := string($nodes/descendant::tei:body/tei:bibl/tei:author[1])  :)
+    (: pick the first <author> with a non-empty @ref, if any; otherwise the first author :)
+    let $author :=
+      if (exists(
+          $nodes
+            //tei:body
+            /tei:bibl
+            /*[local-name()='author' and string-length(normalize-space(@ref)) > 0]
+        ))
+    then string(
+          $nodes
+            //tei:body
+            /tei:bibl
+            /*[local-name()='author' and string-length(normalize-space(@ref)) > 0][1]
+        )
+    else string(
+          $nodes
+            //tei:body
+            /tei:bibl
+            /*[local-name()='author'][1]
+        )
     
                     
     return 
