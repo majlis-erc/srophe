@@ -301,26 +301,30 @@ declare function tei2html:summary-view-generic($nodes as node()*, $id as xs:stri
     (: new author binding, grabs first <author> under text/body/bibl :)
     (:let $author := string($nodes/descendant::tei:body/tei:bibl/tei:author[1])  :)
     (: pick the first <author> with a non-empty @ref, if any; otherwise the first author :)
-    let $author :=
-      if (exists(
-          $nodes
-            //tei:body
-            /tei:bibl
-            /*[local-name()='author' and string-length(normalize-space(@ref)) > 0]
+    let $author-node :=
+    if (exists(
+          $nodes//tei:body/tei:bibl
+            /*[local-name() = 'author' 
+              and string-length(normalize-space(@ref)) > 0]
         ))
-    then string(
-          $nodes
-            //tei:body
-            /tei:bibl
-            /*[local-name()='author' and string-length(normalize-space(@ref)) > 0][1]
-        )
-    else string(
-          $nodes
-            //tei:body
-            /tei:bibl
-            /*[local-name()='author'][1]
-        )
+    then
+      ($nodes//tei:body/tei:bibl
+         /*[local-name() = 'author' 
+           and string-length(normalize-space(@ref)) > 0]
+       )[1]
+    else
+      ($nodes//tei:body/tei:bibl
+         /*[local-name() = 'author']
+       )[1]
+
+    let $author     := string($author-node) 
     
+    (: normalize and rebase the author @ref just like $url :)
+    let $raw-ref := normalize-space(string($author-node/@ref))
+    let $author-url :=
+      if ($raw-ref != '')
+      then replace(replace($raw-ref, $config:base-uri, $config:nav-base), '/tei', '')
+      else ''
                     
     return 
         <div class="short-rec-view">
@@ -344,13 +348,19 @@ declare function tei2html:summary-view-generic($nodes as node()*, $id as xs:stri
                         $string
                     }</span>
             else()}
-	      {
-		if (normalize-space($author) != '') then
-		  <span class="results-list-desc author" dir="ltr" lang="en">
-		    <span class="srp-label">Author: </span>{ $author }
-		  </span>
-		else ()
-	      }
+            
+	    {
+              if (normalize-space($author) != '') then
+          	<span class="results-list-desc author" dir="ltr" lang="en">
+            	  <span class="srp-label">Author: </span>{
+                    if ($author-url != '')
+                    then <a href="{ $author-url }">{ $author }</a>
+                    else $author
+            	  }
+          	</span>
+              else ()
+      	    }
+            
             {
             if($id != '') then 
             <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">{replace($id,'/tei','')}</a></span>
