@@ -244,11 +244,6 @@
             <xsl:apply-templates mode="majlis-credits"
                 select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
-        <xsl:variable name="ChangeLog">
-	    <xsl:apply-templates
-	      mode="majlis-changeLog"
-	      select="ancestor::t:TEI/descendant::t:teiHeader/t:revisionDesc"/>
-	</xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
                 <xsl:if
@@ -308,15 +303,6 @@
                             href="#mainMenuCredits" type="button">Credits</button>
                     </div>
                 </xsl:if>
-                <xsl:if test="$ChangeLog/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-		   <div class="btn-group">
-		       <button
-			   class="btn btn-default btn-grey btn-lg"
-		           data-toggle="collapse"
-			   href="#mainMenuChangeLog"
-		           type="button">Change Log</button>
-		   </div>
-		</xsl:if>
                 <div class="btn-group">
                     <button class="btn btn-default btn-grey btn-lg" id="expand-all" type="button"
                         >Open All</button>
@@ -354,10 +340,6 @@
                 <xsl:if
                     test="$Credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$Credits"/>
-                </xsl:if>
-                <xsl:if
-                    test="$ChangeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$ChangeLog"/>
                 </xsl:if>
                 <!--
                 <xsl:apply-templates select="t:listBibl/t:msDesc/t:msContents" mode="majlis"/>
@@ -486,10 +468,6 @@
             <xsl:apply-templates mode="majlis-credits"
                 select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
-        <xsl:variable name="changeLog">
-            <xsl:apply-templates mode="majlis-changeLog"
-                select="ancestor::t:TEI/descendant::t:teiHeader/t:revisionDesc"/>
-        </xsl:variable>
         <!-- Add works -->
         <xsl:variable name="works">
             <xsl:apply-templates mode="relatedWorks" select="ancestor::*:result/*:works"/>
@@ -561,13 +539,6 @@
                             href="#mainMenuCredits" type="button">Credits</button>
                     </div>
                 </xsl:if>
-                <xsl:if
-                    test="$changeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
-                            href="#mainMenuChangeLog" type="button">Change Log</button>
-                    </div>
-                </xsl:if>
                 <div class="btn-group">
                     <button class="btn btn-default btn-grey btn-lg" id="expand-all" type="button"
                         >Open All</button>
@@ -609,10 +580,6 @@
                 <xsl:if
                     test="$credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$credits"/>
-                </xsl:if>
-                <xsl:if
-                    test="$changeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$changeLog"/>
                 </xsl:if>
             </div>
         </div>
@@ -744,10 +711,6 @@
             <xsl:apply-templates mode="majlis-credits"
                 select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
-        <xsl:variable name="changeLog">
-            <xsl:apply-templates mode="majlis-changeLog"
-                select="ancestor::t:TEI/descendant::t:teiHeader/t:revisionDesc"/>
-        </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
                 <xsl:if
@@ -807,13 +770,6 @@
                             href="#mainMenuCredits" type="button">Credits</button>
                     </div>
                 </xsl:if>
-                <xsl:if
-                    test="$changeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
-                            href="#mainMenuChangeLog" type="button">Change Log</button>
-                    </div>
-                </xsl:if>
                 <div class="btn-group">
                     <button class="btn btn-default btn-grey btn-lg" id="expand-all" type="button"
                         >Open All</button>
@@ -851,10 +807,6 @@
                     test="$credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$credits"/>
                 </xsl:if>
-                <xsl:if
-                    test="$changeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$changeLog"/>
-                </xsl:if>
             </div>
         </div>
     </xsl:template>
@@ -876,10 +828,6 @@
         <xsl:variable name="credits">
             <xsl:apply-templates mode="majlis-credits"
                 select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
-        </xsl:variable>
-        <xsl:variable name="changeLog">
-            <xsl:apply-templates mode="majlis-changeLog"
-                select="ancestor::t:TEI/descendant::t:teiHeader/t:revisionDesc"/>
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
@@ -919,13 +867,6 @@
                             href="#mainMenuCredits" type="button">Credits</button>
                     </div>
                 </xsl:if>
-                <xsl:if
-                    test="$changeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
-                            href="#mainMenuChangeLog" type="button">Change Log</button>
-                    </div>
-                </xsl:if>
                 <div class="btn-group">
                     <button class="btn btn-default btn-grey btn-lg" id="expand-all" type="button"
                         >Open All</button>
@@ -951,10 +892,6 @@
                 <xsl:if
                     test="$credits/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$credits"/>
-                </xsl:if>
-                <xsl:if
-                    test="$changeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$changeLog"/>
                 </xsl:if>
             </div>
         </div>
@@ -1899,6 +1836,7 @@
                                             <xsl:text> f. </xsl:text>
                                         </xsl:otherwise>
                                     </xsl:choose>
+                                    
                                     <xsl:value-of select="t:citedRange"/>
                                 </p>
                             </xsl:for-each>
@@ -1928,15 +1866,16 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Extent </div>
                         <div class="col-md-10">
+                            <xsl:apply-templates select="."/>
                             <xsl:choose>
                                 <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
-                                    <xsl:text> ff. </xsl:text>
+                                    <xsl:text> fols. </xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:text> f. </xsl:text>
+                                    <xsl:text> fol. </xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <xsl:apply-templates select="."/>
+                            
                         </div>
                     </div>
                 </xsl:for-each>
@@ -1964,10 +1903,10 @@
                                 </xsl:if>
                                 <xsl:choose>
                                     <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
-                                        <xsl:text> ff. </xsl:text>
+                                        <xsl:text> fols. </xsl:text>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:text> f. </xsl:text>
+                                        <xsl:text> fol. </xsl:text>
                                     </xsl:otherwise>
                                 </xsl:choose>
                                 <xsl:apply-templates select="."/>
@@ -2256,10 +2195,10 @@
                             <xsl:text>, </xsl:text>
                             <xsl:choose>
                                 <xsl:when test="t:locus/@from and t:locus/@to">
-                                    <xsl:text>ff. </xsl:text>
+                                    <xsl:text>fols. </xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:text>f. </xsl:text>
+                                    <xsl:text>fol. </xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <xsl:value-of select="t:locus/@from"/>
@@ -2588,15 +2527,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 inline-h4">General Editor: </div>
-                    <div class="col-md-10">
-                        <xsl:for-each select="t:editor[@role = 'general']">
-                            <xsl:apply-templates select="."/>
-                            <xsl:if test="position() != last()">, </xsl:if>
-                        </xsl:for-each>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-md-2 inline-h4">Associate researcher: </div>
                     <div class="col-md-10">
                         <xsl:for-each select="t:editor[@role = 'contributor']">
@@ -2614,7 +2544,7 @@
                         </xsl:for-each>
                     </div>
                 </div>
-                <!--<xsl:for-each
+                <xsl:for-each
                     select="ancestor::t:teiHeader/descendant::t:change[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4"> Change log:</div>
@@ -2661,7 +2591,7 @@
                             <xsl:value-of select="."/>
                         </div>
                     </div>
-                </xsl:for-each>-->
+                </xsl:for-each>
             </div>
         </div>
         <div class="whiteBoxwShadow panel panel-default">
@@ -2688,68 +2618,6 @@
             </div>
         </div>
     </xsl:template>
-    <xsl:template match="t:revisionDesc" mode="majlis-changeLog">
-  	<div class="whiteBoxwShadow">
-    	    <h3>
-	        <a aria-expanded="false"
-		   data-toggle="collapse"
-		   href="#mainMenuChangeLog">
-		  Change Log
-	        </a>
-    	    </h3>
-    	    <div class="collapse" id="mainMenuChangeLog">
-	       <xsl:for-each
-		    select="t:change[string-length(normalize-space(.)) gt 2]">
-		    <div class="row">
-			<div class="col-md-2 inline-h4"> Change log:</div>
-			<div class="col-md-10">
-			    <xsl:variable name="who" select="replace(@who, '#', '')"/>
-			    <xsl:variable name="when">
-			        <xsl:variable name="date" select="substring(@when, 1, 10)"/>
-			        <xsl:choose>
-			            <xsl:when test="$date castable as xs:date">
-			                <xsl:value-of
-			                    select="format-date(xs:date($date), '[D] [MNn] [Y]', 'en', (), ())"
-			                />
-			            </xsl:when>
-			            <xsl:otherwise>
-			                <xsl:value-of select="$date"/>
-			            </xsl:otherwise>
-			        </xsl:choose>
-			    </xsl:variable>
-			    <xsl:variable name="name">
-			        <xsl:choose>
-			            <xsl:when test="descendant::t:editor[@xml:id[. = $who]]">
-			                <xsl:for-each
-			                    select="descendant::t:editor[@xml:id[. = $who]][1]">
-			                    <xsl:choose>
-			                        <xsl:when test="t:persName">
-			                          <xsl:value-of select="t:persName"/>
-			                        </xsl:when>
-			                        <xsl:otherwise>
-			                          <xsl:value-of
-			                          select="string-join(descendant-or-self::text(), ' ')"
-			                          />
-			                        </xsl:otherwise>
-			                    </xsl:choose>
-			                </xsl:for-each>
-			            </xsl:when>
-			            <xsl:otherwise>
-			                <xsl:value-of select="$who"/>
-			            </xsl:otherwise>
-			        </xsl:choose>
-			    </xsl:variable>
-			    <xsl:value-of select="$name"/>
-			    <xsl:if test="@when[. != '']"> (<xsl:value-of select="$when"/>)</xsl:if>
-			    <xsl:text>: </xsl:text>
-			    <xsl:value-of select="."/>
-                        </div>
-	            </div>
-	        </xsl:for-each>
-	    </div>
-        </div>
-    </xsl:template>
-
     <xsl:template match="t:textLang">
         <xsl:for-each select="@otherLangs | @mainLang">
             <xsl:variable name="langCode" select="."/>
@@ -2762,10 +2630,10 @@
     <xsl:template name="locus">
         <xsl:choose>
             <xsl:when test="@to != ''">
-                <xsl:text> ff. </xsl:text>
+                <xsl:text> fols. </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> f. </xsl:text>
+                <xsl:text> fol. </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         <xsl:value-of select="@from"/>
