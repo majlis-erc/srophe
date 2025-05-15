@@ -148,6 +148,7 @@ declare function tei2html:summary-view($nodes as node()*, $lang as xs:string?, $
       else if(contains($id,'/place/')) then tei2html:summary-view-places($nodes,$id)
       else if(contains($id,'/keyword/')) then tei2html:summary-view-keyword($nodes, $id)
       else if(contains($id,'/bibl/')) then tei2html:summary-view-bibl($nodes, $id)
+      else if(contains($id,'/work/')) then tei2html:summary-view-generic($nodes, $id)
       else tei2html:summary-view-generic($nodes,$id)   
 };
 
@@ -295,7 +296,12 @@ declare function tei2html:summary-view-generic($nodes as node()*, $id as xs:stri
     let $url := (:<document-ids type="document-url">document-url</document-ids>:)
                 if($config:get-config//*:document-ids[@type='document-url']) then
                     concat('record.html?doc=',document-uri(root($nodes[1])))
-                else replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')                   
+                else replace(replace($id,$config:base-uri,$config:nav-base),'/tei','') 
+    
+    (: new author binding, grabs first <author> under text/body/bibl :)
+    let $author := string($nodes/descendant::tei:body/tei:bibl/tei:author[1])  
+    
+                    
     return 
         <div class="short-rec-view">
             <a href="{$url}" dir="ltr">{tei2html:tei2html($title)}</a>
@@ -318,6 +324,13 @@ declare function tei2html:summary-view-generic($nodes as node()*, $id as xs:stri
                         $string
                     }</span>
             else()}
+	      {
+		if (normalize-space($author) != '') then
+		  <span class="results-list-desc author" dir="ltr" lang="en">
+		    <span class="srp-label">Author: </span>{ $author }
+		  </span>
+		else ()
+	      }
             {
             if($id != '') then 
             <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">{replace($id,'/tei','')}</a></span>
