@@ -290,6 +290,21 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
                   else if($nodes/descendant-or-self::tei:title[@level='a']) then
                     $nodes/descendant-or-self::tei:title[1]
                   else $nodes/descendant-or-self::tei:title[1]
+                  
+                  
+    (: pick the “majlis‐headword” title in English if present, otherwise any “majlis‐headword” :)
+    let $title :=
+    if (exists(
+          $nodes//tei:body/tei:bibl/tei:title
+            [@type = 'majlis-headword' and @xml:lang = 'en']
+        ))
+    then
+      $nodes//tei:body/tei:bibl/tei:title
+        [@type = 'majlis-headword' and @xml:lang = 'en'][1]
+    else
+      $nodes//tei:body/tei:bibl/tei:title
+        [@type = 'majlis-headword'][1]
+
     let $series := for $a in distinct-values($nodes/descendant::tei:seriesStmt/tei:biblScope/tei:title)
                    return tei2html:translate-series($a)
     let $url := (:<document-ids type="document-url">document-url</document-ids>:)
