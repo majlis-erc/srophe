@@ -1561,6 +1561,22 @@
                                 <xsl:apply-templates select="."/>
                             </div>
                         </div>
+                        
+                        <!-- NEW: row that shows the title’s type -->
+		      <div class="row">
+		        <div class="col-md-1 inline-h4">Type</div>
+		        <div class="col-md-10">
+		     	  <xsl:choose>
+		  	    <xsl:when test="@type = 'majlis-headword'">
+			      Descriptive title
+			    </xsl:when>
+			    <xsl:otherwise>
+			      <xsl:value-of select="@type"/>
+			    </xsl:otherwise>
+			  </xsl:choose>
+		        </div>
+		      </div>
+            
                     </xsl:for-each>
                 </div>
             </div>
