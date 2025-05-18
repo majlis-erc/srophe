@@ -2590,12 +2590,7 @@
                         <xsl:apply-templates select="t:title[@level = 'm'][1]"/>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-2 inline-h4"/>
-                    <div class="col-md-10">
-                        <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
-                    </div>
-                </div>
+                
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal investigator: </div>
                     <div class="col-md-10">
@@ -2619,11 +2614,20 @@
                     <div class="col-md-10">
                         <xsl:for-each select="t:funder">
                             <xsl:apply-templates select="."/>
-                            <xsl:if test="position() != last()">, </xsl:if>
+                            <!--<xsl:variable name="raw"   select="string(.)"/>
+			    <xsl:variable name="step1" select="replace($raw, '\(\s+', '(')"/>
+			    <xsl:variable name="fixed" select="replace($step1, '(\S)\(', '$1 (')" />
+			    <xsl:value-of select="$fixed"/>-->
+			    <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
                     </div>
                 </div>
-                
+                <!--<div class="row">
+                    <div class="col-md-2 inline-h4">Project: </div>
+                    <div class="col-md-10">
+                        <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
+                    </div>
+                </div>-->
             </div>
         </div>
         <div class="whiteBoxwShadow panel panel-default">
@@ -2851,5 +2855,14 @@
                 <xsl:apply-templates/>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+    <!-- clean up whitespace around parentheses in all text under a funder -->
+    <xsl:template match="text()[ancestor::t:funder]">
+      <xsl:value-of select="
+        replace(
+          replace(., '\(\s+', '('),
+      	  '\s*\(', ' ('
+      	)
+      "/>
     </xsl:template>
 </xsl:stylesheet>
