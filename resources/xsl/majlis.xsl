@@ -2623,54 +2623,7 @@
                         </xsl:for-each>
                     </div>
                 </div>
-                <xsl:for-each
-                    select="ancestor::t:teiHeader/descendant::t:change[string-length(normalize-space(.)) gt 2]">
-                    <div class="row">
-                        <div class="col-md-2 inline-h4"> Change log:</div>
-                        <div class="col-md-10">
-                            <xsl:variable name="who" select="replace(@who, '#', '')"/>
-                            <xsl:variable name="when">
-                                <xsl:variable name="date" select="substring(@when, 1, 10)"/>
-                                <xsl:choose>
-                                    <xsl:when test="$date castable as xs:date">
-                                        <xsl:value-of
-                                            select="format-date(xs:date($date), '[D] [MNn] [Y]', 'en', (), ())"
-                                        />
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="$date"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <xsl:variable name="name">
-                                <xsl:choose>
-                                    <xsl:when test="descendant::t:editor[@xml:id[. = $who]]">
-                                        <xsl:for-each
-                                            select="descendant::t:editor[@xml:id[. = $who]][1]">
-                                            <xsl:choose>
-                                                <xsl:when test="t:persName">
-                                                  <xsl:value-of select="t:persName"/>
-                                                </xsl:when>
-                                                <xsl:otherwise>
-                                                  <xsl:value-of
-                                                  select="string-join(descendant-or-self::text(), ' ')"
-                                                  />
-                                                </xsl:otherwise>
-                                            </xsl:choose>
-                                        </xsl:for-each>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="$who"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <xsl:value-of select="$name"/>
-                            <xsl:if test="@when[. != '']"> (<xsl:value-of select="$when"/>)</xsl:if>
-                            <xsl:text>: </xsl:text>
-                            <xsl:value-of select="."/>
-                        </div>
-                    </div>
-                </xsl:for-each>
+                
             </div>
         </div>
         <div class="whiteBoxwShadow panel panel-default">
