@@ -2590,7 +2590,12 @@
                         <xsl:apply-templates select="t:title[@level = 'm'][1]"/>
                     </div>
                 </div>
-                
+                <div class="row">
+                    <div class="col-md-2 inline-h4"/>
+                    <div class="col-md-10">
+                        <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal investigator: </div>
                     <div class="col-md-10">
