@@ -2591,13 +2591,18 @@
                     </div>
                 </div>
                 <div class="row">
+
                     <div class="col-md-2 inline-h4"/>
+
                     <div class="col-md-10">
+
                         <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
+
                     </div>
+
                 </div>
                 <div class="row">
-                    <div class="col-md-2 inline-h4">Principal investigator: </div>
+                    <div class="col-md-2 inline-h4">Principal Investigator(s): </div>
                     <div class="col-md-10">
                         <xsl:for-each select="t:editor[@role = 'general']">
                             <xsl:apply-templates select="."/>
@@ -2606,7 +2611,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 inline-h4">Associate researcher: </div>
+                    <div class="col-md-2 inline-h4">Associate Researcher(s): </div>
                     <div class="col-md-10">
                         <xsl:for-each select="t:editor[@role = 'contributor']">
                             <xsl:apply-templates select="normalize-space(.)"/>
@@ -2631,6 +2636,24 @@
                     <div class="col-md-2 inline-h4">Project: </div>
                     <div class="col-md-10">
                         <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
+                    </div>
+                </div>-->
+                <div class="row">
+                    <div class="col-md-2 inline-h4">General Editor(s): </div>
+                    <div class="col-md-10">
+                        <xsl:for-each select="t:editor[@role = 'general']">
+                            <xsl:apply-templates select="."/>
+                            <xsl:if test="position() != last()">, </xsl:if>
+                        </xsl:for-each>
+                    </div>
+                </div>
+                <!--<div class="row">
+                    <div class="col-md-2 inline-h4">Entry Editor(s): </div>
+                    <div class="col-md-10">
+                        <xsl:for-each select="t:editor[@role = 'general']">
+                            <xsl:apply-templates select="."/>
+                            <xsl:if test="position() != last()">, </xsl:if>
+                        </xsl:for-each>
                     </div>
                 </div>-->
             </div>
