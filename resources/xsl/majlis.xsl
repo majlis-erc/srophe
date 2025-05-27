@@ -1906,16 +1906,18 @@
                                             <xsl:value-of select="t:idno"/>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <xsl:choose>
-                                        <xsl:when
-                                            test="t:citedRange[contains(., '-')] or t:citedRange[contains(., '–')]">
-                                            <xsl:text> ff. </xsl:text>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:text> f. </xsl:text>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                    
+                                    <!-- only do anything if t:citedRange has non-blank content -->
+				    <xsl:if test="string-length(normalize-space(t:citedRange)) &gt; 0">
+	                                <xsl:choose>
+	                                    <xsl:when
+	                                        test="t:citedRange[contains(., '-')] or t:citedRange[contains(., '–')]">
+	                                        <xsl:text> fols. </xsl:text>
+	                                    </xsl:when>
+	                                    <xsl:otherwise>
+	                                        <xsl:text> fol. </xsl:text>
+	                                    </xsl:otherwise>
+	                                </xsl:choose>
+                                    </xsl:if>
                                     <xsl:value-of select="t:citedRange"/>
                                 </p>
                             </xsl:for-each>
