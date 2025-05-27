@@ -2272,8 +2272,11 @@
                             <xsl:value-of select="position()"/>
                         </div>
                         <div class="col-md-10">
-                            <xsl:value-of select="t:objectType"/>
-                            <xsl:text>, </xsl:text>
+                            <!-- only output objectType + ", " if objectType is non-empty -->
+			    <xsl:if test="string-length(normalize-space(t:objectType)) &gt; 0">
+			      <xsl:value-of select="t:objectType"/>
+			      <xsl:text>, </xsl:text>
+			    </xsl:if>
                             <!-- only fire choose when from or to is non-empty -->
 			    <xsl:if test="
 			       string-length(normalize-space(t:locus/@from)) &gt; 0
