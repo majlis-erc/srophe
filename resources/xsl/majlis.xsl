@@ -1626,19 +1626,19 @@
                         </div>
                         
                         <!-- NEW: row that shows the title’s type -->
-		      <div class="row">
-		        <div class="col-md-1 inline-h4">Type</div>
-		        <div class="col-md-10">
-		     	  <xsl:choose>
-		  	    <xsl:when test="@type = 'majlis-headword'">
-			      Descriptive title
-			    </xsl:when>
-			    <xsl:otherwise>
-			      <xsl:value-of select="@type"/>
-			    </xsl:otherwise>
-			  </xsl:choose>
+		        <div class="row">
+		          <div class="col-md-1 inline-h4">Type</div>
+		          <div class="col-md-10">
+		     	    <xsl:choose>
+		  	      <xsl:when test="@type = 'majlis-headword'">
+			        Descriptive title
+			      </xsl:when>
+			      <xsl:otherwise>
+			        <xsl:value-of select="@type"/>
+			      </xsl:otherwise>
+			    </xsl:choose>
+		          </div>
 		        </div>
-		      </div>
             
                     </xsl:for-each>
                 </div>
@@ -2274,14 +2274,19 @@
                         <div class="col-md-10">
                             <xsl:value-of select="t:objectType"/>
                             <xsl:text>, </xsl:text>
-                            <xsl:choose>
-                                <xsl:when test="t:locus/@from and t:locus/@to">
-                                    <xsl:text>fols. </xsl:text>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:text>fol. </xsl:text>
-                                </xsl:otherwise>
-                            </xsl:choose>
+                            <!-- only fire choose when from or to is non-empty -->
+			    <xsl:if test="
+			       string-length(normalize-space(t:locus/@from)) &gt; 0
+			       or string-length(normalize-space(t:locus/@to)) &gt; 0">
+                                <xsl:choose>
+                                    <xsl:when test="t:locus/@from and t:locus/@to">
+                                        <xsl:text>fols. </xsl:text>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:text>fol. </xsl:text>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:if>
                             <xsl:value-of select="t:locus/@from"/>
                             <xsl:if test="t:locus/@to != ''"> - <xsl:value-of select="t:locus/@to"/>
                             </xsl:if>
@@ -2756,16 +2761,21 @@
         <xsl:call-template name="locus"/>
     </xsl:template>
     <xsl:template name="locus">
-        <xsl:choose>
-            <xsl:when test="@to != ''">
-                <xsl:text> fols. </xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:text> fol. </xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:value-of select="@from"/>
-        <xsl:if test="@to != ''">–<xsl:value-of select="@to"/></xsl:if>
+        <!-- only do anything when from or to has non-whitespace content -->
+        <xsl:if test="
+              string-length(normalize-space(@from)) &gt; 0
+           or string-length(normalize-space(@to)) &gt; 0">
+            <xsl:choose>
+                <xsl:when test="@to != ''">
+                    <xsl:text> fols. </xsl:text>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text> fol. </xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="@from"/>
+            <xsl:if test="@to != ''">–<xsl:value-of select="@to"/></xsl:if>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="t:bibl" mode="majlisCite">
         <xsl:choose>
