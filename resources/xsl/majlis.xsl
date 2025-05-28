@@ -2600,7 +2600,7 @@
                         <xsl:apply-templates select="t:title[@level = 'm'][1]"/>
                     </div>
                 </div>
-                <div class="row">
+                <!--<div class="row">
 
                     <div class="col-md-2 inline-h4"/>
 
@@ -2610,11 +2610,12 @@
 
                     </div>
 
-                </div>
+                </div>-->
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal Investigator(s): </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="t:editor[@role = 'general']">
+<!--                        <xsl:for-each select="t:editor[@role = 'general']">-->
+			    <xsl:for-each select="t:principal">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -2660,12 +2661,83 @@
                 <!--<div class="row">
                     <div class="col-md-2 inline-h4">Entry Editor(s): </div>
                     <div class="col-md-10">
-                        <xsl:for-each select="t:editor[@role = 'general']">
+                        <xsl:for-each select="t:editor[@role = 'entry-editor']">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
                     </div>
                 </div>-->
+                <!-- 2nd project in editionStmt (only if editionStmt/edition is non‐empty) -->
+                <xsl:if test="normalize-space(../t:editionStmt/t:edition[1]) != ''">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Project: </div>
+                        <div class="col-md-10">
+                            <xsl:apply-templates select="../t:editionStmt/t:edition[1]"
+                            />
+                        </div>
+                    </div>
+                </xsl:if>
+                <!-- PI of 2nd project in editionStmt (only if there's at least one principal) -->
+                <xsl:if test="normalize-space(../t:editionStmt/t:principal) != ''">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Principal Investigator(s): </div>
+                        <div class="col-md-10">
+	                    <xsl:for-each select="../t:editionStmt/t:principal">
+                                <xsl:apply-templates select="."/>
+        		        <xsl:if test="position() != last()">, </xsl:if>
+      			    </xsl:for-each>
+                        </div>
+                    </div>
+                </xsl:if>
+                <!-- Associates of 2nd project in editionStmt (only if there's at least one associate) -->
+                <xsl:if test="../t:editionStmt/t:editor[@role = 'contributor'] != ''">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Associate Researcher(s): </div>
+                        <div class="col-md-10">
+	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'contributor']">
+                                <xsl:apply-templates select="normalize-space(.)"/>
+        		        <xsl:if test="position() != last()">, </xsl:if>
+      			    </xsl:for-each>
+                        </div>
+                    </div>
+                </xsl:if>
+                <!-- Funder of 2nd project in editionStmt (only if there's funder data) -->
+                <xsl:if test="../t:editionStmt/t:funder != ''">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Funded through: </div>
+                        <div class="col-md-10">
+	                    <xsl:for-each select="../t:editionStmt/t:funder">
+                                <xsl:apply-templates select="."/>
+        		        <xsl:if test="position() != last()">, </xsl:if>
+      			    </xsl:for-each>
+                        </div>
+                    </div>
+                </xsl:if>
+                <!-- General editors of 2nd project in editionStmt (only if there's at least one) -->
+                <xsl:if test="../t:editionStmt/t:editor[@role = 'general'] != ''">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">General Editor(s): </div>
+                        <div class="col-md-10">
+	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'general']">
+                                <xsl:apply-templates select="."/>
+        		        <xsl:if test="position() != last()">, </xsl:if>
+      			    </xsl:for-each>
+                        </div>
+                    </div>
+                </xsl:if>
+                <!-- Entry editors of 2nd project in editionStmt (only if there's at least one) -->
+                <!--<xsl:if test="normalize-space(../t:editionStmt/t:editor[@role = 'entry-editor']) != ''">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4">Entry Editor(s): </div>
+                        <div class="col-md-10">
+	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'entry-editor']">
+                                <xsl:apply-templates select="."/>
+        		        <xsl:if test="position() != last()">, </xsl:if>
+      			    </xsl:for-each>
+                        </div>
+                    </div>
+                </xsl:if>-->
+                
             </div>
         </div>
         <div class="whiteBoxwShadow panel panel-default">
