@@ -2588,11 +2588,6 @@
             </div>
         </div>
     </xsl:template>
-    
-
-	
-
-
     <xsl:template match="t:titleStmt" mode="majlis-credits">
         <div class="whiteBoxwShadow">
             <h3>
@@ -2688,8 +2683,7 @@
                         <div class="col-md-2 inline-h4">Principal Investigator(s): </div>
                         <div class="col-md-10">
 	                    <xsl:for-each select="../t:editionStmt/t:principal">
-                                <xsl:apply-templates select="."
-                                />
+                                <xsl:apply-templates select="."/>
         		        <xsl:if test="position() != last()">, </xsl:if>
       			    </xsl:for-each>
                         </div>
@@ -2701,8 +2695,7 @@
                         <div class="col-md-2 inline-h4">Associate Researcher(s): </div>
                         <div class="col-md-10">
 	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'contributor']">
-                                <xsl:apply-templates select="."
-                                />
+                                <xsl:apply-templates select="normalize-space(.)"/>
         		        <xsl:if test="position() != last()">, </xsl:if>
       			    </xsl:for-each>
                         </div>
@@ -2714,8 +2707,7 @@
                         <div class="col-md-2 inline-h4">Funded through: </div>
                         <div class="col-md-10">
 	                    <xsl:for-each select="../t:editionStmt/t:funder">
-                                <xsl:apply-templates select="."
-                                />
+                                <xsl:apply-templates select="."/>
         		        <xsl:if test="position() != last()">, </xsl:if>
       			    </xsl:for-each>
                         </div>
@@ -2727,8 +2719,7 @@
                         <div class="col-md-2 inline-h4">General Editor(s): </div>
                         <div class="col-md-10">
 	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'general']">
-                                <xsl:apply-templates select="."
-                                />
+                                <xsl:apply-templates select="."/>
         		        <xsl:if test="position() != last()">, </xsl:if>
       			    </xsl:for-each>
                         </div>
@@ -2740,8 +2731,7 @@
                         <div class="col-md-2 inline-h4">Entry Editor(s): </div>
                         <div class="col-md-10">
 	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'entry-editor']">
-                                <xsl:apply-templates select="normalize-space(.)"
-                                mode="majlis-credits"/>
+                                <xsl:apply-templates select="."/>
         		        <xsl:if test="position() != last()">, </xsl:if>
       			    </xsl:for-each>
                         </div>
