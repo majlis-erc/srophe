@@ -13,17 +13,47 @@
         <!-- teiHeader -->
         <div class="row titleStmt">
             <div class="col-md-8">
+		<!--Title of Works: t:text/t:body/t:bibl/t:title[@type='majlis-headword']
+		Title of other types than Works: teiHeader/t:fileDesc/t:titleStmt/t:title[@level='a'] -->
                 <h1>
-                    <xsl:choose>
-                        <xsl:when test="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level = 'a']">
-                            <xsl:apply-templates
-                                select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level = 'a']"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:apply-templates
-                                select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
+			<!-- 1) If there's any majlis-headword in bibl/title (i.e., Works only) -->
+			<xsl:if test="t:text/t:body/t:bibl/t:title[@type='majlis-headword']">
+			  
+			  <!-- 1a) Prefer English if available -->
+			  <xsl:if test="t:text/t:body/t:bibl/t:title
+				            [@type='majlis-headword' and @xml:lang='en']">
+			    <xsl:apply-templates
+			      select="t:text/t:body/t:bibl/t:title
+				        [@type='majlis-headword' and @xml:lang='en'][1]"/>
+			  </xsl:if>
+
+			  <!-- 1b) Otherwise, take the first majlis-headword -->
+			  <xsl:if test="not(t:text/t:body/t:bibl/t:title
+				                [@type='majlis-headword' and @xml:lang='en'])">
+			    <xsl:apply-templates
+			      select="t:text/t:body/t:bibl/t:title
+				        [@type='majlis-headword'][1]"/>
+			  </xsl:if>
+
+			</xsl:if>
+
+			<!-- 2) NO majlis-headword in bibl/title (i.e., other types than Works), get header titles -->
+			<xsl:if test="not(t:text/t:body/t:bibl/t:title[@type='majlis-headword'])">
+			  
+			  <!-- 2a) Try level="a" first -->
+			  <xsl:if test="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level='a']">
+			    <xsl:apply-templates
+			      select="t:teiHeader/t:fileDesc/t:titleStmt/t:title
+				        [@level='a'][1]"/>
+			  </xsl:if>
+
+			  <!-- 2b) Finally, just grab the very first title -->
+			  <xsl:if test="not(t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level='a'])">
+			    <xsl:apply-templates
+			      select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+			  </xsl:if>
+
+			</xsl:if>
                 </h1>
             </div>
             <div class="col-md-4 actionButtons">
