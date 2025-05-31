@@ -285,12 +285,12 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
    let $id := if(ends-with($id, '/tei')) then replace(replace($id,$config:base-uri,$config:nav-base),'/tei','') 
               else if(ends-with($id, '/')) then substring($id, 1, string-length($id) - 1)
               else $id
-   let $title := if($nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
+   (:let $title := if($nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
                     $nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en'][1]/text()
                   else if($nodes/descendant-or-self::tei:title[@level='a']) then
                     $nodes/descendant-or-self::tei:title[1]
                   else $nodes/descendant-or-self::tei:title[1]
-                  
+    :)              
                   
     (: pick the “majlis‐headword” title in English if present, otherwise any “majlis‐headword” :)
     let $title :=
@@ -304,9 +304,17 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
     else
       $nodes//tei:body/tei:bibl/tei:title
         [@type = 'majlis-headword'][1]
+        
+        
+    (:— Compute “title‐type” text: if @type eq 'majlis-headword', show “Descriptive title”; otherwise show the raw @type :)
+    let $title-type :=
+      if ($title/@type = 'majlis-headword')
+      then 'Descriptive title'
+      else string($title/@type)
 
     let $series := for $a in distinct-values($nodes/descendant::tei:seriesStmt/tei:biblScope/tei:title)
                    return tei2html:translate-series($a)
+                   
     let $url := (:<document-ids type="document-url">document-url</document-ids>:)
                 if($config:get-config//*:document-ids[@type='document-url']) then
                     concat('record.html?doc=',document-uri(root($nodes[1])))
@@ -348,21 +356,41 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
                 data-clipboard-action="copy" data-clipboard-text="{normalize-space($title[1])} - {normalize-space($id[1])}">
                     <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
             </button>
-            {if($series != '') then <span class="results-list-desc type" dir="ltr" lang="en">{(' (',$series,') ')}</span> else ()}
-            {if($nodes/descendant-or-self::*[starts-with(@xml:id,'abstract')]) then 
-                for $abstract in $nodes/descendant::*[starts-with(@xml:id,'abstract')]
-                let $string := string-join(tei2html:tei2html($abstract)//text(),'')
-                let $blurb := 
-                    if(count(tokenize($string, '\W+')[. != '']) gt 25) then  
-                        concat(string-join(for $w in tokenize($string, '\W+')[position() lt 25]
-                        return $w,' '),'...')
-                     else $string 
+            
+            <!-- Series, if any -->
+            {if($series != '') 
+            	then <span class="results-list-desc type" dir="ltr" lang="en">{(' (',$series,') ')}</span> 
+            	else ()}
+            	
+            <!-- Abstract “blurb,” if any -->	
+            {if($nodes/descendant-or-self::*[starts-with(@xml:id,'abstract')]) 
+            	then 
+                  for $abstract in $nodes/descendant::*[starts-with(@xml:id,'abstract')]
+                  let $string := string-join(tei2html:tei2html($abstract)//text(),'')
+                  let $blurb := 
+                    if(count(tokenize($string, '\W+')[. != '']) gt 25) 
+                      then  
+                        concat(
+                          string-join(for $w in tokenize($string, '\W+')[position() lt 25]
+                          return $w,' '),'...')
+                      else $string 
                 return 
-                    <span class="results-list-desc desc" dir="ltr" lang="en">{
-                        $string
-                    }</span>
+                    <span class="results-list-desc desc" dir="ltr" lang="en">
+                      {$string}
+                    </span>
             else()}
             
+            <!-- NEW LINE: Title‐type indicator (“Descriptive title” or raw @type) -->
+	    { if (normalize-space($title-type) != '') 
+	        then
+		  <span class="results-list-desc type" dir="ltr" lang="en">
+		    <span class="srp-label">Type: </span>
+		    { $title-type }
+		  </span>
+		else () 
+	    }
+
+           <!-- Existing Author logic -->
 	    {
               if (normalize-space($author) != '') then
           	<span class="results-list-desc author" dir="ltr" lang="en">
@@ -375,9 +403,15 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
               else ()
       	    }
             
-            {
-            if($id != '') then 
-            <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">{replace($id,'/tei','')}</a></span>
+            <!-- Existing URI line -->
+            {if($id != '') 
+              then 
+                <span class="results-list-desc uri">
+                  <span class="srp-label">URI: </span>
+                  <a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">
+                    {replace($id,'/tei','')}
+                  </a>
+                </span>
             else()
             }
         </div>   
