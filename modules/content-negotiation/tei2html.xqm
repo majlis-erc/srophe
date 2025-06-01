@@ -164,41 +164,106 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
     let $death := $nodes/descendant::tei:death/tei:date/text()
     let $birthPlace := $nodes/descendant::tei:birth/tei:placeName/text()
     let $roles := $nodes/descendant::tei:state/tei:label/text()
-    return 
-        <div class="short-rec-view">
-            <a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}" dir="ltr">{tei2html:tei2html($title)}</a>
-            <button type="button" class="btn btn-sm btn-default copy-sm clipboard"  
-                data-toggle="tooltip" title="Copies record title &amp; URI to clipboard." 
-                data-clipboard-action="copy" data-clipboard-text="{normalize-space($title[1])} - {normalize-space($id[1])}">
-                    <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
-            </button>
-            {(
-                if($roles != '') then
-                    <span class="results-list-desc"><span class="srp-label">Role: </span> {
-                    for $role at $pos in $roles
-                    return
-                        ($role,
-                        if ($pos != count($roles)) then text {", "} else ())
-                    }</span>
-                else (),
-                if($birthPlace != '') then
-                    <span class="results-list-desc"><span class="srp-label">Place of birth: </span> {$birthPlace}</span>
-                else (),
-                if($birth != '' or $death != '') then
-                    <span class="results-list-desc">
-                    {if($birth != '') then
-                       (<span class="srp-label">Date of birth: </span>, $birth,' ') 
-                     else ()}
-                    {if($death != '') then
-                       (' ', <span class="srp-label">Date of death: </span>, $death) 
-                     else ()}
-                    </span>
-                else (),
-                if($id != '') then 
-                    <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace(replace($id,$config:base-uri,$config:nav-base),'/tei','')}">{replace($id,'/tei','')}</a></span>
-                else()
-            )}
-        </div>   
+    
+    (: -- NEW: check for place of residence -- :)
+    let $residence := $nodes/descendant::tei:residence/tei:placeName/text()
+
+    (: -- NEW: check for floruit (date of activity) -- :)
+    let $floruit   := $nodes/descendant::tei:floruit/tei:date/text()
+    
+    return
+  <div class="short-rec-view">
+    <a href="{replace(replace($id,$config:base-uri,$config:nav-base), '/tei', '')}" dir="ltr">
+      {tei2html:tei2html($title)}
+    </a>
+    <button
+      type="button"
+      class="btn btn-sm btn-default copy-sm clipboard"
+      data-toggle="tooltip"
+      title="Copies record title &amp; URI to clipboard."
+      data-clipboard-action="copy"
+      data-clipboard-text="{normalize-space($title[1])} - {normalize-space($id[1])}">
+      <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
+    </button>
+    {(
+
+      if ($roles != '') then
+        <span class="results-list-desc">
+          <span class="srp-label">Role: </span>
+          {
+            for $role at $pos in $roles
+            return
+              (
+                $role,
+                if ($pos != count($roles)) then text{", "} else ()
+              )
+          }
+        </span>
+      else
+        (),
+
+      if ($birthPlace != '') then
+        <span class="results-list-desc">
+          <span class="srp-label">Place of birth: </span> {$birthPlace}
+        </span>
+      else
+        (),
+
+      if ($birth != '' or $death != '') then
+        <span class="results-list-desc">
+          { 
+            if ($birth != '') then
+              (
+                <span class="srp-label">Date of birth: </span>,
+                $birth,
+                " "
+              )
+            else
+              ()
+          }
+          {
+            if ($death != '') then
+              (
+                <span class="srp-label">Date of death: </span>,
+                $death
+              )
+            else
+              ()
+          }
+        </span>
+      else
+        (),
+
+      if ($birthPlace = '' and $birth = '' and $death = '') then
+        (
+          if ($residence != '') then
+            <span class="results-list-desc">
+              <span class="srp-label">Place of residence: </span> {$residence}
+            </span>
+          else
+            (),
+
+          if ($floruit != '') then
+            <span class="results-list-desc">
+              <span class="srp-label">Date of activity: </span> {$floruit}
+            </span>
+          else
+            ()
+        )
+      else
+        (),
+
+      if ($id != '') then
+        <span class="results-list-desc uri">
+          <span class="srp-label">URI: </span>
+          <a href="{replace(replace($id,$config:base-uri,$config:nav-base), '/tei', '')}">
+            {replace($id,'/tei','')}
+          </a>
+        </span>
+      else
+        ()
+    )}
+  </div>   
 };
 
 (: Special short view template for Places :)
