@@ -1227,6 +1227,14 @@
                                 </div>
                             </div>
                         </xsl:for-each>
+                        <xsl:for-each select="t:note[@type='names'][string-length(normalize-space(.)) gt 2]">
+                            <div class="row">
+                                <div class="col-md-1 inline-h4">Note </div>
+                                <div class="col-md-10">
+                                    <xsl:apply-templates select="."/>
+                                </div>
+                            </div>
+                        </xsl:for-each>
                     </div>
                 </div>
             </div>
@@ -1271,7 +1279,7 @@
                         >Biography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBiography">
-                    <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each select="t:note[@type='biography'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
