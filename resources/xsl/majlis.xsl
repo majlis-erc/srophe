@@ -2696,15 +2696,17 @@
                         </xsl:for-each>
                     </div>
                 </div>
-                <!--<div class="row">
-                    <div class="col-md-2 inline-h4">Entry Editor(s): </div>
-                    <div class="col-md-10">
-                        <xsl:for-each select="t:editor[@role = 'entry-editor']">
-                            <xsl:apply-templates select="."/>
-                            <xsl:if test="position() != last()">, </xsl:if>
-                        </xsl:for-each>
+                <xsl:if test="normalize-space(t:editor[@role = 'entry-editor']) != ''">
+                   <div class="row">
+                        <div class="col-md-2 inline-h4">Entry Editor(s): </div>
+                        <div class="col-md-10">
+                            <xsl:for-each select="t:editor[@role = 'entry-editor']">
+                                <xsl:apply-templates select="."/>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
+                        </div>
                     </div>
-                </div>-->
+                </xsl:if>
                 <!-- 2nd project in editionStmt (only if editionStmt/edition is non‐empty) -->
                 <xsl:if test="normalize-space(../t:editionStmt/t:edition[1]) != ''">
                     <div class="row">
@@ -2764,7 +2766,7 @@
                     </div>
                 </xsl:if>
                 <!-- Entry editors of 2nd project in editionStmt (only if there's at least one) -->
-                <!--<xsl:if test="normalize-space(../t:editionStmt/t:editor[@role = 'entry-editor']) != ''">
+                <xsl:if test="normalize-space(../t:editionStmt/t:editor[@role = 'entry-editor']) != ''">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Entry Editor(s): </div>
                         <div class="col-md-10">
@@ -2774,7 +2776,7 @@
       			    </xsl:for-each>
                         </div>
                     </div>
-                </xsl:if>-->
+                </xsl:if>
                 
             </div>
         </div>
