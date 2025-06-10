@@ -366,9 +366,9 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
     then
       $nodes//tei:body/tei:bibl/tei:title
         [@type = 'majlis-headword' and @xml:lang = 'en'][1]
-    else
-      $nodes//tei:body/tei:bibl/tei:title
-        [@type = 'majlis-headword'][1]
+    else if (exists($nodes//tei:body/tei:bibl/tei:title[@type = 'majlis-headword']))
+    then $nodes//tei:body/tei:bibl/tei:title[@type = 'majlis-headword'][1]
+    else $nodes//tei:body/tei:bibl/tei:title[1]
         
         
     (:— Compute “title‐type” text: if @type eq 'majlis-headword', show “Descriptive title”; otherwise show the raw @type :)
