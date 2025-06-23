@@ -1613,7 +1613,49 @@
                         >Works</a>
                 </h3>
                 <div class="collapse" id="mainMenuRelatedWorks">
+                      <!-- LANGUAGE TOGGLES -->
+  	            <div class="row">
+                      <script type="text/javascript">
+	                <![CDATA[
+	  		  $(function(){
+			    // ensure initial state matches your CSS
+			    $(".hebrewTitles, .arabicTitles").hide();
+
+			    $("#toggle-englishW").on("click", function(){
+			      $(this).toggleClass("highlight");
+			      $(".englishTitles").toggle();
+			    });
+			    $("#toggle-hebrewW").on("click", function(){
+			      $(this).toggleClass("highlight");
+			      $(".hebrewTitles").toggle();
+			    });
+			    $("#toggle-arabicW").on("click", function(){
+			      $(this).toggleClass("highlight");
+			      $(".arabicTitles").toggle();
+			    });
+  			  });
+	                ]]>
+  	              </script>
+	                <div class="col-md-12 inline-h4">
+	 	          <div class="tri-state-toggle">
+		            <span class="tri-state-toggle-button highlight"
+                                href="#englishTitles" id="toggle-englishW">
+                                <span lang="en">E</span>
+                            </span>
+                            <span class="tri-state-toggle-button" data-toggle="collapse"
+                                 href="#hebrewTitles" id="toggle-hebrewW">
+                                <span lang="he">ע</span>
+                            </span>
+                            <span class="tri-state-toggle-button" data-toggle="collapse"
+                                href="#arabicTitles" id="toggle-arabicW">
+                                <span lang="ar"> ع </span>
+                            </span>
+		          </div>
+	  	        </div>
+	            </div>
+
                     <xsl:for-each select="descendant::t:body/t:bibl">
+                        <!--
                         <div class="row">
                             <div class="col-md-1 inline-h4">Title </div>
                             <div class="col-md-10">
@@ -1645,6 +1687,48 @@
                                 </xsl:choose>
                             </div>
                         </div>
+                        -->
+                        <xsl:for-each select="t:title">
+			    <xsl:variable name="langClass">
+			      <xsl:choose>
+				<xsl:when test="@xml:lang = 'en'
+				               or contains(@xml:lang, 'Latn')">
+				  englishTitles
+				</xsl:when>
+				<xsl:when test="@xml:lang = 'he'
+				               or contains(@xml:lang, 'Hebr')">
+				  hebrewTitles
+				</xsl:when>
+				<xsl:when test="@xml:lang = 'ar'
+				               or contains(@xml:lang, 'Arab')">
+				  arabicTitles
+				</xsl:when>
+
+				<xsl:otherwise>englishTitles</xsl:otherwise>
+			      </xsl:choose>
+			    </xsl:variable>
+			    
+			    <div class="row {$langClass}">
+			      <div class="col-md-1 inline-h4">
+				<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+			      </div>
+			      <div class="col-md-10">
+				<a target="_blank"
+				   href="{concat(
+				     $nav-base,
+				     substring-after(
+				       ancestor::t:TEI
+				         /descendant::t:publicationStmt
+				           /t:idno[@type='URI'][1],
+				       $base-uri
+				     )
+				   )}">
+
+				  <xsl:apply-templates/>
+				</a>
+			      </div>
+			    </div>
+          		</xsl:for-each>
                     </xsl:for-each>
                 </div>
             </div>
