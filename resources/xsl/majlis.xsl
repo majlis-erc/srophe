@@ -1688,7 +1688,7 @@
                             </div>
                         </div>
                         -->
-                        <xsl:for-each select="t:title">
+                        <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]">
 			    <xsl:variable name="langClass">
 			      <xsl:choose>
 				<xsl:when test="@xml:lang = 'en'
@@ -1707,6 +1707,17 @@
 				<xsl:otherwise>englishTitles</xsl:otherwise>
 			      </xsl:choose>
 			    </xsl:variable>
+			    <!-- grab the full URI out of the first <t:idno> -->
+			    <xsl:variable name="full" 
+					select="ancestor::t:TEI
+						/descendant::t:publicationStmt
+						/t:idno[@type='URI'][1]" />
+			    <!-- strip off your base -->
+			    <xsl:variable name="rel" 
+					select="substring-after($full, $base-uri)" />
+		   	    <!-- split on “/” and keep the last bit -->
+			    <xsl:variable name="idno-tail" 
+					select="tokenize($rel, '/')[last()]" />
 			    
 			    <div class="row {$langClass}">
 			      <div class="col-md-1 inline-h4">
@@ -1714,17 +1725,15 @@
 			      </div>
 			      <div class="col-md-10">
 				<a target="_blank"
-				   href="{concat(
-				     $nav-base,
-				     substring-after(
-				       ancestor::t:TEI
-				         /descendant::t:publicationStmt
-				           /t:idno[@type='URI'][1],
-				       $base-uri
-				     )
-				   )}">
-
+				   href="{concat($nav-base, $rel)}">
+				  <!--
+				    "{concat($nav-base, substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1],$base-uri))}" -->
 				  <xsl:apply-templates/>
+				  <!-- a space ( as separator -->
+				  <xsl:text> (Word ID: </xsl:text>
+				  <!-- the numeric tail, work id -->
+				  <xsl:value-of select="$idno-tail"/>
+				  <xsl:text>)</xsl:text>
 				</a>
 			      </div>
 			    </div>

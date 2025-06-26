@@ -394,6 +394,19 @@ button.clipboard {
 .datasliketable .row:nth-child(2n+1) {
     background:transparent;    
 }
+
+.datasliketable .row.englishNames, 
+.datasliketable .row.englishTitles {
+    background:#CCE7D8;    
+}
+.datasliketable .row.arabicNames, 
+.datasliketable .row.arabicTitles {
+    background:#F9CF98;    
+}
+.datasliketable .row.hebrewNames, 
+.datasliketable .row.hebrewTitles {
+    background:#99D9F4;    
+}
 #body .whiteBoxwShadow .datasliketable .row > * {
     padding:10px 30px;
 }
