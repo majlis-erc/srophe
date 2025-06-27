@@ -1654,8 +1654,7 @@
 	  	        </div>
 	            </div>
 
-                    <xsl:for-each select="descendant::t:body/t:bibl">
-                        <!--
+                    <!--<xsl:for-each select="descendant::t:body/t:bibl">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Title </div>
                             <div class="col-md-10">
@@ -1688,7 +1687,45 @@
                             </div>
                         </div>
                         -->
-                        <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]">
+                    <!-- 
+		    Now group *all* your <t:title> elements by their work-ID tail. 
+		    Each group is one work-ID, and position() here is the *group* index.
+		    -->
+		    <xsl:for-each-group 
+		       select="descendant::t:body/t:bibl/t:title[string-length(normalize-space(.)) > 0]" 
+		       group-by="
+		         tokenize(
+		           substring-after(
+		             ancestor::t:TEI
+		               /descendant::t:publicationStmt
+		               /t:idno[@type='URI'][1],
+		             $base-uri
+		           ),
+		           '/'
+		         )[last()]
+		       ">
+		                   
+		      <!-- this is the *grouping key* (the work-ID tail) -->
+		      <xsl:variable name="work-id" select="current-grouping-key()"/>
+		      <!--  shades of original colors from https://www.lmu.de/de/die-lmu/struktur/zentrale-universitaetsverwaltung/kommunikation-und-presse/lmu-brand-guide/designgrundsaetze/farben/
+                		('#626468', '#C0C1C3', '#E6E6E7', '#F5F5F5')"
+                	    -->
+                      <xsl:variable name="palette" as="xs:string*"
+				select="(
+					'#3F4144', '#505255', '#626468', '#777A7F',
+					'#959697', '#AEB0B2', '#C0C1C3', '#D4D5D6',
+					'#CFCFD0', '#D9D9DA', '#E6E6E7', '#F0F0F1',
+					'#E0E0E0', '#EBEBEB', '#F2F2F2', '#F5F5F5'
+			        	)" />
+		      <!-- map group (work id) position → a slot in [1..palette-length] -->
+	              <xsl:variable name="slot"
+          			  select="(position() - 1) mod count($palette) + 1"/>
+          	      <!-- the one colour for this entire group (work id) -->
+	              <xsl:variable name="swatch-color"
+          			  select="$palette[$slot]"/>
+ 		      <!-- now emit *all* titles in this group with the same swatch -->
+<!--                      <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]"> -->
+		      <xsl:for-each select="current-group()">
 			    <xsl:variable name="langClass">
 			      <xsl:choose>
 				<xsl:when test="@xml:lang = 'en'
@@ -1707,7 +1744,8 @@
 				<xsl:otherwise>englishTitles</xsl:otherwise>
 			      </xsl:choose>
 			    </xsl:variable>
-			    <!-- grab the full URI out of the first <t:idno> -->
+			    
+			    <!-- get the full URI out of the first <t:idno> -->
 			    <xsl:variable name="full" 
 					select="ancestor::t:TEI
 						/descendant::t:publicationStmt
@@ -1719,7 +1757,12 @@
 			    <xsl:variable name="idno-tail" 
 					select="tokenize($rel, '/')[last()]" />
 			    
-			    <div class="row {$langClass}">
+			    
+			    <div class="row {$langClass} row-swatch">
+			      <!-- swatch bar: same for every row (work title) in this group (work id) -->
+			      <div class="swatch"
+			           style="background-color:{$swatch-color};"/>
+			           
 			      <div class="col-md-1 inline-h4">
 				<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
 			      </div>
@@ -1738,7 +1781,7 @@
 			      </div>
 			    </div>
           		</xsl:for-each>
-                    </xsl:for-each>
+                    </xsl:for-each-group>
                 </div>
             </div>
         </xsl:if>

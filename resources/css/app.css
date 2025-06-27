@@ -407,6 +407,17 @@ button.clipboard {
 .datasliketable .row.hebrewTitles {
     background:#99D9F4;    
 }
+.row-swatch {
+  display: flex;
+  align-items: stretch;    /* children fill the row’s height */
+}
+
+.row-swatch > .swatch {
+  flex-shrink: 0;
+  /*flex: 0;                  /* grow to fill available space */
+  width: 1px;       /* thickness of the bar */
+  margin-right: 0;  /* no gutter needed */
+}
 #body .whiteBoxwShadow .datasliketable .row > * {
     padding:10px 30px;
 }
