@@ -1618,21 +1618,48 @@
                       <script type="text/javascript">
 	                <![CDATA[
 	  		  $(function(){
-			    // ensure initial state matches your CSS
+			    // 0) force the collapse open immediately
+			    //    (Bootstrap 3: adds “in”; BS 4/5: this calls .show() under the hood)
+			    //$('#mainMenuRelatedWorks').collapse('show');
+			    
 			    $(".hebrewTitles, .arabicTitles").hide();
+			    // immediately update dividers for that initial state, on page-load
+			    updateGroupDividers();
 
 			    $("#toggle-englishW").on("click", function(){
 			      $(this).toggleClass("highlight");
 			      $(".englishTitles").toggle();
+ 		              updateGroupDividers();
 			    });
 			    $("#toggle-hebrewW").on("click", function(){
 			      $(this).toggleClass("highlight");
 			      $(".hebrewTitles").toggle();
+	  	              updateGroupDividers();
 			    });
 			    $("#toggle-arabicW").on("click", function(){
 			      $(this).toggleClass("highlight");
 			      $(".arabicTitles").toggle();
+			      updateGroupDividers();
 			    });
+			    
+			    // now hide any <hr> under a .work-group that has no visible .row
+			    function updateGroupDividers() {
+			      // build a selector for all “active” lang-classes
+			      const active = [];
+			      if ($("#toggle-englishW").hasClass("highlight")) active.push(".englishTitles");
+			      if ($("#toggle-hebrewW").hasClass("highlight")) active.push(".hebrewTitles");
+			      if ($("#toggle-arabicW").hasClass("highlight")) active.push(".arabicTitles");
+
+			      const sel = active.join(", ");
+
+			      // for each group: “does it have ANY .row in an active language?”
+			      $(".work-group").each(function(){
+				const $g = $(this);
+				const keepHr = sel && $g.find(sel).length > 0;
+				$g.find("hr.group-divider").toggle(keepHr);
+			      });
+			    }
+
   			  });
 	                ]]>
   	              </script>
@@ -1711,12 +1738,13 @@
                 		('#626468', '#C0C1C3', '#E6E6E7', '#F5F5F5')"
                 	    -->
                       <xsl:variable name="palette" as="xs:string*"
-				select="(
-					'#3F4144', '#505255', '#626468', '#777A7F',
+				select="('#505255', '#959697')"/>
+<!--					'#3F4144', '#505255', '#626468', '#777A7F',
 					'#959697', '#AEB0B2', '#C0C1C3', '#D4D5D6',
 					'#CFCFD0', '#D9D9DA', '#E6E6E7', '#F0F0F1',
 					'#E0E0E0', '#EBEBEB', '#F2F2F2', '#F5F5F5'
 			        	)" />
+-->
 		      <!-- map group (work id) position → a slot in [1..palette-length] -->
 	              <xsl:variable name="slot"
           			  select="(position() - 1) mod count($palette) + 1"/>
@@ -1725,6 +1753,24 @@
           			  select="$palette[$slot]"/>
  		      <!-- now emit *all* titles in this group with the same swatch -->
 <!--                      <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]"> -->
+
+		      <!-- now the language-aware divider: -->
+		      <xsl:variable name="langs" 
+			    select="distinct-values(current-group()/@xml:lang)"/>
+		      <xsl:variable name="lang-classes"
+			    select="
+				for $l in $langs
+				return
+				  if ($l = 'en' or contains($l,'Latn'))
+				  then 'englishTitles'
+				  else if ($l = 'he' or contains($l,'Hebr'))
+				  then 'hebrewTitles'
+				  else if ($l = 'ar' or contains($l,'Arab'))
+				  then 'arabicTitles'
+				  else ()
+		     "/>
+		      <!-- start the group wrapper -->
+		      <div class="work-group">
 		      <xsl:for-each select="current-group()">
 			    <xsl:variable name="langClass">
 			      <xsl:choose>
@@ -1760,9 +1806,9 @@
 			    
 			    <div class="row {$langClass} row-swatch">
 			      <!-- swatch bar: same for every row (work title) in this group (work id) -->
-			      <div class="swatch"
+			      <!-- <div class="swatch"
 			           style="background-color:{$swatch-color};"/>
-			           
+			      -->     
 			      <div class="col-md-1 inline-h4">
 				<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
 			      </div>
@@ -1781,7 +1827,13 @@
 			      </div>
 			    </div>
           		</xsl:for-each>
-                    </xsl:for-each-group>
+          		
+          		<!-- Insert group separator here -->
+			<xsl:if test="position() != last()">
+			    <hr class="group-divider"/>
+			</xsl:if>
+			</div>
+		    </xsl:for-each-group>
                 </div>
             </div>
         </xsl:if>

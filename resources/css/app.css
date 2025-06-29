@@ -418,6 +418,11 @@ button.clipboard {
   width: 1px;       /* thickness of the bar */
   margin-right: 0;  /* no gutter needed */
 }
+.group-divider {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 0.5em 0;
+}
 #body .whiteBoxwShadow .datasliketable .row > * {
     padding:10px 30px;
 }
