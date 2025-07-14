@@ -1987,20 +1987,12 @@
                     </div>
                 </xsl:for-each>
                 <xsl:for-each
-                    select="t:supportDesc/t:extent/t:measure[string-length(normalize-space(.)) gt 2]">
+                    select="t:supportDesc/t:extent/t:measure[. != '']">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Extent </div>
                         <div class="col-md-10">
                             <xsl:apply-templates select="."/>
-                            <xsl:choose>
-                                <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
-                                    <xsl:text> fols. </xsl:text>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:text> fol. </xsl:text>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                            
+                            <xsl:text> fols.</xsl:text>
                         </div>
                     </div>
                 </xsl:for-each>
