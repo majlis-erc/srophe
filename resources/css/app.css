@@ -397,15 +397,15 @@ button.clipboard {
 
 .datasliketable .row.englishNames, 
 .datasliketable .row.englishTitles {
-    background:#CCE7D8;    
+    background:#e6f5ed;/*dff2e7;/*CCE7D8;*/    
 }
 .datasliketable .row.arabicNames, 
 .datasliketable .row.arabicTitles {
-    background:#F9CF98;    
+    background:#ffe9ca;/*faddb6;/*F9CF98;*/    
 }
 .datasliketable .row.hebrewNames, 
 .datasliketable .row.hebrewTitles {
-    background:#99D9F4;    
+    background:#d4ecf5;/*c6e9f7;/*99D9F4;*/    
 }
 .row-swatch {
   display: flex;
