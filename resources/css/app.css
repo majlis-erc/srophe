@@ -394,6 +394,35 @@ button.clipboard {
 .datasliketable .row:nth-child(2n+1) {
     background:transparent;    
 }
+
+.datasliketable .row.englishNames, 
+.datasliketable .row.englishTitles {
+    background:#e6f5ed;/*dff2e7;/*CCE7D8;*/    
+}
+.datasliketable .row.arabicNames, 
+.datasliketable .row.arabicTitles {
+    background:#ffe9ca;/*faddb6;/*F9CF98;*/    
+}
+.datasliketable .row.hebrewNames, 
+.datasliketable .row.hebrewTitles {
+    background:#d4ecf5;/*c6e9f7;/*99D9F4;*/    
+}
+.row-swatch {
+  display: flex;
+  align-items: stretch;    /* children fill the row’s height */
+}
+
+.row-swatch > .swatch {
+  flex-shrink: 0;
+  /*flex: 0;                  /* grow to fill available space */
+  width: 1px;       /* thickness of the bar */
+  margin-right: 0;  /* no gutter needed */
+}
+.group-divider {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 0.5em 0;
+}
 #body .whiteBoxwShadow .datasliketable .row > * {
     padding:10px 30px;
 }

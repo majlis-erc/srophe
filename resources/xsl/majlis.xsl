@@ -1613,7 +1613,75 @@
                         >Works</a>
                 </h3>
                 <div class="collapse" id="mainMenuRelatedWorks">
-                    <xsl:for-each select="descendant::t:body/t:bibl">
+                      <!-- LANGUAGE TOGGLES -->
+  	            <div class="row">
+                      <script type="text/javascript">
+	                <![CDATA[
+	  		  $(function(){
+			    // 0) force the collapse open immediately
+			    //    (Bootstrap 3: adds “in”; BS 4/5: this calls .show() under the hood)
+			    //$('#mainMenuRelatedWorks').collapse('show');
+			    
+			    $(".hebrewTitles, .arabicTitles").hide();
+			    // immediately update dividers for that initial state, on page-load
+			    updateGroupDividers();
+
+			    $("#toggle-englishW").on("click", function(){
+			      $(this).toggleClass("highlight");
+			      $(".englishTitles").toggle();
+ 		              updateGroupDividers();
+			    });
+			    $("#toggle-hebrewW").on("click", function(){
+			      $(this).toggleClass("highlight");
+			      $(".hebrewTitles").toggle();
+	  	              updateGroupDividers();
+			    });
+			    $("#toggle-arabicW").on("click", function(){
+			      $(this).toggleClass("highlight");
+			      $(".arabicTitles").toggle();
+			      updateGroupDividers();
+			    });
+			    
+			    // now hide any <hr> under a .work-group that has no visible .row
+			    function updateGroupDividers() {
+			      // build a selector for all “active” lang-classes
+			      const active = [];
+			      if ($("#toggle-englishW").hasClass("highlight")) active.push(".englishTitles");
+			      if ($("#toggle-hebrewW").hasClass("highlight")) active.push(".hebrewTitles");
+			      if ($("#toggle-arabicW").hasClass("highlight")) active.push(".arabicTitles");
+
+			      const sel = active.join(", ");
+
+			      // for each group: “does it have ANY .row in an active language?”
+			      $(".work-group").each(function(){
+				const $g = $(this);
+				const keepHr = sel && $g.find(sel).length > 0;
+				$g.find("hr.group-divider").toggle(keepHr);
+			      });
+			    }
+
+  			  });
+	                ]]>
+  	              </script>
+	                <div class="col-md-12 inline-h4">
+	 	          <div class="tri-state-toggle">
+		            <span class="tri-state-toggle-button highlight"
+                                href="#englishTitles" id="toggle-englishW">
+                                <span lang="en">E</span>
+                            </span>
+                            <span class="tri-state-toggle-button" data-toggle="collapse"
+                                 href="#hebrewTitles" id="toggle-hebrewW">
+                                <span lang="he">ע</span>
+                            </span>
+                            <span class="tri-state-toggle-button" data-toggle="collapse"
+                                href="#arabicTitles" id="toggle-arabicW">
+                                <span lang="ar"> ع </span>
+                            </span>
+		          </div>
+	  	        </div>
+	            </div>
+
+                    <!--<xsl:for-each select="descendant::t:body/t:bibl">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Title </div>
                             <div class="col-md-10">
@@ -1645,7 +1713,127 @@
                                 </xsl:choose>
                             </div>
                         </div>
-                    </xsl:for-each>
+                        -->
+                    <!-- 
+		    Now group *all* your <t:title> elements by their work-ID tail. 
+		    Each group is one work-ID, and position() here is the *group* index.
+		    -->
+		    <xsl:for-each-group 
+		       select="descendant::t:body/t:bibl/t:title[string-length(normalize-space(.)) > 0]" 
+		       group-by="
+		         tokenize(
+		           substring-after(
+		             ancestor::t:TEI
+		               /descendant::t:publicationStmt
+		               /t:idno[@type='URI'][1],
+		             $base-uri
+		           ),
+		           '/'
+		         )[last()]
+		       ">
+		                   
+		      <!-- this is the *grouping key* (the work-ID tail) -->
+		      <xsl:variable name="work-id" select="current-grouping-key()"/>
+		      <!--  shades of original colors from https://www.lmu.de/de/die-lmu/struktur/zentrale-universitaetsverwaltung/kommunikation-und-presse/lmu-brand-guide/designgrundsaetze/farben/
+                		('#626468', '#C0C1C3', '#E6E6E7', '#F5F5F5')"
+                	    -->
+                      <xsl:variable name="palette" as="xs:string*"
+				select="('#505255', '#959697')"/>
+<!--					'#3F4144', '#505255', '#626468', '#777A7F',
+					'#959697', '#AEB0B2', '#C0C1C3', '#D4D5D6',
+					'#CFCFD0', '#D9D9DA', '#E6E6E7', '#F0F0F1',
+					'#E0E0E0', '#EBEBEB', '#F2F2F2', '#F5F5F5'
+			        	)" />
+-->
+		      <!-- map group (work id) position → a slot in [1..palette-length] -->
+	              <xsl:variable name="slot"
+          			  select="(position() - 1) mod count($palette) + 1"/>
+          	      <!-- the one colour for this entire group (work id) -->
+	              <xsl:variable name="swatch-color"
+          			  select="$palette[$slot]"/>
+ 		      <!-- now emit *all* titles in this group with the same swatch -->
+<!--                      <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]"> -->
+
+		      <!-- now the language-aware divider: -->
+		      <xsl:variable name="langs" 
+			    select="distinct-values(current-group()/@xml:lang)"/>
+		      <xsl:variable name="lang-classes"
+			    select="
+				for $l in $langs
+				return
+				  if ($l = 'en' or contains($l,'Latn'))
+				  then 'englishTitles'
+				  else if ($l = 'he' or contains($l,'Hebr'))
+				  then 'hebrewTitles'
+				  else if ($l = 'ar' or contains($l,'Arab'))
+				  then 'arabicTitles'
+				  else ()
+		     "/>
+		      <!-- start the group wrapper -->
+		      <div class="work-group">
+		      <xsl:for-each select="current-group()">
+			    <xsl:variable name="langClass">
+			      <xsl:choose>
+				<xsl:when test="@xml:lang = 'en'
+				               or contains(@xml:lang, 'Latn')">
+				  englishTitles
+				</xsl:when>
+				<xsl:when test="@xml:lang = 'he'
+				               or contains(@xml:lang, 'Hebr')">
+				  hebrewTitles
+				</xsl:when>
+				<xsl:when test="@xml:lang = 'ar'
+				               or contains(@xml:lang, 'Arab')">
+				  arabicTitles
+				</xsl:when>
+
+				<xsl:otherwise>englishTitles</xsl:otherwise>
+			      </xsl:choose>
+			    </xsl:variable>
+			    
+			    <!-- get the full URI out of the first <t:idno> -->
+			    <xsl:variable name="full" 
+					select="ancestor::t:TEI
+						/descendant::t:publicationStmt
+						/t:idno[@type='URI'][1]" />
+			    <!-- strip off your base -->
+			    <xsl:variable name="rel" 
+					select="substring-after($full, $base-uri)" />
+		   	    <!-- split on “/” and keep the last bit -->
+			    <xsl:variable name="idno-tail" 
+					select="tokenize($rel, '/')[last()]" />
+			    
+			    
+			    <div class="row {$langClass} row-swatch">
+			      <!-- swatch bar: same for every row (work title) in this group (work id) -->
+			      <!-- <div class="swatch"
+			           style="background-color:{$swatch-color};"/>
+			      -->     
+			      <div class="col-md-1 inline-h4">
+				<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+			      </div>
+			      <div class="col-md-10">
+				<a target="_blank"
+				   href="{concat($nav-base, $rel)}">
+				  <!--
+				    "{concat($nav-base, substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1],$base-uri))}" -->
+				  <xsl:apply-templates/>
+				  <!-- a space ( as separator -->
+				  <xsl:text> (Work ID: </xsl:text>
+				  <!-- the numeric tail, work id -->
+				  <xsl:value-of select="$idno-tail"/>
+				  <xsl:text>)</xsl:text>
+				</a>
+			      </div>
+			    </div>
+          		</xsl:for-each>
+          		
+          		<!-- Insert group separator here -->
+			<xsl:if test="position() != last()">
+			    <hr class="group-divider"/>
+			</xsl:if>
+			</div>
+		    </xsl:for-each-group>
                 </div>
             </div>
         </xsl:if>
