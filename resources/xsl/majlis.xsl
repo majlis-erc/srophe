@@ -1819,10 +1819,10 @@
 				    "{concat($nav-base, substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1],$base-uri))}" -->
 				  <xsl:apply-templates/>
 				  <!-- a space ( as separator -->
-				  <xsl:text> (Work ID: </xsl:text>
+				  <!--<xsl:text> (Work ID: </xsl:text> -->
 				  <!-- the numeric tail, work id -->
-				  <xsl:value-of select="$idno-tail"/>
-				  <xsl:text>)</xsl:text>
+				  <!--<xsl:value-of select="$idno-tail"/> -->
+				  <!--<xsl:text>)</xsl:text> -->
 				</a>
 			      </div>
 			    </div>
