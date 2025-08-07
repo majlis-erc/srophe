@@ -541,18 +541,18 @@
                     </div>
                 </xsl:if>
                 <xsl:if
+                    test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
+                            href="#mainMenuAttestedNames" type="button">Attested Names</button>
+                    </div>
+                </xsl:if>
+                <xsl:if
                     test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button aria-expanded="true" class="btn btn-default btn-grey btn-lg"
                             data-toggle="collapse" href="#mainMenuRelatedWorks" type="button"
                             >Works</button>
-                    </div>
-                </xsl:if>
-                <xsl:if
-                    test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
-                            href="#mainMenuAttestedNames" type="button">Attested Names</button>
                     </div>
                 </xsl:if>
                 <xsl:if
@@ -615,12 +615,12 @@
                     <xsl:sequence select="$majlisNames"/>
                 </xsl:if>
                 <xsl:if
-                    test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$works"/>
-                </xsl:if>
-                <xsl:if
                     test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$attestedNames"/>
+                </xsl:if>
+                <xsl:if
+                    test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$works"/>
                 </xsl:if>
                 <xsl:if
                     test="$biography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
