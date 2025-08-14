@@ -512,9 +512,9 @@
         <xsl:variable name="bibliography">
             <xsl:apply-templates mode="person-bibliography" select="t:listPerson/t:person"/>
         </xsl:variable>
-        <xsl:variable name="attestations">
+        <!--<xsl:variable name="attestations">
             <xsl:apply-templates mode="person-attestations" select="t:listPerson/t:person"/>
-        </xsl:variable>
+        </xsl:variable>-->
         <xsl:variable name="linkedOpenData">
             <xsl:apply-templates mode="linkedOpenData" select="t:listPerson/t:person"/>
         </xsl:variable>
@@ -541,18 +541,18 @@
                     </div>
                 </xsl:if>
                 <xsl:if
+                    test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
+                            href="#mainMenuAttestedNames" type="button">Attested Names</button>
+                    </div>
+                </xsl:if>
+                <xsl:if
                     test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button aria-expanded="true" class="btn btn-default btn-grey btn-lg"
                             data-toggle="collapse" href="#mainMenuRelatedWorks" type="button"
                             >Works</button>
-                    </div>
-                </xsl:if>
-                <xsl:if
-                    test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
-                            href="#mainMenuAttestedNames" type="button">Attested Names</button>
                     </div>
                 </xsl:if>
                 <xsl:if
@@ -569,13 +569,13 @@
                             href="#mainMenuBibliography" type="button">Bibliography</button>
                     </div>
                 </xsl:if>
-                <xsl:if
+                <!--<xsl:if
                     test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
                             href="#mainMenuAttestations" type="button">Attestations</button>
                     </div>
-                </xsl:if>
+                </xsl:if>-->
                 <xsl:if
                     test="$linkedOpenData/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
@@ -615,12 +615,12 @@
                     <xsl:sequence select="$majlisNames"/>
                 </xsl:if>
                 <xsl:if
-                    test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-                    <xsl:sequence select="$works"/>
-                </xsl:if>
-                <xsl:if
                     test="$attestedNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$attestedNames"/>
+                </xsl:if>
+                <xsl:if
+                    test="$works/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <xsl:sequence select="$works"/>
                 </xsl:if>
                 <xsl:if
                     test="$biography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
@@ -630,10 +630,10 @@
                     test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$bibliography"/>
                 </xsl:if>
-                <xsl:if
+                <!--<xsl:if
                     test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$attestations"/>
-                </xsl:if>
+                </xsl:if>-->
                 <xsl:if
                     test="$linkedOpenData/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$linkedOpenData"/>
@@ -1268,7 +1268,7 @@
                                 </xsl:choose>
                             </div>
                             <div class="col-md-10">
-                                <xsl:apply-templates select="t:name"/>
+                                <xsl:apply-templates select="t:name" mode="attestedNames"/>
                             </div>
                         </div>
                     </xsl:for-each>
@@ -3205,5 +3205,65 @@
       	  '\s*\(', ' ('
       	)
       "/>
+    </xsl:template>
+    
+    
+    <!-- Custom template for t:name elements to wrap text content of attested names for a Person in <a> tags -->
+<!--    <xsl:template match="t:name" mode="attestedNames">-->
+    <xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
+      <span class="tei-name">
+        <xsl:sequence select="local:attributes(.)"/>
+        <!--<a target="_blank" class="expandFromAnchor">-->
+        <!-- Generate tooltip content from the corresponding source -->
+        <xsl:variable name="tooltipContent">
+            <xsl:choose>
+                <xsl:when test="@source">
+                    <xsl:variable name="sourceRef" select="@source"/>
+                    <xsl:variable name="targetId" select="if (starts-with($sourceRef, '#')) then substring-after($sourceRef, '#') else $sourceRef"/>
+                    <xsl:variable name="matchingBibl" select="ancestor::t:person/t:bibl[@xml:id = $targetId][@type = 'manuscript'][1]"/>
+                    <xsl:choose>
+                        <xsl:when test="$matchingBibl">
+                            <xsl:variable name="title" select="$matchingBibl/t:title[1]"/>
+                            <xsl:choose>
+                                <xsl:when test="$title">
+                                    <xsl:value-of select="normalize-space($title)"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text></xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <!--<xsl:apply-templates select="$matchingBibl" mode="tooltip"/>-->
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!--<xsl:value-of select="@source"/>-->
+                            <xsl:value-of select="$sourceRef"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:otherwise></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <a target="_blank" class="expandFromAnchor" data-toggle="tooltip" data-container="body" title="{normalize-space($tooltipContent)}">
+            <xsl:choose>
+                <xsl:when test="@source">
+                    <xsl:attribute name="href">
+                        <xsl:choose>
+                            <xsl:when test="starts-with(@source,$base-uri)">
+                                <!--<xsl:value-of select="replace(@source,$base-uri,$nav-base)"/>-->
+                                <xsl:value-of select="concat($nav-base,substring-after(@source, $base-uri))"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="@source"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="href"></xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
+            <xsl:apply-templates/>
+        </a>
+      </span>
     </xsl:template>
 </xsl:stylesheet>
