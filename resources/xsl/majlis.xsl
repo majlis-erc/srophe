@@ -512,9 +512,9 @@
         <xsl:variable name="bibliography">
             <xsl:apply-templates mode="person-bibliography" select="t:listPerson/t:person"/>
         </xsl:variable>
-        <xsl:variable name="attestations">
+        <!--<xsl:variable name="attestations">
             <xsl:apply-templates mode="person-attestations" select="t:listPerson/t:person"/>
-        </xsl:variable>
+        </xsl:variable>-->
         <xsl:variable name="linkedOpenData">
             <xsl:apply-templates mode="linkedOpenData" select="t:listPerson/t:person"/>
         </xsl:variable>
@@ -569,13 +569,13 @@
                             href="#mainMenuBibliography" type="button">Bibliography</button>
                     </div>
                 </xsl:if>
-                <xsl:if
+                <!--<xsl:if
                     test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
                         <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
                             href="#mainMenuAttestations" type="button">Attestations</button>
                     </div>
-                </xsl:if>
+                </xsl:if>-->
                 <xsl:if
                     test="$linkedOpenData/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
@@ -630,10 +630,10 @@
                     test="$bibliography/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$bibliography"/>
                 </xsl:if>
-                <xsl:if
+                <!--<xsl:if
                     test="$attestations/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$attestations"/>
-                </xsl:if>
+                </xsl:if>-->
                 <xsl:if
                     test="$linkedOpenData/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$linkedOpenData"/>
