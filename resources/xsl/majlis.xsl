@@ -3209,6 +3209,7 @@
     
     
     <!-- Custom template for t:name elements to wrap text content of attested names for a Person in <a> tags -->
+<!--    <xsl:template match="t:name" mode="attestedNames">-->
     <xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
       <span class="tei-name">
         <xsl:sequence select="local:attributes(.)"/>
