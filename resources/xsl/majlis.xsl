@@ -1247,35 +1247,84 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:person" mode="attestedNames">
-        <xsl:if test="t:persName[@type = 'attested']">
-            <div class="whiteBoxwShadow">
-                <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestedNames"
-                        >Attested Names</a>
-                </h3>
-                <div class="collapse" id="mainMenuAttestedNames">
-                    <xsl:for-each
-                        select="t:persName[@type = 'attested'][string-length(normalize-space(.)) gt 2]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">
-                                <xsl:choose>
-                                    <xsl:when test="@xml:lang[. != '']">
-                                        <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:text>Name </xsl:text>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </div>
-                            <div class="col-md-10">
-                                <xsl:apply-templates select="t:name" mode="attestedNames"/>
-                            </div>
-                        </div>
-                    </xsl:for-each>
-                </div>
-            </div>
-        </xsl:if>
+      <xsl:if test="t:persName[@type='attested']/t:name[string-length(normalize-space(.)) gt 0]">
+	<xsl:variable name="attestedId" select="if (@xml:id) then @xml:id else generate-id(.)"/>
+
+	  <div class="whiteBoxwShadow">
+	    <div class="row">
+	      <h3>
+		  <!-- keep this id as-is because the main menu button points to it -->
+		<a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestedNames">Attested Names</a>
+	      </h3>
+
+	    <div class="collapse" id="mainMenuAttestedNames">
+		  <!-- Language buttons (same look & feel as Names) -->
+	      <div class="row">
+		<script type="text/javascript">
+		    <![CDATA[
+		      (function () {
+			if (window.jalitAttestedToggleInit) return;
+			window.jalitAttestedToggleInit = true;
+			// delegated handler so we don't need unique ids per page
+			$(document).on("click", ".tri-state-toggle[data-target] .tri-state-toggle-button", function () {
+			  var $bar   = $(this).closest(".tri-state-toggle");
+			  var target = $bar.data("target");   // e.g., "#attestedNames-<id>"
+			  var lang   = $(this).data("lang");  // englishNames | hebrewNames | arabicNames
+			  $(this).toggleClass("highlight");
+			  $(target + " ." + lang).toggle();
+			  // hide any tooltips inside rows we just hid
+			  $(target + " ." + lang + " [data-toggle='tooltip']").tooltip('hide');
+			});
+		      })();
+		    ]]>
+		</script>
+
+		<div class="col-md-12 inline-h4">
+		  <div class="tri-state-toggle" data-target="#attestedNames-{$attestedId}">
+		    <span class="tri-state-toggle-button highlight" data-lang="englishNames">
+		      <span lang="en">E</span>
+			</span>
+		      <span class="tri-state-toggle-button" data-lang="hebrewNames">
+		      <span lang="he">ע</span>
+			</span>
+			  <span class="tri-state-toggle-button" data-lang="arabicNames">
+		      <span lang="ar">ع</span>
+		    </span>
+		  </div>
+		</div>
+	      </div>
+
+		  <!-- Scoped container so the buttons only affect this block -->
+	      <div id="attestedNames-{$attestedId}">
+		<xsl:for-each select="t:persName[@type='attested'][t:name[string-length(normalize-space(.)) gt 0]]">
+		      <!-- assign the SAME language classes you use in Names -->
+		  <xsl:variable name="langClass">
+		    <xsl:choose>
+			<xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang='en'">englishNames</xsl:when>
+			  <!-- check for Hebr/he BEFORE ar so ar-Hebr maps to Hebrew -->
+			<xsl:when test="@xml:lang='he' or contains(@xml:lang,'he') or contains(@xml:lang,'Hebr')">hebrewNames</xsl:when>
+			<xsl:when test="@xml:lang='ar' or contains(@xml:lang,'ar') or contains(@xml:lang,'Arab')">arabicNames</xsl:when>
+			<xsl:otherwise>englishNames</xsl:otherwise>
+		    </xsl:choose>
+		  </xsl:variable>
+
+		  <div class="row {$langClass}">
+		    <div class="col-md-1 inline-h4">
+			<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+		    </div>
+		    <div class="col-md-10">
+		      <xsl:apply-templates select="t:name" mode="attestedNames"/>
+		    </div>
+		  </div>
+		</xsl:for-each>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+      </xsl:if>
     </xsl:template>
+
+
     <xsl:template match="t:person" mode="biography">
         <xsl:if
             test="t:note | t:birth | t:death | t:floruit | t:sex | t:faith | t:occupation | t:residence">
@@ -3210,60 +3259,53 @@
     
     <!-- Custom template for t:name elements to wrap text content of attested names for a Person in <a> tags -->
 <!--    <xsl:template match="t:name" mode="attestedNames">-->
-    <xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
-      <span class="tei-name">
-        <xsl:sequence select="local:attributes(.)"/>
-        <!--<a target="_blank" class="expandFromAnchor">-->
-        <!-- Generate tooltip content from the corresponding source -->
-        <xsl:variable name="tooltipContent">
+<xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
+  <span class="tei-name">
+    <xsl:sequence select="local:attributes(.)"/>
+
+    <!-- tooltip content from the corresponding source -->
+    <xsl:variable name="tooltipContent">
+      <xsl:choose>
+        <xsl:when test="@source">
+          <xsl:variable name="sourceRef" select="@source"/>
+          <xsl:variable name="targetId"
+            select="if (starts-with($sourceRef, '#'))
+                    then substring-after($sourceRef, '#')
+                    else $sourceRef"/>
+          <xsl:variable name="matchingBibl"
+            select="ancestor::t:person/t:bibl[@xml:id=$targetId][@type='manuscript'][1]"/>
+          <xsl:choose>
+            <xsl:when test="$matchingBibl">
+              <xsl:variable name="title" select="$matchingBibl/t:title[1]"/>
+              <xsl:if test="$title"><xsl:value-of select="normalize-space($title)"/></xsl:if>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="$sourceRef"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise/>
+      </xsl:choose>
+    </xsl:variable>
+
+    <a target="_blank" class="expandFromAnchor"
+       data-toggle="tooltip" data-container="body"
+       title="{normalize-space($tooltipContent)}">
+      <xsl:choose>
+        <xsl:when test="@source">
+          <xsl:attribute name="href">
             <xsl:choose>
-                <xsl:when test="@source">
-                    <xsl:variable name="sourceRef" select="@source"/>
-                    <xsl:variable name="targetId" select="if (starts-with($sourceRef, '#')) then substring-after($sourceRef, '#') else $sourceRef"/>
-                    <xsl:variable name="matchingBibl" select="ancestor::t:person/t:bibl[@xml:id = $targetId][@type = 'manuscript'][1]"/>
-                    <xsl:choose>
-                        <xsl:when test="$matchingBibl">
-                            <xsl:variable name="title" select="$matchingBibl/t:title[1]"/>
-                            <xsl:choose>
-                                <xsl:when test="$title">
-                                    <xsl:value-of select="normalize-space($title)"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:text></xsl:text>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                            <!--<xsl:apply-templates select="$matchingBibl" mode="tooltip"/>-->
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <!--<xsl:value-of select="@source"/>-->
-                            <xsl:value-of select="$sourceRef"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:otherwise></xsl:otherwise>
+              <xsl:when test="starts-with(@source,$base-uri)">
+                <xsl:value-of select="concat($nav-base, substring-after(@source, $base-uri))"/>
+              </xsl:when>
+              <xsl:otherwise><xsl:value-of select="@source"/></xsl:otherwise>
             </xsl:choose>
-        </xsl:variable>
-        <a target="_blank" class="expandFromAnchor" data-toggle="tooltip" data-container="body" title="{normalize-space($tooltipContent)}">
-            <xsl:choose>
-                <xsl:when test="@source">
-                    <xsl:attribute name="href">
-                        <xsl:choose>
-                            <xsl:when test="starts-with(@source,$base-uri)">
-                                <!--<xsl:value-of select="replace(@source,$base-uri,$nav-base)"/>-->
-                                <xsl:value-of select="concat($nav-base,substring-after(@source, $base-uri))"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="@source"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:attribute>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:attribute name="href"></xsl:attribute>
-                </xsl:otherwise>
-            </xsl:choose>
-            <xsl:apply-templates/>
-        </a>
-      </span>
-    </xsl:template>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise><xsl:attribute name="href"/></xsl:otherwise>
+      </xsl:choose>
+
+      <xsl:apply-templates/>
+    </a>
+  </span>
+</xsl:template>
+
 </xsl:stylesheet>
