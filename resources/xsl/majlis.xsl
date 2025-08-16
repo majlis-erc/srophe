@@ -1887,45 +1887,95 @@
             </div>
         </xsl:if>
     </xsl:template>
+<!-- Work Titles -->
     <xsl:template match="t:bibl" mode="work-title">
-        <xsl:if test="t:title[@type != 'attested'][string-length(normalize-space(.)) gt 2]">
-            <div class="whiteBoxwShadow">
-                <h3>
-                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuTitle">Title</a>
-                </h3>
-                <div class="collapse" id="mainMenuTitle">
-                    <xsl:for-each
-                        select="t:title[@type != 'attested'][string-length(normalize-space(.)) gt 2]">
-                        <div class="row">
-                            <div class="col-md-1 inline-h4">Title <xsl:if
-                                    test="./@xml:lang[. != '']"> (<xsl:value-of
-                                        select="local:expand-lang(./@xml:lang, '')"/>) </xsl:if>
-                            </div>
-                            <div class="col-md-10">
-                                <xsl:apply-templates select="."/>
-                            </div>
-                        </div>
-                        
-                        <!-- NEW: row that shows the title’s type -->
-		        <div class="row">
-		          <div class="col-md-1 inline-h4">Type</div>
-		          <div class="col-md-10">
-		     	    <xsl:choose>
-		  	      <xsl:when test="@type = 'majlis-headword'">
-			        Descriptive title
-			      </xsl:when>
-			      <xsl:otherwise>
-			        <xsl:value-of select="@type"/>
-			      </xsl:otherwise>
-			    </xsl:choose>
-		          </div>
-		        </div>
-            
-                    </xsl:for-each>
-                </div>
-            </div>
-        </xsl:if>
+      <xsl:if test="t:title[@type != 'attested'][string-length(normalize-space(.)) gt 2]">
+	  <xsl:variable name="workId" select="generate-id(.)"/>
+
+	  <div class="whiteBoxwShadow">
+	    <h3>
+	      <a aria-expanded="true" data-toggle="collapse" href="#mainMenuTitle">Title</a>
+	    </h3>
+	    <div class="collapse" id="mainMenuTitle">
+		
+		<!-- LANGUAGE TOGGLE BUTTONS -->
+	      <div class="row">
+		  <!-- JS to support toggle, initialized only once -->
+		<script type="text/javascript">
+		    <![CDATA[
+		      (function () {
+		        if (window.jalitAttestedToggleInit) return;
+		        window.jalitAttestedToggleInit = true;
+		        $(document).on("click", ".tri-state-toggle[data-target] .tri-state-toggle-button", function () {
+		          var $bar = $(this).closest(".tri-state-toggle");
+		          var target = $bar.data("target");
+		          var lang = $(this).data("lang");
+		          $(this).toggleClass("highlight");
+		          $(target + " ." + lang).toggle();
+		          $(target + " ." + lang + " [data-toggle='tooltip']").tooltip('hide');
+		        });
+		      })();
+		    ]]>
+		</script>
+
+		<div class="col-md-12 inline-h4">
+		  <div class="tri-state-toggle" data-target="#workTitles-{$workId}">
+		    <span class="tri-state-toggle-button highlight" data-lang="englishNames">
+		      <span lang="en">E</span>
+		    </span>
+		    <span class="tri-state-toggle-button" data-lang="hebrewNames">
+		      <span lang="he">ע</span>
+		    </span>
+		    <span class="tri-state-toggle-button" data-lang="arabicNames">
+		      <span lang="ar">ع</span>
+		    </span>
+		  </div>
+		</div>
+	      </div>
+
+		<!-- TITLE BLOCK SCOPED BY ID -->
+	      <div id="workTitles-{$workId}">
+		<xsl:for-each select="t:title[@type != 'attested'][string-length(normalize-space(.)) gt 2]">
+		  <xsl:variable name="langClass">
+		    <xsl:choose>
+		      <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang='en'">englishNames</xsl:when>
+		      <xsl:when test="@xml:lang='he' or contains(@xml:lang,'he') or contains(@xml:lang,'Hebr')">hebrewNames</xsl:when>
+		      <xsl:when test="@xml:lang='ar' or contains(@xml:lang,'ar') or contains(@xml:lang,'Arab')">arabicNames</xsl:when>
+		      <xsl:otherwise>englishNames</xsl:otherwise>
+		    </xsl:choose>
+		  </xsl:variable>
+
+		  <!-- Title row -->
+		  <div class="row {$langClass}">
+		    <div class="col-md-1 inline-h4">
+		      <!--Title-->
+		      <xsl:if test="@xml:lang">
+		        <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+		      </xsl:if>
+		    </div>
+		    <div class="col-md-10">
+		      <xsl:apply-templates select="."/>
+		    </div>
+		  </div>
+
+		    <!-- Type row -->
+		  <div class="row {$langClass}">
+		    <div class="col-md-1 inline-h4">Type</div>
+		    <div class="col-md-10">
+		      <xsl:choose>
+		        <xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>
+		        <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+		      </xsl:choose>
+		    </div>
+		  </div>
+		</xsl:for-each>
+	      </div>
+
+	    </div>
+	  </div>
+	</xsl:if>
     </xsl:template>
+
     <xsl:template match="t:bibl" mode="work-attestedTitles">
         <xsl:if test="t:title[@type = 'attested'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
