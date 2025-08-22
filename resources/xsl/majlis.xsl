@@ -3310,10 +3310,11 @@
     <!-- Custom template for t:name elements to wrap text content of attested names for a Person in <a> tags -->
 <!--    <xsl:template match="t:name" mode="attestedNames">-->
 <xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
+  <!--<xsl:template match="t:name" mode="attestedNames" priority="5">-->
   <span class="tei-name">
     <xsl:sequence select="local:attributes(.)"/>
 
-    <!-- tooltip content from the corresponding source -->
+    <!-- Tooltip content -->
     <xsl:variable name="tooltipContent">
       <xsl:choose>
         <xsl:when test="@source">
@@ -3323,39 +3324,56 @@
                     then substring-after($sourceRef, '#')
                     else $sourceRef"/>
           <xsl:variable name="matchingBibl"
-            select="ancestor::t:person/t:bibl[@xml:id=$targetId][@type='manuscript'][1]"/>
+            select="ancestor::t:person//t:bibl[@xml:id=$targetId][@type='manuscript'][1]"/>
           <xsl:choose>
             <xsl:when test="$matchingBibl">
               <xsl:variable name="title" select="$matchingBibl/t:title[1]"/>
-              <xsl:if test="$title"><xsl:value-of select="normalize-space($title)"/></xsl:if>
+              <xsl:if test="$title">
+                <xsl:value-of select="normalize-space($title)"/>
+              </xsl:if>
             </xsl:when>
-            <xsl:otherwise><xsl:value-of select="$sourceRef"/></xsl:otherwise>
+            <xsl:otherwise>
+              <xsl:value-of select="$sourceRef"/>
+            </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise/>
       </xsl:choose>
     </xsl:variable>
 
-    <a target="_blank" class="expandFromAnchor"
-       data-toggle="tooltip" data-container="body"
-       title="{normalize-space($tooltipContent)}">
-      <xsl:choose>
-        <xsl:when test="@source">
-          <xsl:attribute name="href">
-            <xsl:choose>
-              <xsl:when test="starts-with(@source,$base-uri)">
-                <xsl:value-of select="concat($nav-base, substring-after(@source, $base-uri))"/>
-              </xsl:when>
-              <xsl:otherwise><xsl:value-of select="@source"/></xsl:otherwise>
-            </xsl:choose>
-          </xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise><xsl:attribute name="href"/></xsl:otherwise>
-      </xsl:choose>
+    <!-- Link building -->
+    <xsl:choose>
+      <xsl:when test="@source">
+        <xsl:variable name="refid" select="substring-after(@source, '#')" />
+        <xsl:variable name="ref-element"
+          select="id($refid) | /*/descendant::*[@xml:id = $refid][1]" />
+        <xsl:variable name="target" select="$ref-element/t:ptr/@target" />
+        <xsl:variable name="href">
+          <xsl:choose>
+            <xsl:when test="starts-with($target, $base-uri)">
+              <xsl:value-of select="concat($nav-base, substring-after($target, $base-uri))"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$target"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
 
-      <xsl:apply-templates/>
-    </a>
+        <!-- Final <a> output with tooltip -->
+        <a href="{$href}" target="_blank" class="expandFromAnchor"
+           data-toggle="tooltip" data-container="body"
+           title="{normalize-space($tooltipContent)}">
+          <xsl:apply-templates/>
+        </a>
+      </xsl:when>
+
+      <!-- No source: fallback (render name without link) -->
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
   </span>
 </xsl:template>
+
 
 </xsl:stylesheet>
