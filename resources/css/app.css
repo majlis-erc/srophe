@@ -395,15 +395,18 @@ button.clipboard {
     background:transparent;    
 }
 
-.datasliketable .row.englishNames, 
+.datasliketable .row.englishNames,
+.datasliketable .row.englishANames,  
 .datasliketable .row.englishTitles {
     background:#e6f5ed;/*dff2e7;/*CCE7D8;*/    
 }
-.datasliketable .row.arabicNames, 
+.datasliketable .row.arabicNames,
+.datasliketable .row.arabicANames,  
 .datasliketable .row.arabicTitles {
     background:#ffe9ca;/*faddb6;/*F9CF98;*/    
 }
-.datasliketable .row.hebrewNames, 
+.datasliketable .row.hebrewNames,
+.datasliketable .row.hebrewANames, 
 .datasliketable .row.hebrewTitles {
     background:#d4ecf5;/*c6e9f7;/*99D9F4;*/    
 }

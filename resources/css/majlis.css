@@ -142,8 +142,10 @@ h3 a {text-decoration:none; color:black;}
 }
 .noBorder {border:none !important;}
 .srp-label {font-weight:bold;}
-.arabicNames {display:none}
-.hebrewNames {display:none}
+.arabicNames,
+.hebrewNames,
+.arabicANames,
+.hebrewANames {display:none}
 .tooltip-inner {
     max-width: 100% !important;
 }
