@@ -3305,7 +3305,6 @@
     <!-- Custom template for t:name elements to wrap text content of attested names for a Person in <a> tags -->
 <!--    <xsl:template match="t:name" mode="attestedNames">-->
 <xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
-  <!--<xsl:template match="t:name" mode="attestedNames" priority="5">-->
   <span class="tei-name">
     <xsl:sequence select="local:attributes(.)"/>
 
@@ -3343,23 +3342,44 @@
         <xsl:variable name="ref-element"
           select="id($refid) | /*/descendant::*[@xml:id = $refid][1]" />
         <xsl:variable name="target" select="$ref-element/t:ptr/@target" />
+
+        <!-- NEW: Check if target contains /manuscript/ -->
+        <xsl:variable name="isManuscriptLink" select="contains($target, '/manuscript/')"/>
+
+        <!-- Generate href ONLY if it's a manuscript link -->
         <xsl:variable name="href">
           <xsl:choose>
-            <xsl:when test="starts-with($target, $base-uri)">
+            <xsl:when test="$isManuscriptLink and starts-with($target, $base-uri)">
               <xsl:value-of select="concat($nav-base, substring-after($target, $base-uri))"/>
             </xsl:when>
-            <xsl:otherwise>
+            <xsl:when test="$isManuscriptLink">
               <xsl:value-of select="$target"/>
-            </xsl:otherwise>
+            </xsl:when>
+            <xsl:otherwise/>
           </xsl:choose>
         </xsl:variable>
 
         <!-- Final <a> output with tooltip -->
-        <a href="{$href}" target="_blank" class="expandFromAnchor"
-           data-toggle="tooltip" data-container="body"
-           title="{normalize-space($tooltipContent)}">
-          <xsl:apply-templates/>
-        </a>
+	<xsl:choose>
+	  <!-- Case: valid href, wrap in <a> -->
+	  <xsl:when test="string-length($href) gt 0">
+	    <a href="{$href}" target="_blank" class="expandFromAnchor"
+	       data-toggle="tooltip" data-container="body"
+	       title="{normalize-space($tooltipContent)}">
+	      <xsl:apply-templates/>
+	    </a>
+	  </xsl:when>
+
+	  <!-- Case: no href → just text, no <a> -->
+	  <xsl:otherwise>
+	    <span class="expandFromAnchor"
+		  data-toggle="tooltip" data-container="body"
+		  title="{normalize-space($tooltipContent)}">
+	      <xsl:apply-templates/>
+	    </span>
+	  </xsl:otherwise>
+	</xsl:choose>
+
       </xsl:when>
 
       <!-- No source: fallback (render name without link) -->
