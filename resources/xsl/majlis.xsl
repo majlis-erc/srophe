@@ -3310,30 +3310,43 @@
 
     <!-- Tooltip content -->
     <xsl:variable name="tooltipContent">
-      <xsl:choose>
-        <xsl:when test="@source">
-          <xsl:variable name="sourceRef" select="@source"/>
-          <xsl:variable name="targetId"
-            select="if (starts-with($sourceRef, '#'))
-                    then substring-after($sourceRef, '#')
-                    else $sourceRef"/>
-          <xsl:variable name="matchingBibl"
-            select="ancestor::t:person//t:bibl[@xml:id=$targetId][@type='manuscript'][1]"/>
-          <xsl:choose>
-            <xsl:when test="$matchingBibl">
-              <xsl:variable name="title" select="$matchingBibl/t:title[1]"/>
-              <xsl:if test="$title">
-                <xsl:value-of select="normalize-space($title)"/>
-              </xsl:if>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="$sourceRef"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:otherwise/>
-      </xsl:choose>
+	  <xsl:choose>
+	    <xsl:when test="@source">
+	      <xsl:variable name="sourceRef" select="@source"/>
+	      <xsl:variable name="targetId"
+		select="if (starts-with($sourceRef, '#'))
+		        then substring-after($sourceRef, '#')
+		        else $sourceRef"/>
+	      <xsl:variable name="matchingBibl"
+		select="ancestor::t:person//t:bibl[@xml:id = $targetId][@type = 'manuscript'][1]"/>
+	      <xsl:choose>
+		<xsl:when test="$matchingBibl">
+		  <xsl:variable name="title" select="normalize-space($matchingBibl/t:title[1])"/>
+		  <xsl:variable name="range" select="normalize-space($matchingBibl/t:citedRange[1])"/>
+		  <xsl:choose>
+		    <!-- both title and range -->
+		    <xsl:when test="$title and $range">
+		      <xsl:value-of select="concat($title, ' — ', $range)"/>
+		    </xsl:when>
+		    <!-- only title -->
+		    <xsl:when test="$title">
+		      <xsl:value-of select="$title"/>
+		    </xsl:when>
+		    <!-- only range -->
+		    <xsl:when test="$range">
+		      <xsl:value-of select="$range"/>
+		    </xsl:when>
+		    <!-- neither -->
+		    <xsl:otherwise/>
+		  </xsl:choose>
+		</xsl:when>
+		<xsl:otherwise/>
+	      </xsl:choose>
+	    </xsl:when>
+	    <xsl:otherwise/>
+	  </xsl:choose>
     </xsl:variable>
+
 
     <!-- Link building -->
     <xsl:choose>
