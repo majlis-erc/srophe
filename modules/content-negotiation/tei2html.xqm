@@ -382,7 +382,9 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
         
     (:— Compute “title‐type” text: if @type eq 'majlis-headword', show “Descriptive title”; otherwise show the raw @type :)
     let $title-type :=
-      if ($title/@type = 'majlis-headword')
+      if ($title/@type = 'authorial')
+      then 'Authorial title'
+      else if ($title/@type = 'majlis-headword')
       then 'Descriptive title'
       else string($title/@type)
 
