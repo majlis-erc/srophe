@@ -1959,6 +1959,7 @@
 		    <div class="col-md-10">
 		      <xsl:choose>
 		        <xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>
+			<xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
 		        <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
 		      </xsl:choose>
 		    </div>
