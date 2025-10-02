@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Majlis TEI Advanced Search</title>
+  <!-- Bootstrap CSS for styling -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <style>
+    body { background-color: #f5f5f5; }
+    .header { background: #007BFF; color: #fff; padding: 15px 0; text-align: center; }
+    .header img.logo { max-height: 60px; margin-bottom: 10px; }
+    .search-container { margin: 20px auto; max-width: 960px; background: #fff; padding: 20px; border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .criteria-block { border: 1px solid #dee2e6; padding: 15px; margin-bottom: 20px; border-radius: 4px;
+      background: #f9f9f9; position: relative; }
+    .logical-operator-block { margin-bottom: 10px; text-align: center; }
+    .logical-operator-block select { width: 150px; display: inline-block; }
+    #addCriteria { margin-bottom: 20px; }
+    .removeCriteria { position: absolute; top: 10px; right: 10px; }
+    .clearCriteria { position: absolute; top: 10px; right: 60px; }
+    #timeSpanFilter { border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; background: #f1f1f1; margin-top: 20px; }
+    .keyboard-icon { width: 18px; height: auto; }
+    .keyboard-modal .modal-dialog { max-width: 600px; }
+    .keyboard-container { display: flex; flex-wrap: wrap; }
+    .keyboard-key { margin: 4px; padding: 10px 14px; background: #e9ecef; border-radius: 4px; cursor: pointer;
+      user-select: none; }
+    .keyboard-key:hover { background: #dee2e6; }
+    .lang-select .btn { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <img src="https://manuforma-staging.jalit.org/exist/apps/majlis/images/logo.png" alt="Majlis Logo" class="logo">
+      <h1>Majlis TEI Advanced Search</h1>
+    </div>
+  </header>
+
+  <div class="container search-container">
+    <form id="advancedSearchForm">
+      <!-- General Keyword with keyboard icon -->
+      <div class="form-group">
+	<h3>General Keyword Search</h3>
+        <div class="input-group">
+          <input type="text" class="form-control" id="generalKeyword" name="generalKeyword" placeholder="Search across all entities">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary keyboard-btn" type="button" data-target="#generalKeyword">
+              <img src="https://example.com/icons/keyboard.png" alt="Keyboard" class="keyboard-icon">
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Advanced Search Title -->
+      <h3>Advanced Search</h3>
+
+      <!-- Dynamic criteria -->
+      <div id="criteriaContainer"></div>
+
+      <!-- Add More Criteria -->
+      <button type="button" id="addCriteria" class="btn btn-secondary">Add More Criteria</button>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Results -->
+    <div id="results" class="mt-4">
+      <h3>Search Results</h3>
+      <div id="resultItems"></div>
+
+      <div id="timeSpanFilter">
+        <h4>Filter by</h4>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="startYear">Start Year</label>
+            <input type="number" class="form-control" id="startYear" placeholder="e.g., 500">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="endYear">End Year</label>
+            <input type="number" class="form-control" id="endYear" placeholder="e.g., 1500">
+          </div>
+        </div>
+        <button id="applyTimeSpan" class="btn btn-secondary">Apply Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Modal -->
+  <div class="modal fade keyboard-modal" id="keyboardModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">On-Screen Keyboard</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="lang-select mb-3">
+            <button type="button" class="btn btn-outline-primary btn-sm select-lang" data-lang="he">Hebrew</button>
+            <button type="button" class="btn btn-outline-primary btn-sm select-lang" data-lang="ar">Arabic</button>
+          </div>
+          <div class="keyboard-container" id="keyboardKeys"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script>
+    const maxEntities = 3;
+    const teiMapping = {
+      manuscript: ['Content', 'Codicology and paleography', 'Incodicated documents', 'History'],
+      work: ['Title', 'Author', 'Language', 'Subject Area'],
+      person: ['Name', 'Place of Birth', 'Biography']
+    };
+    let criteriaCount = 0;
+    let activeInput = null;
+    const layouts = {
+      he: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'],
+      ar: ['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي']
+    };
+
+    function createCriteriaBlock(idx) {
+      const operatorHtml = idx > 1 ? `
+        <div class="logical-operator-block">
+          <label for="logicalOperator_${idx}">Logical Operator</label>
+          <select class="form-control logicalOperator" id="logicalOperator_${idx}" name="logicalOperator_${idx}">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+            <option value="NOT">NOT</option>
+          </select>
+        </div>` : '';
+
+      return `
+      <div class="criteria-block" data-index="${idx}">
+        <button type="button" class="btn btn-danger btn-sm removeCriteria">Remove</button>
+        <button type="button" class="btn btn-secondary btn-sm clearCriteria">Clear</button>
+        ${operatorHtml}
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="searchTerm_${idx}">Search Term</label>
+            <div class="input-group">
+              <input type="text" class="form-control searchTerm" id="searchTerm_${idx}" name="searchTerm_${idx}" placeholder="Enter search term">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary keyboard-btn" type="button" data-target="#searchTerm_${idx}">
+                  <img src="https://example.com/icons/keyboard.png" alt="Keyboard" class="keyboard-icon">
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Search Type</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input searchType" type="radio" name="searchType_${idx}" id="exact_${idx}" value="exact">
+              <label class="form-check-label" for="exact_${idx}">Exact</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input searchType" type="radio" name="searchType_${idx}" id="similar_${idx}" value="similar" checked>
+              <label class="form-check-label" for="similar_${idx}">Similar</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="entity_${idx}">Entity</label>
+            <select class="form-control entitySelect" id="entity_${idx}" name="entity_${idx}">
+              <option value="">-- Select entity --</option>
+              <option value="manuscript">Manuscript</option>
+              <option value="work">Work</option>
+              <option value="person">Person</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group teiElementsContainer" style="display:none;">
+          <label for="teiElements_${idx}">fields (available for the selected entity)</label>
+          <select multiple class="form-control teiElementsSelect" id="teiElements_${idx}" name="teiElements_${idx}[]"></select>
+          <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple. Leave empty to search all available fields.</small>
+        </div>
+      </div>`;
+    }
+
+    function updateAddButton() {
+      $('#addCriteria').prop('disabled', criteriaCount >= maxEntities);
+    }
+    function updateRemoveButtons() {
+      $('.removeCriteria').toggle(criteriaCount > 1);
+    }
+    function addCriteriaBlock() {
+      if (criteriaCount < maxEntities) {
+        criteriaCount++;
+        $('#criteriaContainer').append(createCriteriaBlock(criteriaCount));
+        updateRemoveButtons();
+        updateAddButton();
+      }
+    }
+
+    function showKeyboard(lang) {
+      const $keys = $('#keyboardKeys').empty();
+      layouts[lang].forEach(ch => {
+        $('<div>')
+          .addClass('keyboard-key')
+          .text(ch)
+          .appendTo($keys)
+          .on('click', () => {
+            const $input = $(activeInput);
+            const start = $input.prop('selectionStart');
+            const val = $input.val();
+            $input.val(val.slice(0, start) + ch + val.slice(start));
+            $input[0].setSelectionRange(start + 1, start + 1);
+          });
+      });
+    }
+
+    $(document).ready(() => {
+      // Prefill the General Keyword from ?keyword= (nice UX)
+      (function () {
+        const p = new URLSearchParams(location.search);
+        const kw = p.get('keyword');
+        if (kw && !$('#generalKeyword').val()) {
+          $('#generalKeyword').val(kw);
+        }
+      })();
+      addCriteriaBlock();
+      $('#addCriteria').click(addCriteriaBlock);
+      // Remove criteria block
+      $(document).on('click', '.removeCriteria', function() {
+        $(this).closest('.criteria-block').remove();
+        criteriaCount--;
+        updateRemoveButtons();
+        updateAddButton();
+      });
+      // Clear criteria block
+      $(document).on('click', '.clearCriteria', function() {
+        const $block = $(this).closest('.criteria-block');
+        $block.find('.searchTerm').val('');
+        $block.find('.searchType').prop('checked', false);
+        $block.find('.searchType[value="similar"]').prop('checked', true);
+        $block.find('.entitySelect').val('');
+        $block.find('.teiElementsContainer').hide();
+        $block.find('.teiElementsSelect').empty();
+        $block.find('.logicalOperator').val('AND');
+      });
+      // Populate fields based on entity
+      $(document).on('change', '.entitySelect', function() {
+        const ent = $(this).val(), $block = $(this).closest('.criteria-block');
+        const $cont = $block.find('.teiElementsContainer'), $sel = $cont.find('.teiElementsSelect').empty();
+        if (teiMapping[ent]) {
+          teiMapping[ent].forEach(f => $sel.append(`<option>${f}</option>`));
+          $cont.show();
+        } else {
+          $cont.hide();
+        }
+      });
+      // Keyboard popup
+      $(document).on('click', '.keyboard-btn', function() {
+        activeInput = $(this).data('target');
+        $('#keyboardModal').modal('show');
+      });
+      $('.select-lang').click(function() {
+        showKeyboard($(this).data('lang'));
+      });
+      // Form submission
+      $(document).off('submit','#advancedSearchForm').on('submit','#advancedSearchForm', async function(e) {
+	    e.preventDefault();
+
+	    const qs = new URLSearchParams();
+
+	    const urlParams = new URLSearchParams(location.search);
+	    const generalFromQS = urlParams.get('keyword') || '';
+	    const general = $('#generalKeyword').val() || generalFromQS;
+	    if (general) qs.set('generalKeyword', general);
+
+
+	    $('.criteria-block').each(function() {
+	      const idx = $(this).data('index');
+	      const op   = idx > 1 ? $(this).find('.logicalOperator').val() : '';
+	      const term = $(this).find('.searchTerm').val();
+	      const typ  = $(this).find('.searchType:checked').val();
+	      const ent  = $(this).find('.entitySelect').val();
+	      const flds = $(this).find('.teiElementsSelect').val() || [];
+
+	      if (idx > 1 && op) qs.set(`logicalOperator_${idx}`, op);
+	      if (term) qs.set(`searchTerm_${idx}`, term);
+	      if (typ)  qs.set(`searchType_${idx}`, typ);
+	      if (ent)  qs.set(`entity_${idx}`, ent);
+	      flds.forEach(v => qs.append(`teiElements_${idx}[]`, v));
+	    });
+
+	    const sY = $('#startYear').val();
+	    const eY = $('#endYear').val();
+	    if (sY) qs.set('startYear', sY);
+	    if (eY) qs.set('endYear', eY);
+
+	    // handler should call the API
+	    const url = `/exist/restxq/apps/majlis/api/search_new?${qs.toString()}`;
+	    console.debug('→ calling', url);
+
+	    $('#resultItems').html('<div class="text-muted">Searching…</div>');
+	    try {
+	      const res = await fetch(url, { headers: { 'Accept':'application/json' }});
+	      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+	      const data = await res.json();
+
+	      const html = [
+		`<div class="small text-muted mb-2">Total: ${data.total}</div>`,
+		...data.items.map(it => `
+		  <div class="card mb-2">
+		    <div class="card-body">
+		      <h5 class="card-title">${it.title || '(untitled)'}</h5>
+		      <div class="card-subtitle mb-2 text-muted">
+		        ${it.type || ''} ${it.date ? '· ' + it.date : ''}
+		      </div>
+		      <a class="card-link" href="/exist/rest${it.path}" target="_blank" rel="noopener">Open</a>
+		    </div>
+		  </div>
+		`)
+	      ].join('');
+	      $('#resultItems').html(html || '<div class="text-muted">No results.</div>');
+	    } catch (err) {
+	      $('#resultItems').html(`<div class="text-danger">Search failed: ${err.message}</div>`);
+	    }
+      });  
+      // Time-span filter
+      $('#applyTimeSpan').off('click').on('click', () => $('#advancedSearchForm').trigger('submit'));
+      // (Optional) auto-run a search if ?keyword= is present
+      const autoKw = new URLSearchParams(location.search).get('keyword');
+      if (autoKw) $('#advancedSearchForm').trigger('submit');
+    });
+  </script>
+</body>
+</html>
+

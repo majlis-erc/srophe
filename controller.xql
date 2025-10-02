@@ -44,9 +44,11 @@ declare variable $exist:app-root  :=
     return string($collection/@app-root))    
 ; 
 
+
 (: Send to content negotiation:)
 declare function local:content-negotiation($exist:path, $exist:resource){
-    if(starts-with($exist:resource, ('search','browse'))) then
+(:    if(starts-with($exist:resource, ('search', 'browse'))) then:)
+    if(starts-with($exist:resource, 'browse')) then
         let $format := request:get-parameter('format', '')
         return 
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">        
@@ -108,24 +110,19 @@ else if (contains($exist:path,'/api/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{concat($config:nav-base,'/api-documentation/index.html')}"/>
     </dispatch>
-    else if($exist:resource = 'oai') then
+   else if($exist:resource = 'oai') then
      <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <forward url="{replace($exist:path,'/api/oai',concat($exist:controller,'/modules/oai.xql'))}"/>
      </dispatch>
-    else if($exist:resource = 'sparql') then
+   else if($exist:resource = 'sparql') then
      <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <forward url="{replace($exist:path,'/api/sparql',concat($exist:controller,'/sparql/run-sparql.xql'))}"/>
      </dispatch>
-    else if(contains($exist:path, '/search/')) then
-        let $element := tokenize($exist:path,'/')[last()]
-        return 
-        <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-            <forward url="{concat($exist:controller,'/modules/content-negotiation/content-negotiation.xql')}">
-                <add-parameter name="api" value="'true'"/>
-                <add-parameter name="element" value="{$element}"/>
-            </forward>
-        </dispatch>
-    else if(contains($exist:path, '/geo/')) then
+    (: for new search :)
+    
+    (: end for new search :)
+ 
+   else if(contains($exist:path, '/geo/')) then
         let $format := tokenize($exist:path,'/')[last()]
         return 
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
@@ -135,10 +132,41 @@ else if (contains($exist:path,'/api/')) then
                 <add-parameter name="format" value="{if($format = 'json') then 'geojson' else if($format='kml') then 'kml' else 'xml'}"/>
             </forward>
         </dispatch>
-    else
+   else
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
             <redirect url="{concat($config:nav-base,'/api-documentation/index.html')}"/>
         </dispatch>
+
+(: new search: serve the single new search page at /search.html from modules/search/index.html :)        
+(: /search.html → serve modules/search/index.html :)
+else if ($exist:path = "/search.html") then
+  <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+    <!-- RELATIVE to the app root; avoids wrong /db/apps/... path -->
+    <forward url="modules/search/index.html"/>
+    <cache-control cache="no"/>
+  </dispatch>
+
+(: Redirect old per-entity search pages to the single Advanced Search: /{entity}/search(.html) → /search.html, preserve query string  :)
+else if (matches($exist:path, "^/(works|persons|places|relations|manuscripts|geo|bibl)/search(\\.html)?/?$")) then
+  let $qs := request:get-query-string()
+  let $app-url-base := request:get-context-path() || "/apps/majlis"   (: e.g. "/exist/apps/majlis" :)
+  return
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+      <redirect url="{ $app-url-base || '/search.html' || (if ($qs) then '?'||$qs else '') }"/>
+    </dispatch>
+
+(: normalize: /search/, /search or /search/index.html → /search.html :)
+else if (matches($exist:path, "^/search(/index\\.html)?/?$")) then
+  let $qs := request:get-query-string()
+  let $app-url-base := request:get-context-path() || "/apps/majlis"
+  return
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+      <redirect url="{ $app-url-base || '/search.html' || (if ($qs) then '?'||$qs else '') }"/>
+    </dispatch>
+
+(: snippets for new seach ends here :)
+
+        
 (: Passes data to content negotiation module:)
 else if(request:get-parameter('format', '') != '' and request:get-parameter('format', '') != 'html') then
     local:content-negotiation($exist:path, $exist:resource)
@@ -156,9 +184,11 @@ else if(request:get-parameter('doc', '') != '') then
        			<forward url="{$exist:controller}/modules/view.xql"/>
        		</error-handler>
         </dispatch>
-(: Checks for any record uri patterns as defined in repo.xml :)    
+(: Checks for any record uri patterns as defined in repo.xml :)   
+
 else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris or replace($exist:path, $exist:resource,'') = $exist:app-root) then
-    if($exist:resource = ('index.html','search.html','browse.html','about.html')) then    
+(:    if($exist:resource = ('index.html','search.html','browse.html','about.html')) then    :)
+    if($exist:resource = ('index.html','browse.html','about.html')) then    
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
             <view>
                 <forward url="{$exist:controller}/modules/view.xql"/>
@@ -227,6 +257,7 @@ else if ($exist:resource eq '' or ends-with($exist:path,"/")) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{concat($config:nav-base,'/',$exist:path,'/index.html')}"/>
     </dispatch>   
+    
     
 (: Redirects paths with directory, and no trailing slash to index.html in that directory :)    
 else if (matches($exist:resource, "^([^.]+)$")) then
