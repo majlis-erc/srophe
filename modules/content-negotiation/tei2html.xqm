@@ -361,6 +361,15 @@ declare function tei2html:summary-view-work($nodes as node()*, $id as xs:string?
     let $title :=
     if (exists(
           $nodes//tei:body/tei:bibl/tei:title
+            [@type = 'authorial' and @xml:lang = 'en']
+        ))
+    then
+      $nodes//tei:body/tei:bibl/tei:title
+        [@type = 'authorial' and @xml:lang = 'en'][1]
+    else if (exists($nodes//tei:body/tei:bibl/tei:title[@type = 'authorial']))
+    then $nodes//tei:body/tei:bibl/tei:title[@type = 'authorial'][1]
+    else if (exists(
+          $nodes//tei:body/tei:bibl/tei:title
             [@type = 'majlis-headword' and @xml:lang = 'en']
         ))
     then
