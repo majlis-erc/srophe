@@ -8,7 +8,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        jdk: [11,17,21,25]
+        jdk: [11,25]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
       - name: Build, Test, and Package
         run: mvn clean package
       - name: Persist built XAR
-        if: matrix.os == 'ubuntu-latest' && matrix.jdk == '11' && github.ref != 'refs/heads/main'
+        if: matrix.os == 'ubuntu-latest' && matrix.jdk == '11' && github.ref != 'refs/heads/master'
         uses: actions/upload-artifact@v4
         with:
           name: xar
@@ -30,7 +30,7 @@ jobs:
           overwrite: true
 
   deploy-staging:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     needs: build
     name: Deploy
     runs-on: ubuntu-latest
@@ -42,8 +42,10 @@ jobs:
         with:
           distribution: 'liberica'
           java-version: 11
+      - name: Set Version Number
+        run: echo "NEW_VERSION=$(date -u '+%Y.%m.%d').$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Bump Version Number
-        run: mvn versions:set -DnewVersion="$(date -u '+%Y.%m.%d').$(git rev-parse --short HEAD)"
+        run: mvn versions:set -DnewVersion="${NEW_VERSION}"
       - name: Build Deploy Scripts and Package
         run: mvn package -DskipTests -Pbuild-deploy-scripts
       - name: Set Deploy Scripts as executable
@@ -53,7 +55,7 @@ jobs:
           REMOTE_EDB_SERVER_USERNAME: ${{ secrets.REMOTE_EDB_SERVER_USERNAME }}
           REMOTE_EDB_SERVER_PASSWORD: ${{ secrets.REMOTE_EDB_SERVER_PASSWORD }}
           REMOTE_EDB_SERVER_URL: ${{ secrets.REMOTE_EDB_SERVER_URL }}
-        run: target/classes/deploy-resources/upload-remote-tmp-xar.sh
+        run: target/classes/deploy-resources/upload-remote-tmp-xar.sh target/majlis-$NEW_VERSION.xar
       - name: Redeploy XAR on Remote Database Server
         env:
           REMOTE_EDB_SERVER_USERNAME: ${{ secrets.REMOTE_EDB_SERVER_USERNAME }}
