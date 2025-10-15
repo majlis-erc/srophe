@@ -408,7 +408,7 @@ button.clipboard {
 .datasliketable .row.hebrewNames,
 .datasliketable .row.hebrewANames, 
 .datasliketable .row.hebrewTitles {
-    background:#d4ecf5;/*c6e9f7;/*99D9F4;*/    
+    background:#f5f5f5/*#d4ecf5;/*c6e9f7;/*99D9F4;*/    
 }
 .row-swatch {
   display: flex;
