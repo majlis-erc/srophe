@@ -4,6 +4,96 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns"
     exclude-result-prefixes="xs t x saxon local" version="2.0">
     <!-- ================================================================== 
+       Helpers for duplicate person names
+       
+       ================================================================== -->
+    <!-- Collapse whitespace only (no diacritic/case/Unicode normalization) -->
+    <xsl:function name="local:ws-collapse" as="xs:string">
+	  <xsl:param name="s" as="xs:string?"/>
+	  <xsl:sequence select="normalize-space($s)"/>
+    </xsl:function>
+
+	<!-- Build the final text exactly as your UI would show it (no HTML tags),
+	     branching per language for @type='canon'. -->
+    <xsl:function name="local:display-text" as="xs:string">
+	  <xsl:param name="pn" as="element(t:persName)"/>
+	  <xsl:variable name="lang" select="string($pn/@xml:lang)"/>
+	  <xsl:choose>
+	    <!-- canon, Hebrew branch -->
+	    <xsl:when test="$pn/@type='canon' and ($lang='he' or contains($lang,'he'))">
+	      <xsl:variable name="main"
+		select="string-join((
+		         $pn/t:forename,
+		         $pn/t:addName[@type='patronym'],
+		         $pn/t:addName[@type='epithet'],
+		         $pn/t:addName[@type='acronym']
+		       )[normalize-space(.)], ' ')"/>
+	      <xsl:sequence select="
+		concat(
+		  $main,
+		  if ($pn/t:addName[@type='shuhra'][normalize-space(.)])
+		     then concat(' (known as ', string($pn/t:addName[@type='shuhra']), ')')
+		     else ''
+		)"/>
+	    </xsl:when>
+
+	    <!-- canon, Arabic branch -->
+	    <xsl:when test="$pn/@type='canon' and ($lang='ar' or contains($lang,'ar'))">
+	      <xsl:variable name="nasab"
+		select="string($pn/t:addName[@type='nasab'])"/>
+	      <xsl:variable name="main"
+		select="string-join((
+		         $pn/t:addName[@type='kunya'],
+		         $pn/t:addName[@type='ism'],
+		         $nasab,
+		         $pn/t:addName[@type='nisbah']
+		       )[normalize-space(.)], ' ')"/>
+	      <xsl:sequence select="
+		concat(
+		  $main,
+		  if ($pn/t:addName[@type='laqab'][normalize-space(.)])
+		     then concat(', ', string($pn/t:addName[@type='laqab']))
+		     else '',
+		  if ($pn/t:addName[@type='shuhra'][normalize-space(.)])
+		     then concat(' (known as ', string($pn/t:addName[@type='shuhra']), ')')
+		     else ''
+		)"/>
+	    </xsl:when>
+
+	    <!-- canon, everything else (e.g., Latin/English) – adjust if needed -->
+	    <xsl:when test="$pn/@type='canon'">
+	      <!-- If you also display Latin canon differently, mirror that here.
+		   Otherwise fall back to the element text. -->
+	      <xsl:sequence select="string($pn)"/>
+	    </xsl:when>
+
+	    <!-- majlis-headword: take the element’s text exactly (collapse spaces only) -->
+	    <xsl:otherwise>
+	      <xsl:sequence select="string($pn)"/>
+	    </xsl:otherwise>
+	  </xsl:choose>
+    </xsl:function>
+
+	<!-- Key for deduping: ONLY collapse whitespace. Nothing else. -->
+    <xsl:function name="local:dedupe-key" as="xs:string">
+	  <xsl:param name="pn" as="element(t:persName)"/>
+	  <xsl:sequence select="local:ws-collapse(local:display-text($pn))"/>
+    </xsl:function>
+
+	<!-- Class helper you already have, factored into a function for reuse -->
+    <xsl:function name="local:lang-class" as="xs:string">
+	  <xsl:param name="lang" as="xs:string?"/>
+	  <xsl:sequence select="
+	    if (contains($lang,'Latn') or $lang='en') then 'englishNames'
+	    else if ($lang='he' or contains($lang,'he') or contains($lang,'Hebr')) then 'hebrewNames'
+	    else if ($lang='ar' or contains($lang,'ar') or contains($lang,'Arab')) then 'arabicNames'
+	    else ''"/>
+    </xsl:function>
+
+    
+    
+    
+    <!-- ================================================================== 
        MAJLIS custom srophe XSLT
        For main record display, manuscript
        
@@ -1156,99 +1246,58 @@
                                 </div>
                             </div>
                         </div>
-                        <xsl:for-each
-                            select="t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
-                            <xsl:variable name="langClass">
-                                <xsl:choose>
-                                    <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang = 'en'"
-                                        >englishNames</xsl:when>
-                                    <xsl:when
-                                        test="@xml:lang = 'he' or contains(@xml:lang, 'he') or contains(@xml:lang, 'Hebr')"
-                                        >hebrewNames</xsl:when>
-                                    <xsl:when
-                                        test="@xml:lang = 'ar' or contains(@xml:lang, 'ar') or contains(@xml:lang, 'Arab')"
-                                        >arabicNames</xsl:when>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <div class="row {$langClass}">
-                                <div class="col-md-1 inline-h4">
-                                    <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-                                </div>
-                                <div class="col-md-10">
-                                    <xsl:choose>
-                                        <xsl:when
-                                            test="@xml:lang = 'he' or contains(@xml:lang, 'he')">
-                                            <xsl:value-of select="t:forename"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="t:addName[@type = 'patronym']"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="t:addName[@type = 'epithet']"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="t:addName[@type = 'acronym']"/>
-                                            <xsl:if
-                                                test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
-                                                <br/>
-                                                <xsl:text>(</xsl:text>
-                                                <i>
-                                                  <xsl:text>known as </xsl:text>
-                                                </i>
-                                                <xsl:value-of select="t:addName[@type = 'shuhra']"/>
-                                                <xsl:text>)</xsl:text>
-                                            </xsl:if>
-                                        </xsl:when>
-                                        <xsl:when
-                                            test="@xml:lang = 'ar' or contains(@xml:lang, 'ar')">
-                                            <xsl:value-of select="t:addName[@type = 'kunya']"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="t:addName[@type = 'ism']"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of
-                                                select="replace(t:addName[@type = 'nasab'], 'ابن', 'بن')"/>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="t:addName[@type = 'nisbah']"/>
-                                            <xsl:if
-                                                test="t:addName[@type = 'laqab'][string-length(normalize-space(.)) gt 2]">
-                                                <xsl:text>, </xsl:text>
-                                                <xsl:value-of select="t:addName[@type = 'laqab']"/>
-                                            </xsl:if>
-                                            <xsl:if
-                                                test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
-                                                <br/>
-                                                <xsl:text>(</xsl:text>
-                                                <i>
-                                                  <xsl:text>known as </xsl:text>
-                                                </i>
-                                                <xsl:value-of select="t:addName[@type = 'shuhra']"/>
-                                                <xsl:text>)</xsl:text>
-                                            </xsl:if>
-                                        </xsl:when>
-                                    </xsl:choose>
-                                </div>
-                            </div>
-                        </xsl:for-each>
-                        <xsl:for-each
-                            select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
-                            <xsl:variable name="langClass">
-                                <xsl:choose>
-                                    <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang = 'en'"
-                                        >englishNames</xsl:when>
-                                    <xsl:when
-                                        test="@xml:lang = 'he' or contains(@xml:lang, 'he') or contains(@xml:lang, 'Hebr')"
-                                        >hebrewNames</xsl:when>
-                                    <xsl:when
-                                        test="@xml:lang = 'ar' or contains(@xml:lang, 'ar') or contains(@xml:lang, 'Arab')"
-                                        >arabicNames</xsl:when>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <div class="row {$langClass}">
-                                <div class="col-md-1 inline-h4">
-                                    <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-                                </div>
-                                <div class="col-md-10">
-                                    <xsl:apply-templates select="."/>
-                                </div>
-                            </div>
-                        </xsl:for-each>
+			<!-- Gather both types; keep your length check; then group by the final display text -->
+			<xsl:for-each-group
+			  select="t:persName[@type=('canon','majlis-headword')]
+				  [string-length(normalize-space(.)) gt 2]"
+			  group-by="local:dedupe-key(.)">
+
+			  <!-- Representative node: first in document order -->
+			  <xsl:variable name="pn" select="current-group()[1]"/>
+			  <xsl:variable name="langClass" select="local:lang-class(string($pn/@xml:lang))"/>
+
+			  <div class="row {$langClass}">
+			    <div class="col-md-1 inline-h4">
+			      <xsl:value-of select="local:expand-lang($pn/@xml:lang, '')"/>
+			    </div>
+			    <div class="col-md-10">
+			      <!-- Render exactly as before, based on the representative node -->
+			      <xsl:choose>
+				<xsl:when test="$pn/@type='canon' and ($pn/@xml:lang='he' or contains($pn/@xml:lang,'he'))">
+				  <xsl:value-of select="$pn/t:forename"/><xsl:text> </xsl:text>
+				  <xsl:value-of select="$pn/t:addName[@type='patronym']"/><xsl:text> </xsl:text>
+				  <xsl:value-of select="$pn/t:addName[@type='epithet']"/><xsl:text> </xsl:text>
+				  <xsl:value-of select="$pn/t:addName[@type='acronym']"/>
+				  <xsl:if test="$pn/t:addName[@type='shuhra'][string-length(normalize-space(.)) gt 2]">
+				    <br/><xsl:text>(</xsl:text><i><xsl:text>known as </xsl:text></i>
+				    <xsl:value-of select="$pn/t:addName[@type='shuhra']"/><xsl:text>)</xsl:text>
+				  </xsl:if>
+				</xsl:when>
+
+				<xsl:when test="$pn/@type='canon' and ($pn/@xml:lang='ar' or contains($pn/@xml:lang,'ar'))">
+				  <xsl:value-of select="$pn/t:addName[@type='kunya']"/><xsl:text> </xsl:text>
+				  <xsl:value-of select="$pn/t:addName[@type='ism']"/><xsl:text> </xsl:text>
+				  <xsl:value-of select="replace($pn/t:addName[@type='nasab'],'ابن','بن')"/><xsl:text> </xsl:text>
+				  <xsl:value-of select="$pn/t:addName[@type='nisbah']"/>
+				  <xsl:if test="$pn/t:addName[@type='laqab'][string-length(normalize-space(.)) gt 2]">
+				    <xsl:text>, </xsl:text><xsl:value-of select="$pn/t:addName[@type='laqab']"/>
+				  </xsl:if>
+				  <xsl:if test="$pn/t:addName[@type='shuhra'][string-length(normalize-space(.)) gt 2]">
+				    <br/><xsl:text>(</xsl:text><i><xsl:text>known as </xsl:text></i>
+				    <xsl:value-of select="$pn/t:addName[@type='shuhra']"/><xsl:text>)</xsl:text>
+				  </xsl:if>
+				</xsl:when>
+
+				<!-- majlis-headword (or any other type you included) -->
+				<xsl:otherwise>
+				  <!-- Keep your original rendering for headwords -->
+				  <xsl:apply-templates select="$pn"/>
+				</xsl:otherwise>
+			      </xsl:choose>
+			    </div>
+			  </div>
+			</xsl:for-each-group>
+
                         <xsl:for-each select="t:note[@type='names'][string-length(normalize-space(.)) gt 2]">
                             <div class="row">
                                 <div class="col-md-1 inline-h4">Note </div>
