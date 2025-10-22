@@ -1873,6 +1873,35 @@
 				<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
 			      </div>
 			      <div class="col-md-10">
+				
+				
+				<!-- Resolve the type for the *current* title row -->
+				<xsl:variable name="work-type"
+				  select="lower-case(normalize-space( (string(@type), string(ancestor::t:bibl[1]/@type))[. != ''][1] ))"/>
+
+				<!-- Map to display code -->
+				<xsl:variable name="type-initial">
+				  <xsl:choose>
+				    <xsl:when test="$work-type = 'majlis-headword'">D</xsl:when>
+				    <xsl:when test="$work-type = 'authorial'">AU</xsl:when>
+				    <xsl:when test="$work-type = 'attested'">AT</xsl:when>
+				    <xsl:when test="string-length($work-type) gt 0">
+				      <xsl:value-of select="upper-case(substring($work-type, 1, 2))"/>
+				    </xsl:when>
+				    <xsl:otherwise/>
+				  </xsl:choose>
+				</xsl:variable>
+
+				<xsl:if test="$type-initial != ''">
+				  <!--<div class="col-md-12 inline-h4" style="display:inline">-->
+  				    <div class="work-type-chip" title="{$work-type}">
+  				      <!--<span title="{$work-type}">-->
+				        <xsl:value-of select="$type-initial"/>
+				      <!-- </span>-->
+				    </div>
+				  <!--</div>-->
+				</xsl:if>
+				
 				<a target="_blank"
 				   href="{concat($nav-base, $rel)}">
 				  <!--
