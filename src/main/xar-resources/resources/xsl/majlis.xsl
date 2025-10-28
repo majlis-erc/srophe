@@ -1156,7 +1156,7 @@
                                 </div>
                             </div>
                         </div>
-                        <xsl:for-each
+                        <!--<xsl:for-each
                             select="t:persName[@type = 'canon'][string-length(normalize-space(.)) gt 2]">
                             <xsl:variable name="langClass">
                                 <xsl:choose>
@@ -1225,7 +1225,7 @@
                                     </xsl:choose>
                                 </div>
                             </div>
-                        </xsl:for-each>
+                        </xsl:for-each>-->
                         <xsl:for-each
                             select="t:persName[@type = 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
                             <xsl:variable name="langClass">
