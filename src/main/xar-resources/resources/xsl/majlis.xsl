@@ -1475,7 +1475,7 @@
                             <!--<div class="col-md-1 inline-h4">
                                 <xsl:value-of select="position()"/>
                             </div>-->
-                            <div class="col-md-10">
+                            <div class="col-md-10 person-biblio">
                                 <xsl:apply-templates select="."/>
                                 <!--
                                 <xsl:choose>
