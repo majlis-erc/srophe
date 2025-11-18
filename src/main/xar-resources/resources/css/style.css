@@ -479,6 +479,11 @@ pre {
 .text {margin:0}
 .title {border-bottom:1px solid grey}
 .title-journal, .title-monographic{font-style:italic;}
+/* Only titles in a person bibliography don't get border-bottom if the span has class="title"*/
+#mainMenuBibliography .person-biblio span[class^="title"] {
+    border-bottom: none !important;
+}
+
 .tooltip {
       padding:.25em;
       overflow:visible;
