@@ -1475,7 +1475,7 @@
                             <!--<div class="col-md-1 inline-h4">
                                 <xsl:value-of select="position()"/>
                             </div>-->
-                            <div class="col-md-10">
+                            <div class="col-md-10 person-biblio">
                                 <xsl:apply-templates select="."/>
                                 <!--
                                 <xsl:choose>
@@ -1900,7 +1900,8 @@
     </xsl:template>
 <!-- Work Titles -->
     <xsl:template match="t:bibl" mode="work-title">
-      <xsl:if test="t:title[@type != 'attested'][string-length(normalize-space(.)) gt 2]">
+    	      <!-- Exclude 'majlis-headword' titles from this collapsible as well as 'attested'-->
+      <xsl:if test="t:title[@type != 'attested' and @type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
 	  <xsl:variable name="workId" select="generate-id(.)"/>
 
 	  <div class="whiteBoxwShadow">
@@ -1946,7 +1947,8 @@
 
 		<!-- TITLE BLOCK SCOPED BY ID -->
 	      <div id="workTitles-{$workId}">
-		<xsl:for-each select="t:title[@type != 'attested'][string-length(normalize-space(.)) gt 2]">
+	      <!-- Exclude 'majlis-headword' titles from the rows as well as 'attested'-->
+		<xsl:for-each select="t:title[@type != 'attested' and @type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
 		  <xsl:variable name="langClass">
 		    <xsl:choose>
 		      <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang='en'">englishNames</xsl:when>
@@ -1974,7 +1976,9 @@
 		    <div class="col-md-1 inline-h4">Type</div>
 		    <div class="col-md-10">
 		      <xsl:choose>
-		        <xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>
+		        <!--<xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>-->
+		        <!-- Changed to set 'descriptive' title as the 1st priority--> 
+		        <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
 			<xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
 		        <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
 		      </xsl:choose>
