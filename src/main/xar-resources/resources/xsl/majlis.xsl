@@ -1900,8 +1900,8 @@
     </xsl:template>
 <!-- Work Titles -->
     <xsl:template match="t:bibl" mode="work-title">
-    	      <!-- Exclude 'majlis-headword' titles from this collapsible as well as 'attested'-->
-      <xsl:if test="t:title[@type != 'attested' and @type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
+    	      <!-- Exclude 'majlis-headword' and 'alternate' titles from this collapsible as well as 'attested'-->
+      <xsl:if test="t:title[@type != 'attested' and @type != 'majlis-headword' and @type != 'alternate'][string-length(normalize-space(.)) gt 2]">
 	  <xsl:variable name="workId" select="generate-id(.)"/>
 
 	  <div class="whiteBoxwShadow">
@@ -1947,8 +1947,8 @@
 
 		<!-- TITLE BLOCK SCOPED BY ID -->
 	      <div id="workTitles-{$workId}">
-	      <!-- Exclude 'majlis-headword' titles from the rows as well as 'attested'-->
-		<xsl:for-each select="t:title[@type != 'attested' and @type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
+	      <!-- Exclude 'majlis-headword' and 'alternate' titles from the rows as well as 'attested'-->
+		<xsl:for-each select="t:title[@type != 'attested' and @type != 'majlis-headword' and @type != 'alternate'][string-length(normalize-space(.)) gt 2]">
 		  <xsl:variable name="langClass">
 		    <xsl:choose>
 		      <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang='en'">englishNames</xsl:when>
