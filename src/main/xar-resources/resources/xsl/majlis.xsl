@@ -1666,7 +1666,8 @@
     </xsl:template>
     <!-- majlis-works -->
     <xsl:template match="*:works" mode="relatedWorks">
-        <xsl:if test="descendant::t:title[string-length(normalize-space(.)) gt 2]">
+    <!-- Make collapsible if there are any titles[@type != 'majlis-headword']-->
+        <xsl:if test="descendant::t:title[@type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" data-toggle="collapse" href="#mainMenuRelatedWorks"
@@ -1775,11 +1776,11 @@
                         </div>
                         -->
                     <!-- 
-		    Now group *all* your <t:title> elements by their work-ID tail. 
+		    Now group all the <t:title>[@type='majlis-headword'] elements by their work-ID tail. 
 		    Each group is one work-ID, and position() here is the *group* index.
 		    -->
 		    <xsl:for-each-group 
-		       select="descendant::t:body/t:bibl/t:title[string-length(normalize-space(.)) > 0]" 
+		       select="descendant::t:body/t:bibl/t:title[@type != 'majlis-headword'][string-length(normalize-space(.)) > 0]" 
 		       group-by="
 		         tokenize(
 		           substring-after(
