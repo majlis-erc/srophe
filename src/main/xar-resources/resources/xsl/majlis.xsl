@@ -23,28 +23,28 @@
 		      <!-- 1a–1c) Handle title preference hierarchy -->
 		      <xsl:choose>
 
-			<!-- 1a-0) Prefer English, 'authorial' if available -->
-			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='authorial' and @xml:lang='en']">
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[@type='authorial' and @xml:lang='en'][1]"/>
-			</xsl:when>
-
-			<!-- 1a-1) Else if any 'authorial' (but no @xml:lang='en'), take the first 'authorial' -->
-			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='authorial']">
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[@type='authorial'][1]"/>
-			</xsl:when>
-
-			<!-- 1b) Prefer English, 'majlis-headword' if available -->
+			<!-- 1a-0) Prefer English, 'majlis-headword' if available -->
 			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='majlis-headword' and @xml:lang='en']">
 			  <xsl:apply-templates
 			    select="t:text/t:body/t:bibl/t:title[@type='majlis-headword' and @xml:lang='en'][1]"/>
 			</xsl:when>
 
-			<!-- 1b) Else if any 'majlis-headword' (but no @xml:lang='en'), take the first 'majlis-headword' -->
+			<!-- 1a-1) Else if any 'majlis-headword' (but no @xml:lang='en'), take the first 'authorial' -->
 			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='majlis-headword']">
 			  <xsl:apply-templates
 			    select="t:text/t:body/t:bibl/t:title[@type='majlis-headword'][1]"/>
+			</xsl:when>
+
+			<!-- 1b) Prefer English, 'authorial' if available -->
+			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='authorial' and @xml:lang='en']">
+			  <xsl:apply-templates
+			    select="t:text/t:body/t:bibl/t:title[@type='authorial' and @xml:lang='en'][1]"/>
+			</xsl:when>
+
+			<!-- 1b) Else if any 'authorial' (but no @xml:lang='en'), take the first 'authorial' -->
+			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='authorial']">
+			  <xsl:apply-templates
+			    select="t:text/t:body/t:bibl/t:title[@type='authorial'][1]"/>
 			</xsl:when>
 
 			<!-- 1c) Otherwise (none of above cases at all), take the very first title -->
