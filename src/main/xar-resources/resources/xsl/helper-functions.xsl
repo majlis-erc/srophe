@@ -522,38 +522,53 @@
     <!-- Wrap text with @rend in appropriate html elements or html classes -->
     <xsl:template name="rend">
         <xsl:choose>
-            <xsl:when test="@rend">
-                <xsl:choose>
-                    <xsl:when test="@rend = 'bold'">
-                        <b>
-                            <xsl:call-template name="ref"/>
-                        </b>
-                    </xsl:when>
-                    <xsl:when test="@rend = 'italic'">
-                        <i>
-                            <xsl:call-template name="ref"/>
-                        </i>
-                    </xsl:when>
-                    <xsl:when test="@rend = ('superscript','sup')">
-                        <sup>
-                            <xsl:call-template name="ref"/>
-                        </sup>
-                    </xsl:when>
-                    <xsl:when test="@rend = ('subscript','sub')">
-                        <sub>
-                            <xsl:call-template name="ref"/>
-                        </sub>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <span class="tei-rend-{string(@rend)}">
-                            <xsl:call-template name="ref"/>
-                        </span>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="ref"/> 
-            </xsl:otherwise>
+	    <xsl:when test="@rend">
+	        <xsl:choose>
+	            <xsl:when test="@rend = 'h1'">
+	                <h1>
+	                    <xsl:call-template name="ref"/>
+	                </h1>
+	            </xsl:when>
+	            <xsl:when test="@rend = 'h2'">
+	                <h2>
+	                    <xsl:call-template name="ref"/>
+	                </h2>
+	            </xsl:when>
+    	            <xsl:when test="@rend = 'h3'">
+	                <h3>
+	                    <xsl:call-template name="ref"/>
+	                </h3>
+	            </xsl:when>
+	            <xsl:when test="@rend = 'bold'">
+	                <b>
+	                    <xsl:call-template name="ref"/>
+	                </b>
+	            </xsl:when>
+	            <xsl:when test="@rend = 'italic'">
+	                <i>
+	                    <xsl:call-template name="ref"/>
+	                </i>
+	            </xsl:when>
+	            <xsl:when test="@rend = ('superscript','sup')">
+	                <sup>  
+	                    <xsl:call-template name="ref"/>
+	                </sup>
+	            </xsl:when>
+	            <xsl:when test="@rend = ('subscript','sub')">
+	                <sub>
+	                    <xsl:call-template name="ref"/>
+	                </sub>
+	            </xsl:when>
+	            <xsl:otherwise>
+	                <span class="tei-rend-{string(@rend)}">
+	                    <xsl:call-template name="ref"/>
+	                </span>
+	            </xsl:otherwise>
+	        </xsl:choose>
+	    </xsl:when>
+	    <xsl:otherwise>
+	        <xsl:call-template name="ref"/>
+	    </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     <xsl:template name="ref">
