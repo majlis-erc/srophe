@@ -534,3 +534,284 @@ declare function data:element-search($element, $query){
     else ()  
 };
 :)
+
+(: Functions for new serch :)
+
+declare function data:advanced-block-search(
+  $collection as xs:string?,
+  $entity as xs:string?,
+  $fields as xs:string*,
+  $term as xs:string,
+  $type as xs:string
+) as node()* {
+  let $docs := data:advanced-entity-base($collection, $entity)
+  let $query := data:clean-string($term)
+  return
+    if(empty($fields))
+    then data:search-all-default-fields($docs, $entity, $query, $type)
+    else data:search-selected-fields($docs, $entity, $fields, $query, $type)
+};
+
+declare function data:advanced-entity-base(
+  $collection as xs:string?,
+  $entity as xs:string?
+) as node()* {
+  let $base :=
+    if($collection != '')
+    then collection(concat($config:data-root, '/', $collection))//tei:TEI
+    else collection($config:data-root)//tei:TEI
+
+  return
+    if($entity = 'person') then $base[.//tei:person]
+    else if($entity = 'place') then $base[.//tei:place]
+    else if($entity = 'work') then $base[.//tei:bibl or .//tei:titleStmt]
+    else if($entity = 'manuscript') then $base[.//tei:msDesc]
+    else $base
+};
+
+declare function data:search-all-default-fields(
+  $docs as node()*,
+  $entity as xs:string?,
+  $query as xs:string,
+  $type as xs:string
+) as node()* {
+  if($entity = 'person') then
+    $docs[
+      data:match-node(.//tei:persName, $query, $type) or
+      data:match-node(.//tei:note, $query, $type)
+    ]
+  else if($entity = 'place') then
+    $docs[
+      data:match-node(.//tei:placeName, $query, $type) or
+      data:match-node(.//tei:note, $query, $type)
+    ]
+  else if($entity = 'work') then
+    $docs[
+      data:match-node(.//tei:title, $query, $type) or
+      data:match-node(.//tei:author, $query, $type) or
+      data:match-node(.//tei:textLang, $query, $type) or
+      data:match-node(.//tei:term, $query, $type)
+    ]
+  else if($entity = 'manuscript') then
+    $docs[
+      data:match-node(.//tei:msContents, $query, $type) or
+      data:match-node(.//tei:physDesc, $query, $type) or
+      data:match-node(.//tei:history, $query, $type)
+    ]
+  else
+    $docs[
+      data:match-node(.//tei:body, $query, $type) or
+      data:match-node(.//tei:teiHeader, $query, $type)
+    ]
+};
+
+declare function data:search-selected-fields(
+  $docs as node()*,
+  $entity as xs:string?,
+  $fields as xs:string*,
+  $query as xs:string,
+  $type as xs:string
+) as node()* {
+  $docs[
+    some $field in $fields satisfies data:match-field(., $entity, $field, $query, $type)
+  ]
+};
+
+declare function data:match-field(
+  $doc as node(),
+  $entity as xs:string?,
+  $field as xs:string,
+  $query as xs:string,
+  $type as xs:string
+) as xs:boolean {
+  if($entity = 'person' and $field = 'name') then data:match-node($doc//tei:persName, $query, $type)
+  else if($entity = 'person' and $field = 'biography') then data:match-node($doc//tei:note, $query, $type)
+
+  else if($entity = 'place' and $field = 'name') then data:match-node($doc//tei:placeName, $query, $type)
+
+  else if($entity = 'work' and $field = 'title') then data:match-node($doc//tei:title, $query, $type)
+  else if($entity = 'work' and $field = 'author') then data:match-node($doc//tei:author, $query, $type)
+  else if($entity = 'work' and $field = 'language') then data:match-node($doc//tei:textLang, $query, $type)
+  else if($entity = 'work' and $field = 'subject') then data:match-node($doc//tei:term, $query, $type)
+
+  else if($entity = 'manuscript' and $field = 'content') then data:match-node($doc//tei:msContents, $query, $type)
+  else if($entity = 'manuscript' and $field = 'codicology') then data:match-node($doc//tei:physDesc, $query, $type)
+  else if($entity = 'manuscript' and $field = 'history') then data:match-node($doc//tei:history, $query, $type)
+
+  else false()
+};
+
+declare function data:match-node(
+  $nodes as node()*,
+  $query as xs:string,
+  $type as xs:string
+) as xs:boolean {
+  if(empty($nodes)) then false()
+  else if($type = 'exact') then
+    some $n in $nodes satisfies contains(lower-case(normalize-space(string($n))), lower-case($query))
+  else
+    some $n in $nodes satisfies ft:query($n, $query, data:search-options())
+};
+
+
+declare function data:default-fields-for-entity($entity as xs:string?) as xs:string* {
+  if($entity = 'manuscript') then ('content', 'codicology', 'history')
+  else if($entity = 'work') then ('title', 'author', 'language', 'subject')
+  else if($entity = 'person') then ('name', 'biography')
+  else if($entity = 'place') then ('name')
+  else ()
+};
+
+declare function data:field-path(
+  $entity as xs:string?,
+  $field as xs:string?
+) as xs:string? {
+  if($entity = 'manuscript' and $field = 'content') then 'descendant::tei:msContents'
+  else if($entity = 'manuscript' and $field = 'codicology') then 'descendant::tei:physDesc'
+  else if($entity = 'manuscript' and $field = 'history') then 'descendant::tei:history'
+
+  else if($entity = 'work' and $field = 'title') then 'descendant::tei:title'
+  else if($entity = 'work' and $field = 'author') then 'descendant::tei:author'
+  else if($entity = 'work' and $field = 'language') then 'descendant::tei:textLang'
+  else if($entity = 'work' and $field = 'subject') then 'descendant::tei:term'
+
+  else if($entity = 'person' and $field = 'name') then 'descendant::tei:persName'
+  else if($entity = 'person' and $field = 'biography') then 'descendant::tei:note'
+
+  else if($entity = 'place' and $field = 'name') then 'descendant::tei:placeName'
+  else ''
+};
+
+declare function data:field-query(
+  $path as xs:string,
+  $term as xs:string,
+  $type as xs:string
+) as xs:string {
+  if($type = 'exact') then
+    concat($path, "[contains(lower-case(normalize-space(.)), lower-case('", data:clean-string($term), "'))]")
+  else
+    concat($path, "[ft:query(., '", data:clean-string($term), "', data:search-options())]")
+};
+
+declare function data:advanced-field-clause(
+  $entity as xs:string?,
+  $fields as xs:string*,
+  $term as xs:string,
+  $type as xs:string
+) as xs:string {
+  let $selected :=
+    if(empty($fields)) then data:default-fields-for-entity($entity)
+    else $fields
+
+  let $clauses :=
+    for $field in $selected
+    let $path := data:field-path($entity, $field)
+    where $path != ''
+    return data:field-query($path, $term, $type)
+
+  return
+    if(empty($clauses)) then
+      concat("ft:query(., '", data:clean-string($term), "', data:search-options())")
+    else
+      string-join($clauses, ' or ')
+};
+
+declare function data:advanced-entity-filter($entity as xs:string?) as xs:string {
+  if($entity = 'manuscript') then 'descendant::tei:msDesc'
+  else if($entity = 'work') then 'descendant::tei:title or descendant::tei:bibl'
+  else if($entity = 'person') then 'descendant::tei:person or descendant::tei:persName'
+  else if($entity = 'place') then 'descendant::tei:place or descendant::tei:placeName'
+  else 'true()'
+};
+
+declare function data:advanced-general-keyword() as xs:string? {
+  let $q := normalize-space(request:get-parameter('generalKeyword', ''))
+  return
+    if($q = '') then ''
+    else concat(
+      "[",
+      "ft:query(descendant::tei:body, '", data:clean-string($q), "', data:search-options())",
+      " or ",
+      "ft:query(descendant::tei:teiHeader, '", data:clean-string($q), "', data:search-options())",
+      "]"
+    )
+};
+
+declare function data:advanced-block-query($n as xs:integer) as xs:string? {
+  let $term := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
+  let $entity := normalize-space(request:get-parameter(concat('entity_', $n), ''))
+  let $type := normalize-space(request:get-parameter(concat('searchType_', $n), 'similar'))
+  let $fields :=
+    let $raw := normalize-space(request:get-parameter(concat('teiElements_', $n), ''))
+    return
+      if($raw = '') then ()
+      else tokenize($raw, ',\s*')
+  let $fieldClause := data:advanced-field-clause($entity, $fields, $term, $type)
+  return
+    if($term = '') then ''
+    else if($entity != '') then
+      concat("[", data:advanced-entity-filter($entity), " and ", $fieldClause, "]")
+    else
+      concat("[", $fieldClause, "]")
+};
+
+declare function data:advanced-boolean-op($op as xs:string?) as xs:string {
+  if($op = 'OR') then 'or'
+  else if($op = 'NOT') then 'and not'
+  else 'and'
+};
+
+declare function data:combine-advanced-blocks(
+  $block1 as xs:string?,
+  $block2 as xs:string?,
+  $block3 as xs:string?
+) as xs:string? {
+  let $op2 := normalize-space(request:get-parameter('logicalOperator_2', 'AND'))
+  let $op3 := normalize-space(request:get-parameter('logicalOperator_3', 'AND'))
+
+  let $combined12 :=
+    if($block1 = '' and $block2 = '') then ''
+    else if($block1 = '') then $block2
+    else if($block2 = '') then $block1
+    else concat(
+      "[",
+      substring($block1, 2, string-length($block1) - 2),
+      " ",
+      data:advanced-boolean-op($op2),
+      " ",
+      substring($block2, 2, string-length($block2) - 2),
+      "]"
+    )
+
+  return
+    if($combined12 = '' and $block3 = '') then ''
+    else if($combined12 = '') then $block3
+    else if($block3 = '') then $combined12
+    else concat(
+      "[",
+      substring($combined12, 2, string-length($combined12) - 2),
+      " ",
+      data:advanced-boolean-op($op3),
+      " ",
+      substring($block3, 2, string-length($block3) - 2),
+      "]"
+    )
+};
+
+declare function data:create-advanced-query($collection as xs:string?) as xs:string? {
+  let $base := data:build-collection-path($collection)
+  let $general := data:advanced-general-keyword()
+  let $block1 := data:advanced-block-query(1)
+  let $block2 := data:advanced-block-query(2)
+  let $block3 := data:advanced-block-query(3)
+  let $combined := data:combine-advanced-blocks($block1, $block2, $block3)
+
+  return concat(
+    $base,
+    $general,
+    $combined,
+    slider:date-filter(())
+  )
+};
+
+
