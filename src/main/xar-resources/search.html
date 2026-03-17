@@ -3,106 +3,98 @@
      data-template-with="templates/page.html"
      data-template-at="content">
 
-  <div class="top-padding contentPadding">
+  <div class="top-padding contentPadding search-page">
+    <div class="search-page-shell">
+      <form id="advancedSearchForm" method="get" class="form-horizontal search-form-card" role="form">
+	<br/>
+        <h1 class="search-header search-page-title">Search</h1>
+        <p class="search-page-intro">Search across manuscripts, works, persons, and places using keyword or advanced criteria.</p>
 
-    <form id="advancedSearchForm" method="get" class="form-horizontal indent" role="form">
+        <div class="whiteBoxwShadow search-main-panel">
 
-      <h1 class="search-header">Search</h1>
-
-      <div class="whiteBoxwShadow">
-
-        <div class="form-group">
-          <label for="generalKeyword" class="control-label">General Keyword</label>
-          <div class="input-group general-keyword-wrap">
-	    <input type="text"
-		   id="generalKeyword"
-		   name="generalKeyword"
-		   class="form-control"
-		   placeholder="Search across all entities"/>
-	    <div class="input-group-btn">
-	    <button type="button"
-        	    class="btn btn-default keyboard-trigger"
-                    aria-label="Open keyboard">
-              ⌨
-	    </button>
-	  </div>
-	</div>
-      </div>
-
-        <h3>Advanced Search</h3>
-
-        <div id="criteriaContainer"></div>
-
-        <div class="form-group">
-          <button type="button" id="addCriteria" class="btn btn-default">Add More Criteria</button>
-        </div>
-
-        <div id="timeSpanFilter" class="whiteBoxwShadow">
-          <h4>Filter by Year</h4>
-
-          <div class="form-group year-input-wrap">
-            <label for="startYear" class="control-label">Start Year</label>
-            <input type="number"
-                   id="startYear"
-                   name="startYear"
-                   class="form-control"
-                   placeholder="e.g., 500"/>
+          <div class="form-group general-keyword-group">
+            <label for="generalKeyword" class="control-label">General Keyword</label>
+            <div class="input-group general-keyword-wrap">
+              <input type="text"
+                     id="generalKeyword"
+                     name="generalKeyword"
+                     class="form-control"
+                     placeholder="Search across all entities"/>
+              <div class="input-group-btn">
+                <button type="button"
+                        class="btn btn-default keyboard-trigger"
+                        aria-label="Open keyboard">⌨</button>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group year-input-wrap">
-            <label for="endYear" class="control-label">End Year</label>
-            <input type="number"
-                   id="endYear"
-                   name="endYear"
-                   class="form-control"
-                   placeholder="e.g., 1500"/>
+	  <br/>
+          <h3 class="search-section-title">Advanced Search</h3>
+	  <br/>
+	  
+          <div id="criteriaContainer" class="criteria-container"></div>
+
+          <div class="form-group add-criteria-row">
+            <button type="button" id="addCriteria" class="btn btn-default">Add More Criteria</button>
           </div>
+
+          <div id="timeSpanFilter" class="whiteBoxwShadow search-subpanel">
+            <h4>Filter by Year</h4>
+            <div class="year-range-grid">
+              <div class="form-group year-input-wrap">
+                <label for="startYear" class="control-label">Start Year</label>
+                <input type="number"
+                       id="startYear"
+                       name="startYear"
+                       class="form-control"
+                       placeholder="e.g., 500"/>
+              </div>
+
+              <div class="form-group year-input-wrap">
+                <label for="endYear" class="control-label">End Year</label>
+                <input type="number"
+                       id="endYear"
+                       name="endYear"
+                       class="form-control"
+                       placeholder="e.g., 1500"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="search-actions">
+            <button type="submit" class="btn btn-info search-submit-btn">Search</button>
+            <button type="reset" class="btn search-clear-btn">Clear</button>
+          </div>
+
         </div>
+      </form>
 
-        <div class="pull-right">
-          <button type="submit" class="btn btn-info">Search</button>
-          <button type="reset" class="btn">Clear</button>
-        </div>
-
-        <br class="clearfix"/>
-        <br/>
-
-      </div>
-    </form>
-
-    <div class="results">
+      <div class="results search-results-wrap">
         <div data-template="search:debug-search" data-template-collection="" data-template-sort-element=""></div>
         <div data-template="search:debug-collection"></div>
-      <div data-template="search:search-data">
-        <div data-template="app:pageination"
-             data-template-search-string="yes"
-             data-template-sort-options="title,author,pubDate"/>
-        <div data-template="search:search-summary"></div>
-        <div class="whiteBoxwShadow">
-          <div data-template="search:show-hits" data-template-kwic="yes"></div>
+        <div data-template="search:search-data">
+          <div data-template="app:pageination"
+               data-template-search-string="yes"
+               data-template-sort-options="title,author,pubDate"></div>
+          <div data-template="search:search-summary"></div>
+          <div class="whiteBoxwShadow search-results-panel">
+            <div data-template="search:show-hits" data-template-kwic="yes"></div>
+          </div>
+          <div data-template="app:pageination"></div>
         </div>
-        <div data-template="app:pageination"/>
       </div>
     </div>
-
   </div>
 
   <div id="sharedSearchKeyboard" class="shared-search-keyboard" style="display:none;">
     <div class="keyboard-toolbar">
-      <button type="button" class="btn btn-default keyboard-tab active" data-keyboard="arabic">Arabic
-      </button>
+      <button type="button" class="btn btn-default keyboard-tab active" data-keyboard="arabic">Arabic</button>
       <button type="button" class="btn btn-default keyboard-tab" data-keyboard="hebrew">Hebrew</button>
-      <button type="button" class="btn btn-default keyboard-tab" data-keyboard="translit">
-    English / Transliteration
-      </button>
+      <button type="button" class="btn btn-default keyboard-tab" data-keyboard="translit">English / Transliteration</button>
       <button type="button" class="btn btn-default keyboard-close">Close</button>
     </div>
-
     <div class="keyboard-body" id="keyboardBody"></div>
-  
-  
   </div>
-
 
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
@@ -136,7 +128,7 @@
     function createCriteriaBlock(idx) {
       const logicalOperatorHtml = idx > 1
         ? `
-          <div class="logical-operator-block narrow-select-wrap">
+          <div class="logical-operator-block">
             <label for="logicalOperator_${idx}">Operator</label>
             <select class="form-control logicalOperator" id="logicalOperator_${idx}" name="logicalOperator_${idx}">
               <option value="AND">AND</option>
@@ -147,65 +139,67 @@
         : '';
 
       return `
-        <div class="criteria-block" data-index="${idx}">
+        <div class="criteria-block search-criteria-card" data-index="${idx}">
           ${logicalOperatorHtml}
 
-          <div class="form-group">
-            <label for="searchTerm_${idx}">Search Term</label>
-            <div class="input-group term-input-wrap">
-              <input type="text"
-                     class="form-control searchTerm"
-                     id="searchTerm_${idx}"
-                     name="searchTerm_${idx}"/>
-              <div class="input-group-btn">
-	      <button type="button"
-                     class="btn btn-default keyboard-trigger"
-        	     aria-label="Open keyboard">
-                 ⌨
-	      </button>
-  	    </div>
-	  </div>
-        </div>
+          <div class="criteria-main-grid">
+            
+            <div class="form-group search-term-group">
+              <br/>
+              <label for="searchTerm_${idx}">Search Term</label>
+              <div class="input-group term-input-wrap">
+                <input type="text"
+                       class="form-control searchTerm"
+                       id="searchTerm_${idx}"
+                       name="searchTerm_${idx}"/>
+                <div class="input-group-btn">
+                  <button type="button"
+                          class="btn btn-default keyboard-trigger"
+                          aria-label="Open keyboard">⌨</button>
+                </div>
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label>Search Type</label>
-            <div>
-              <label>
-                <input type="radio" class="searchType" name="searchType_${idx}" value="similar" checked="checked"/> Similar
-              </label>
-              <label>
-                <input type="radio" class="searchType" name="searchType_${idx}" value="exact"/> Exact
-              </label>
+            <div class="form-group search-type-group">
+              <br/>
+              <label>Search Type</label>
+              <div class="search-type-options">
+                <label><input type="radio" class="searchType" name="searchType_${idx}" value="similar" checked="checked"/> Similar</label>
+                <label><input type="radio" class="searchType" name="searchType_${idx}" value="exact"/> Exact</label>
+              </div>
+            </div>
+
+            <div class="form-group narrow-select-wrap entity-group">
+              <br/>
+              <label for="entity_${idx}">Entity</label>
+              <select class="form-control entitySelect" id="entity_${idx}" name="entity_${idx}">
+                <option value="">-- Select Entity --</option>
+                <option value="manuscript">Manuscript</option>
+                <option value="work">Work</option>
+                <option value="person">Person</option>
+                <option value="place">Place</option>
+              </select>
+            </div>
+
+            <div class="form-group teiElementsContainer narrow-select-wrap fields-group" style="display:none;">
+             <br/>
+             <label for="teiElements_${idx}">Fields</label>
+              <select multiple="multiple"
+                      class="form-control teiElementsSelect"
+                      id="teiElements_${idx}"
+                      name="teiElementsUi_${idx}"></select>
+              <input type="hidden"
+                     class="teiElementsHidden"
+                     id="teiElementsHidden_${idx}"
+                     name="teiElements_${idx}"
+                     value=""/>
             </div>
           </div>
 
-          <div class="form-group narrow-select-wrap">
-            <label for="entity_${idx}">Entity</label>
-            <select class="form-control entitySelect" id="entity_${idx}" name="entity_${idx}">
-              <option value="">-- Select Entity --</option>
-              <option value="manuscript">Manuscript</option>
-              <option value="work">Work</option>
-              <option value="person">Person</option>
-              <option value="place">Place</option>
-            </select>
+          <div class="criteria-actions">
+              <button type="button" class="btn btn-sm btn-warning clearCriteria">Clear</button>
+              <button type="button" class="btn btn-sm btn-danger removeCriteria">Remove</button>
           </div>
-
-          <div class="form-group teiElementsContainer narrow-select-wrap" style="display:none;">
-            <label for="teiElements_${idx}">Fields</label>
-            <select multiple="multiple"
-                    class="form-control teiElementsSelect"
-                    id="teiElements_${idx}"
-                    name="teiElementsUi_${idx}"></select>
-            <input type="hidden"
-                   class="teiElementsHidden"
-                   id="teiElementsHidden_${idx}"
-                   name="teiElements_${idx}"
-                   value=""/>
-          </div>
-          
-          <button type="button" class="btn btn-sm btn-warning clearCriteria">Clear</button>
-          <button type="button" class="btn btn-sm btn-danger removeCriteria">Remove</button>
-
         </div>
       `;
     }
@@ -214,15 +208,11 @@
       $select.empty();
       if (!teiMapping[entity]) return;
 
-      teiMapping[entity].forEach(item => {
-        const $opt = $('<option>')
-          .val(item.value)
-          .text(item.label);
-
+      teiMapping[entity].forEach(function(item) {
+        const $opt = $('<option>').val(item.value).text(item.label);
         if (selectedValues.includes(item.value)) {
           $opt.prop('selected', true);
         }
-
         $select.append($opt);
       });
     }
@@ -237,7 +227,7 @@
           logicalWrap.remove();
         } else if (!logicalWrap.length) {
           $(this).prepend(`
-            <div class="logical-operator-block narrow-select-wrap">
+            <div class="logical-operator-block">
               <label for="logicalOperator_${n}">Operator</label>
               <select class="form-control logicalOperator" id="logicalOperator_${n}" name="logicalOperator_${n}">
                 <option value="AND">AND</option>
@@ -326,7 +316,7 @@
         }
       }
     }
-    
+
     function resetAdvancedSearchFormToDefaults() {
       const form = document.getElementById('advancedSearchForm');
       if (form) {
@@ -336,79 +326,67 @@
       $('#generalKeyword').val('');
       $('#startYear').val('');
       $('#endYear').val('');
-
       $('#criteriaContainer').empty();
       criteriaCount = 0;
       addCriteriaBlock();
-}
+    }
 
-      const keyboardLayouts = {
-        arabic: [
-    'ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض',
-    'ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي','ء','أ',
-    'إ','آ','ة','ى','ؤ','ئ','َ','ُ','ِ','ّ','ْ'
-  ],
-        hebrew: [
-    'א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס',
-    'ע','פ','צ','ק','ר','ש','ת','ך','ם','ן','ף','ץ'
-  ],
-        translit: [
-	    'ā','ī','ū','ḍ','ḥ','ṣ','ṭ','ẓ','ʿ','ʾ','ē','ō',
-	    'A','B','C','D','E','F','G','H','I','J','K','L','M',
-	    'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
-	  ]
-};
-    
+    const keyboardLayouts = {
+      arabic: ['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي','ء','أ','إ','آ','ة','ى','ؤ','ئ','َ','ُ','ِ','ّ','ْ'],
+      hebrew: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת','ך','ם','ן','ף','ץ'],
+      translit: ['ā','ī','ū','ḍ','ḥ','ṣ','ṭ','ẓ','ʿ','ʾ','ē','ō','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    };
+
     function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
-function renderKeyboard(layoutName) {
-  const chars = keyboardLayouts[layoutName] || [];
-  const html = chars.map(ch =>
-    `<button type="button" class="btn btn-default keyboard-insert" data-char="${escapeHtml(ch)}">${escapeHtml(ch)}</button>`
-  ).join('');
+    function renderKeyboard(layoutName) {
+      const chars = keyboardLayouts[layoutName] || [];
+      const html = chars.map(function(ch) {
+        return `<button type="button" class="btn btn-default keyboard-insert" data-char="${escapeHtml(ch)}">${escapeHtml(ch)}</button>`;
+      }).join('');
 
-  $('#keyboardBody').html(html);
-  $('.keyboard-tab').removeClass('active');
-  $(`.keyboard-tab[data-keyboard="${layoutName}"]`).addClass('active');
-}
+      $('#keyboardBody').html(html);
+      $('.keyboard-tab').removeClass('active');
+      $(`.keyboard-tab[data-keyboard="${layoutName}"]`).addClass('active');
+    }
 
-function insertAtCursor(input, text) {
-  const start = input.selectionStart || 0;
-  const end = input.selectionEnd || 0;
-  const value = input.value || '';
-  input.value = value.slice(0, start) + text + value.slice(end);
-  input.focus();
-  input.setSelectionRange(start + text.length, start + text.length);
-}
+    function insertAtCursor(input, text) {
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      const value = input.value || '';
+      input.value = value.slice(0, start) + text + value.slice(end);
+      input.focus();
+      input.setSelectionRange(start + text.length, start + text.length);
+    }
 
-function openSharedKeyboard(buttonEl) {
-  const $button = $(buttonEl);
-  const $group = $button.closest('.input-group');
-  const $input = $group.find('input[type="text"], textarea').first();
+    function openSharedKeyboard(buttonEl) {
+      const $button = $(buttonEl);
+      const $group = $button.closest('.input-group');
+      const $input = $group.find('input[type="text"], textarea').first();
 
-  activeInput = $input.length ? $input.get(0) : null;
-  if (!activeInput) return;
+      activeInput = $input.length ? $input.get(0) : null;
+      if (!activeInput) return;
 
-  const $menu = $('#sharedSearchKeyboard');
-  const offset = $button.offset();
+      const $menu = $('#sharedSearchKeyboard');
+      const offset = $button.offset();
 
-  renderKeyboard('arabic');
+      renderKeyboard('arabic');
 
-  $menu.css({
-    position: 'absolute',
-    top: offset.top + $button.outerHeight() + 6,
-    left: offset.left,
-    zIndex: 9999
-  }).show();
-}
-    
+      $menu.css({
+        position: 'absolute',
+        top: offset.top + $button.outerHeight() + 6,
+        left: Math.max(16, offset.left - 120),
+        zIndex: 9999
+      }).show();
+    }
+
     $(document).ready(function() {
       const shouldClearAfterSubmit =
         sessionStorage.getItem('clearAdvancedSearchFormAfterSubmit') === '1' &&
@@ -459,32 +437,32 @@ function openSharedKeyboard(buttonEl) {
           $cont.hide();
         }
       });
-      
-        $(document).on('click', '.keyboard-trigger', function(e) {
-    e.preventDefault();
-    openSharedKeyboard(this);
-  });
 
-  $(document).on('click', '.keyboard-tab', function() {
-    const layoutName = $(this).attr('data-keyboard');
-    renderKeyboard(layoutName);
-  });
+      $(document).on('click', '.keyboard-trigger', function(e) {
+        e.preventDefault();
+        openSharedKeyboard(this);
+      });
 
-  $(document).on('click', '.keyboard-insert', function() {
-    if (activeInput) {
-      insertAtCursor(activeInput, $(this).attr('data-char'));
-    }
-  });
+      $(document).on('click', '.keyboard-tab', function() {
+        const layoutName = $(this).attr('data-keyboard');
+        renderKeyboard(layoutName);
+      });
 
-  $(document).on('click', '.keyboard-close', function() {
-    $('#sharedSearchKeyboard').hide();
-  });
+      $(document).on('click', '.keyboard-insert', function() {
+        if (activeInput) {
+          insertAtCursor(activeInput, $(this).attr('data-char'));
+        }
+      });
 
-  $(document).on('click', function(e) {
-    if (!$(e.target).closest('#sharedSearchKeyboard, .keyboard-trigger').length) {
-      $('#sharedSearchKeyboard').hide();
-    }
-  });
+      $(document).on('click', '.keyboard-close', function() {
+        $('#sharedSearchKeyboard').hide();
+      });
+
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#sharedSearchKeyboard, .keyboard-trigger').length) {
+          $('#sharedSearchKeyboard').hide();
+        }
+      });
 
       $('#advancedSearchForm').on('submit', function() {
         $('.criteria-block').each(function() {

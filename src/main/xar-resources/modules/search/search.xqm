@@ -79,6 +79,9 @@ declare %templates:wrap function search:search-summary(
   let $general := normalize-space(request:get-parameter('generalKeyword', ''))
   let $startYear := normalize-space(request:get-parameter('startYear', ''))
   let $endYear := normalize-space(request:get-parameter('endYear', ''))
+  let $resultCount :=
+    if($model?hits) then count($model?hits)
+    else 0
 
   let $criteria :=
     for $n in 1 to 3
@@ -126,34 +129,38 @@ declare %templates:wrap function search:search-summary(
     if(not($hasSearch)) then ()
     else
       <div xmlns="http://www.w3.org/1999/xhtml" class="search-summary-box">
-        <h4>Applied Search Criteria</h4>
+        <div class="search-summary-header">
+          <h4 class="search-summary-title">Applied Search Criteria</h4>
+          <span class="search-summary-count">{$resultCount} result{if($resultCount = 1) then '' else 's'}</span>
+        </div>
+        <div class="search-summary-content">
+          {
+            if($general != '') then
+              <div class="search-summary-row">
+                <span class="search-summary-chip">General Keyword: {$general}</span>
+              </div>
+            else ()
+          }
 
-        {
-          if($general != '') then
-            <div class="search-summary-row">
-              <span class="search-summary-chip">General Keyword: {$general}</span>
-            </div>
-          else ()
-        }
+          {$criteria}
 
-        {$criteria}
-
-        {
-          if($startYear != '' or $endYear != '') then
-            <div class="search-summary-row">
-              {
-                if($startYear != '') then
-                  <span class="search-summary-chip">Start Year: {$startYear}</span>
-                else ()
-              }
-              {
-                if($endYear != '') then
-                  <span class="search-summary-chip">End Year: {$endYear}</span>
-                else ()
-              }
-            </div>
-          else ()
-        }
+          {
+            if($startYear != '' or $endYear != '') then
+              <div class="search-summary-row">
+                {
+                  if($startYear != '') then
+                    <span class="search-summary-chip">Start Year: {$startYear}</span>
+                  else ()
+                }
+                {
+                  if($endYear != '') then
+                    <span class="search-summary-chip">End Year: {$endYear}</span>
+                  else ()
+                }
+              </div>
+            else ()
+          }
+        </div>
       </div>
 };
 
