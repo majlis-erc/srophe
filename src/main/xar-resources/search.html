@@ -8,7 +8,7 @@
       <form id="advancedSearchForm" method="get" class="form-horizontal search-form-card" role="form">
 	<br/>
         <h1 class="search-header search-page-title">Search</h1>
-        <p class="search-page-intro">Search across manuscripts, works, persons, and places using keyword or advanced criteria.</p>
+        
 
         <div class="whiteBoxwShadow search-main-panel">
 
@@ -31,6 +31,7 @@
 	  <br/>
           <h3 class="search-section-title">Advanced Search</h3>
 	  <br/>
+	  <p class="search-page-intro">Search across manuscripts, works, persons, and places using keyword or advanced criteria.</p>
 	  
           <div id="criteriaContainer" class="criteria-container"></div>
 
@@ -70,18 +71,18 @@
       </form>
 
       <div class="results search-results-wrap">
-        <div data-template="search:debug-search" data-template-collection="" data-template-sort-element=""></div>
-        <div data-template="search:debug-collection"></div>
-        <div data-template="search:search-data">
-          <div data-template="app:pageination"
-               data-template-search-string="yes"
-               data-template-sort-options="title,author,pubDate"></div>
-          <div data-template="search:search-summary"></div>
-          <div class="whiteBoxwShadow search-results-panel">
+	<div data-template="search:search-data" data-template-collection="" data-template-sort-element="">
+	  <div data-template="search:debug-search" data-template-collection="" data-template-sort-element=""></div>
+	  <div data-template="search:debug-collection"></div>
+	  <div data-template="app:pageination"
+	       data-template-search-string="yes"
+	       data-template-sort-options="title,author,pubDate"></div>
+	  <div data-template="search:search-summary"></div>
+	  <div class="whiteBoxwShadow search-results-panel">
             <div data-template="search:show-hits" data-template-kwic="yes"></div>
-          </div>
-          <div data-template="app:pageination"></div>
-        </div>
+	  </div>
+	  <div data-template="app:pageination"></div>
+	</div>
       </div>
     </div>
   </div>

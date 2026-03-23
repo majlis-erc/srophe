@@ -564,7 +564,7 @@ declare function data:advanced-entity-base(
   return
     if($entity = 'person') then $base[.//tei:person]
     else if($entity = 'place') then $base[.//tei:place]
-    else if($entity = 'work') then $base[.//tei:bibl or .//tei:titleStmt]
+    else if($entity = 'work') then $base[.//tei:body/tei:bibl]
     else if($entity = 'manuscript') then $base[.//tei:msDesc]
     else $base
 };
@@ -718,9 +718,9 @@ declare function data:advanced-field-clause(
 
 declare function data:advanced-entity-filter($entity as xs:string?) as xs:string {
   if($entity = 'manuscript') then 'descendant::tei:msDesc'
-  else if($entity = 'work') then 'descendant::tei:title or descendant::tei:bibl'
-  else if($entity = 'person') then 'descendant::tei:person or descendant::tei:persName'
-  else if($entity = 'place') then 'descendant::tei:place or descendant::tei:placeName'
+  else if($entity = 'work') then 'descendant::tei:body/tei:bibl'
+  else if($entity = 'person') then 'descendant::tei:listPerson'
+  else if($entity = 'place') then 'descendant::tei:listPlace'
   else 'true()'
 };
 
@@ -737,6 +737,21 @@ declare function data:advanced-general-keyword() as xs:string? {
     )
 };
 
+declare function data:all-entity-fields-clause(
+  $term as xs:string,
+  $type as xs:string
+) as xs:string {
+  let $entities := ('manuscript', 'work', 'person', 'place')
+  let $clauses :=
+    for $e in $entities
+    return concat(
+      '((',  data:advanced-entity-filter($e), ') and (',
+      data:advanced-field-clause($e, (), $term, $type),
+      '))'
+    )
+  return string-join($clauses, ' or ')
+};
+
 declare function data:advanced-block-query($n as xs:integer) as xs:string? {
   let $term := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
   let $entity := normalize-space(request:get-parameter(concat('entity_', $n), ''))
@@ -746,11 +761,17 @@ declare function data:advanced-block-query($n as xs:integer) as xs:string? {
     return
       if($raw = '') then ()
       else tokenize($raw, ',\s*')
-  let $fieldClause := data:advanced-field-clause($entity, $fields, $term, $type)
+
+  let $fieldClause :=
+    if($entity = '' and empty($fields)) then
+      data:all-entity-fields-clause($term, $type)
+    else
+      data:advanced-field-clause($entity, $fields, $term, $type)
+
   return
     if($term = '') then ''
     else if($entity != '') then
-      concat("[", data:advanced-entity-filter($entity), " and ", $fieldClause, "]")
+      concat("[(", data:advanced-entity-filter($entity), ") and (", $fieldClause, ")]")
     else
       concat("[", $fieldClause, "]")
 };
@@ -800,11 +821,19 @@ declare function data:combine-advanced-blocks(
 
 declare function data:create-advanced-query($collection as xs:string?) as xs:string? {
   let $base := data:build-collection-path($collection)
-  let $general := data:advanced-general-keyword()
   let $block1 := data:advanced-block-query(1)
   let $block2 := data:advanced-block-query(2)
   let $block3 := data:advanced-block-query(3)
   let $combined := data:combine-advanced-blocks($block1, $block2, $block3)
+
+  let $hasAdvancedTerms :=
+    normalize-space(request:get-parameter('searchTerm_1', '')) != '' or
+    normalize-space(request:get-parameter('searchTerm_2', '')) != '' or
+    normalize-space(request:get-parameter('searchTerm_3', '')) != ''
+
+  let $general :=
+    if($hasAdvancedTerms) then ''
+    else data:advanced-general-keyword()
 
   return concat(
     $base,

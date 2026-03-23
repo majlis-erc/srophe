@@ -56,10 +56,13 @@ declare %templates:wrap function search:search-data(
       then data:create-advanced-query($collection)
       else if($collection = 'bibl')
       then bibls:query-string()
-      else ()
+      else concat(
+        data:build-collection-path($collection),
+        data:create-query($collection),
+        slider:date-filter(())
+      )
 
-  let $hits :=
-      data:search($collection, $queryExpr, $sort-element)
+  let $hits := data:search($collection, $queryExpr, $sort-element)
 
   return map {
     "hits" :
@@ -67,7 +70,8 @@ declare %templates:wrap function search:search-data(
       then $hits
       else if(ends-with(request:get-url(), 'search.html'))
       then ()
-      else $hits
+      else $hits,
+    "queryExpr" : $queryExpr
   }
 };
 
@@ -187,45 +191,88 @@ declare %templates:wrap function search:debug-search(
   $collection as xs:string?,
   $sort-element as xs:string?
 ) {
-  let $has-advanced :=
-      normalize-space(request:get-parameter('generalKeyword', '')) != '' or
-      normalize-space(request:get-parameter('searchTerm_1', '')) != '' or
-      normalize-space(request:get-parameter('searchTerm_2', '')) != '' or
-      normalize-space(request:get-parameter('searchTerm_3', '')) != '' or
-      normalize-space(request:get-parameter('startYear', '')) != '' or
-      normalize-space(request:get-parameter('endYear', '')) != ''
+  let $generalKeyword := normalize-space(request:get-parameter('generalKeyword', ''))
+  let $startYear      := normalize-space(request:get-parameter('startYear', ''))
+  let $endYear        := normalize-space(request:get-parameter('endYear', ''))
 
-  let $queryExpr :=
-      if($has-advanced)
-      then data:create-advanced-query($collection)
-      else if($collection = 'bibl')
-      then bibls:query-string()
-      else concat(
-        data:build-collection-path($collection),
-        data:create-query($collection),
-        slider:date-filter(())
-      )
+  let $hasAdvancedTerms :=
+    normalize-space(request:get-parameter('searchTerm_1', '')) != '' or
+    normalize-space(request:get-parameter('searchTerm_2', '')) != '' or
+    normalize-space(request:get-parameter('searchTerm_3', '')) != ''
 
-  let $hits := data:search($collection, $queryExpr, $sort-element)
+  let $hasAny :=
+    $generalKeyword != '' or $hasAdvancedTerms or $startYear != '' or $endYear != ''
+
+  (: Reuse queryExpr already computed by search:search-data :)
+  let $queryExpr := $model?queryExpr
+  let $hits      := $model?hits
+
+  (: Per-block breakdown :)
+  let $blocks :=
+    for $n in 1 to 3
+    let $term    := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
+    let $entity  := normalize-space(request:get-parameter(concat('entity_', $n), ''))
+    let $type    := normalize-space(request:get-parameter(concat('searchType_', $n), 'similar'))
+    let $fields  := normalize-space(request:get-parameter(concat('teiElements_', $n), ''))
+    let $op      := normalize-space(request:get-parameter(concat('logicalOperator_', $n), 'AND'))
+    let $clause  := data:advanced-block-query($n)
+    where $term != '' or $entity != '' or $fields != ''
+    return
+      <div xmlns="http://www.w3.org/1999/xhtml"
+           style="margin:.5em 0; padding:.5em; background:#fffbe6; border:1px solid #ffe58f;">
+        <strong>Block {$n}</strong>
+        { if($n gt 1) then <span> [Operator: {$op}]</span> else () }
+        <table style="border-collapse:collapse; margin-top:.4em;">
+          <tr><td style="padding:2px 8px;"><em>term</em></td>    <td>{if($term   != '') then $term   else '(empty)'}</td></tr>
+          <tr><td style="padding:2px 8px;"><em>entity</em></td>  <td>{if($entity != '') then $entity else '(none — all entities)'}</td></tr>
+          <tr><td style="padding:2px 8px;"><em>fields</em></td>  <td>{if($fields != '') then $fields else '(none — defaults)'}</td></tr>
+          <tr><td style="padding:2px 8px;"><em>type</em></td>    <td>{$type}</td></tr>
+          <tr><td style="padding:2px 8px;"><em>clause</em></td>
+              <td><pre style="margin:0; white-space:pre-wrap;">{if($clause != '') then $clause else '(no clause — term empty)'}</pre></td></tr>
+        </table>
+      </div>
 
   return
-    <div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff3cd; border:1px solid #e0b800; padding:1em; margin:1em 0;">
-      <h3>DEBUG SEARCH</h3>
-      <p><strong>collection:</strong> {string($collection)}</p>
-      <p><strong>sort-element:</strong> {string($sort-element)}</p>
-      <p><strong>has-advanced:</strong> {string($has-advanced)}</p>
-      <p><strong>request params:</strong> {string-join(request:get-parameter-names(), ', ')}</p>
-      <p><strong>queryExpr:</strong></p>
-      <pre>{string($queryExpr)}</pre>
+    <div xmlns="http://www.w3.org/1999/xhtml"
+         style="background:#fff3cd; border:1px solid #e0b800; padding:1em; margin:1em 0; font-size:.9em;">
+      <h3 style="margin-top:0;">DEBUG SEARCH</h3>
+
+      <p><strong>collection:</strong> {if($collection != '') then $collection else '(all)'}</p>
+      <p><strong>sort-element:</strong> {if($sort-element != '') then $sort-element else '(none)'}</p>
+      <p><strong>has-search:</strong> {string($hasAny)}</p>
+      <p><strong>has-advanced-terms:</strong> {string($hasAdvancedTerms)}</p>
+      <p><strong>general-keyword:</strong> {if($generalKeyword != '') then $generalKeyword else '(empty)'}</p>
+      <p><strong>year range:</strong>
+        {if($startYear != '') then concat('from ', $startYear) else ''}
+        {if($endYear   != '') then concat(' to ', $endYear)   else ''}
+        {if($startYear = '' and $endYear = '') then '(none)' else ()}
+      </p>
+      <p><strong>mode:</strong>
+        {if($hasAdvancedTerms) then 'ADVANCED (general keyword ignored)'
+         else if($generalKeyword != '') then 'GENERAL KEYWORD only'
+         else '(no search terms)'}
+      </p>
+
+      { if(exists($blocks)) then (
+          <p><strong>Advanced blocks:</strong></p>,
+          $blocks
+        ) else <p><em>No advanced blocks active.</em></p>
+      }
+
+      <p><strong>Full query expression:</strong></p>
+      <pre style="white-space:pre-wrap; background:#fffff0; padding:.5em;">{
+        if(exists($queryExpr)) then string($queryExpr) else '(none)'
+      }</pre>
+
       <p><strong>hit-count:</strong> {count($hits)}</p>
       <ul>{
         for $hit in subsequence($hits, 1, 5)
-        let $id := string(($hit/descendant::tei:idno)[1])
+        let $id := string(($hit/descendant::tei:idno[@type='URI'])[1])
         return <li>{$id}</li>
       }</ul>
     </div>
 };
-(: debug for new serch - end :)
+(: debug for new search - end :)
 
 (:~ 
  : Builds results output
