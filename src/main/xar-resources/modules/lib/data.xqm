@@ -670,13 +670,13 @@ declare function data:field-path(
   else if($entity = 'manuscript' and $field = 'codicology') then 'descendant::tei:physDesc'
   else if($entity = 'manuscript' and $field = 'history') then 'descendant::tei:history'
 
-  else if($entity = 'work' and $field = 'title') then 'descendant::tei:title'
+  else if($entity = 'work' and $field = 'title') then 'descendant::tei:body/tei:bibl/tei:title'
   else if($entity = 'work' and $field = 'author') then 'descendant::tei:author'
   else if($entity = 'work' and $field = 'language') then 'descendant::tei:textLang'
-  else if($entity = 'work' and $field = 'subject') then 'descendant::tei:term'
+  else if($entity = 'work' and $field = 'subject') then 'descendant::tei:note'
 
   else if($entity = 'person' and $field = 'name') then 'descendant::tei:persName'
-  else if($entity = 'person' and $field = 'biography') then 'descendant::tei:note'
+  else if($entity = 'person' and $field = 'biography') then "descendant::tei:note[@type='biography']"
 
   else if($entity = 'place' and $field = 'name') then 'descendant::tei:placeName'
   else ''
