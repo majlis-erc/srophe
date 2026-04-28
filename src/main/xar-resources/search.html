@@ -1,80 +1,474 @@
-<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
-    <div class="top-padding contentPadding">
-        <!-- <form data-template="search:search-form" data-template-collection="OPTIONAL: COLLECTION NAME"/>--> 
-        <form method="get" class="form-horizontal indent" role="form">
-            <h1 class="search-header">Search</h1>
-            <div class="whiteBoxwShadow">
-                <div class="row">
-                    <div class="col-md-10">
-                        <!-- Keyword -->
-                        <div class="form-group">
-                            <label for="keyword" class="col-sm-2 col-md-3  control-label">Keyword: </label>
-                            <div class="col-sm-10 col-md-9 ">
-                                <div class="input-group">
-                                    <input type="text" id="keyword" name="keyword" class="form-control keyboard"/>
-                                    <div class="input-group-btn">
-                                        <span data-template="app:keyboard-select-menu" data-template-input-id="keyword"/>
-                                    </div>
-                                </div> 
-                            </div>
-                        </div>
-                        <!-- Title-->
-                        <div class="form-group">
-                            <label for="title" class="col-sm-2 col-md-3  control-label">Title: </label>
-                            <div class="col-sm-10 col-md-9 ">
-                                <div class="input-group">
-                                    <input type="text" id="title" name="title" class="form-control keyboard"/>
-                                    <div class="input-group-btn">
-                                        <span data-template="app:keyboard-select-menu" data-template-input-id="title"/>
-                                    </div>
-                                </div>   
-                            </div>
-                        </div>
-                        <!-- Place Name-->
-                        <div class="form-group">
-                            <label for="placeName" class="col-sm-2 col-md-3  control-label">Place Name: </label>
-                            <div class="col-sm-10 col-md-9 ">
-                                <div class="input-group">
-                                    <input type="text" id="placeName" name="placeName" class="form-control keyboard"/>
-                                    <div class="input-group-btn">
-                                        <span data-template="app:keyboard-select-menu" data-template-input-id="placeName"/>
-                                    </div>
-                                </div>   
-                            </div>
-                        </div>
-                        <!-- Place Name-->
-                        <div class="form-group">
-                            <label for="placeName" class="col-sm-2 col-md-3  control-label">Person Name: </label>
-                            <div class="col-sm-10 col-md-9 ">
-                                <div class="input-group">
-                                    <input type="text" id="placeName" name="placeName" class="form-control keyboard"/>
-                                    <div class="input-group-btn">
-                                        <span data-template="app:keyboard-select-menu" data-template-input-id="persName"/>
-                                    </div>
-                                </div>   
-                            </div>
-                        </div>
-                        <!-- end col  -->
-                    </div>
-                    <!-- end row  -->
-                </div>    
-                <div class="pull-right">
-                    <button type="submit" class="btn btn-info">Search</button> 
-                    <button type="reset" class="btn">Clear</button>
-                </div>
-                <br class="clearfix"/>
-                <br/>
+<div xmlns="http://www.w3.org/1999/xhtml"
+     data-template="templates:surround"
+     data-template-with="templates/page.html"
+     data-template-at="content">
+
+  <div class="top-padding contentPadding search-page">
+    <div class="search-page-shell">
+      <form id="advancedSearchForm" method="get" class="form-horizontal search-form-card" role="form">
+	<br/>
+        <h1 class="search-header search-page-title">Search</h1>
+        
+
+        <div class="whiteBoxwShadow search-main-panel">
+
+          <div class="form-group general-keyword-group">
+            <label for="generalKeyword" class="control-label">General Keyword</label>
+            <div class="input-group general-keyword-wrap">
+              <input type="text"
+                     id="generalKeyword"
+                     name="generalKeyword"
+                     class="form-control"
+                     placeholder="Search across all entities"/>
+              <div class="input-group-btn">
+                <button type="button"
+                        class="btn btn-default keyboard-trigger"
+                        aria-label="Open keyboard">⌨</button>
+              </div>
             </div>
-        </form>
-        <div class="results">
-            <div data-template="search:search-data">
-                    <div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="title,author,pubDate"/>
-<!--                <div data-template="app:display-map"/>-->
-                <div class="whiteBoxwShadow">
-                    <div data-template="search:show-hits" data-template-kwic="yes"/>
-                </div>
-                <div data-template="app:pageination"/>
+          </div>
+
+	  <br/>
+          <h3 class="search-section-title">Advanced Search</h3>
+	  <br/>
+	  <p class="search-page-intro">Search across manuscripts, works, persons, and places using keyword or advanced criteria.</p>
+	  
+          <div id="criteriaContainer" class="criteria-container"></div>
+
+          <div class="form-group add-criteria-row">
+            <button type="button" id="addCriteria" class="btn btn-default">Add More Criteria</button>
+          </div>
+
+          <div id="timeSpanFilter" class="whiteBoxwShadow search-subpanel">
+            <h4>Filter by Year</h4>
+            <div class="year-range-grid">
+              <div class="form-group year-input-wrap">
+                <label for="startYear" class="control-label">Start Year</label>
+                <input type="number"
+                       id="startYear"
+                       name="startYear"
+                       class="form-control"
+                       placeholder="e.g., 500"/>
+              </div>
+
+              <div class="form-group year-input-wrap">
+                <label for="endYear" class="control-label">End Year</label>
+                <input type="number"
+                       id="endYear"
+                       name="endYear"
+                       class="form-control"
+                       placeholder="e.g., 1500"/>
+              </div>
             </div>
+          </div>
+
+          <div class="search-actions">
+            <button type="submit" class="btn btn-info search-submit-btn">Search</button>
+            <button type="reset" class="btn search-clear-btn">Clear</button>
+          </div>
+
         </div>
+      </form>
+
+      <div class="results search-results-wrap">
+	<div data-template="search:search-data" data-template-collection="" data-template-sort-element="">
+	  <div data-template="search:debug-search" data-template-collection="" data-template-sort-element=""></div>
+	  <div data-template="search:debug-collection"></div>
+	  <div data-template="app:pageination"
+	       data-template-search-string="yes"
+	       data-template-sort-options="title,author,pubDate"></div>
+	  <div data-template="search:search-summary"></div>
+	  <div class="whiteBoxwShadow search-results-panel">
+            <div data-template="search:show-hits" data-template-kwic="yes"></div>
+	  </div>
+	  <div data-template="app:pageination"></div>
+	</div>
+      </div>
     </div>
+  </div>
+
+  <div id="sharedSearchKeyboard" class="shared-search-keyboard" style="display:none;">
+    <div class="keyboard-toolbar">
+      <button type="button" class="btn btn-default keyboard-tab active" data-keyboard="arabic">Arabic</button>
+      <button type="button" class="btn btn-default keyboard-tab" data-keyboard="hebrew">Hebrew</button>
+      <button type="button" class="btn btn-default keyboard-tab" data-keyboard="translit">English / Transliteration</button>
+      <button type="button" class="btn btn-default keyboard-close">Close</button>
+    </div>
+    <div class="keyboard-body" id="keyboardBody"></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script><![CDATA[
+    const maxEntities = 3;
+    let criteriaCount = 0;
+    let activeInput = null;
+
+    const teiMapping = {
+      manuscript: [
+        { value: 'content', label: 'Content' },
+        { value: 'codicology', label: 'Codicology and paleography' },
+        { value: 'history', label: 'History' }
+      ],
+      work: [
+        { value: 'title', label: 'Title' },
+        { value: 'author', label: 'Author' },
+        { value: 'language', label: 'Language' },
+        { value: 'subject', label: 'Subject Area' }
+      ],
+      person: [
+        { value: 'name', label: 'Name' },
+        { value: 'biography', label: 'Biography' }
+      ],
+      place: [
+        { value: 'name', label: 'Name' }
+      ]
+    };
+
+    function createCriteriaBlock(idx) {
+      const logicalOperatorHtml = idx > 1
+        ? `
+          <div class="logical-operator-block">
+            <label for="logicalOperator_${idx}">Operator</label>
+            <select class="form-control logicalOperator" id="logicalOperator_${idx}" name="logicalOperator_${idx}">
+              <option value="AND">AND</option>
+              <option value="OR">OR</option>
+              <option value="NOT">NOT</option>
+            </select>
+          </div>`
+        : '';
+
+      return `
+        <div class="criteria-block search-criteria-card" data-index="${idx}">
+          ${logicalOperatorHtml}
+
+          <div class="criteria-main-grid">
+            
+            <div class="form-group search-term-group">
+              <label for="searchTerm_${idx}">Search Term</label>
+              <div class="input-group term-input-wrap">
+                <input type="text"
+                       class="form-control searchTerm"
+                       id="searchTerm_${idx}"
+                       name="searchTerm_${idx}"/>
+                <div class="input-group-btn">
+                  <button type="button"
+                          class="btn btn-default keyboard-trigger"
+                          aria-label="Open keyboard">⌨</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group search-type-group">
+              <label>Search Type</label>
+              <div class="search-type-options">
+                <label><input type="radio" class="searchType" name="searchType_${idx}" value="similar" checked="checked"/> Similar</label>
+                <label><input type="radio" class="searchType" name="searchType_${idx}" value="exact"/> Exact</label>
+              </div>
+            </div>
+
+            <div class="form-group narrow-select-wrap entity-group">
+              <label for="entity_${idx}">Entity</label>
+              <select class="form-control entitySelect" id="entity_${idx}" name="entity_${idx}">
+                <option value="">-- Select Entity --</option>
+                <option value="manuscript">Manuscript</option>
+                <option value="work">Work</option>
+                <option value="person">Person</option>
+                <option value="place">Place</option>
+              </select>
+            </div>
+
+            <div class="form-group teiElementsContainer narrow-select-wrap fields-group" style="display:none;">
+             <label for="teiElements_${idx}">Fields</label>
+              <select multiple="multiple"
+                      class="form-control teiElementsSelect"
+                      id="teiElements_${idx}"
+                      name="teiElementsUi_${idx}"></select>
+              <input type="hidden"
+                     class="teiElementsHidden"
+                     id="teiElementsHidden_${idx}"
+                     name="teiElements_${idx}"
+                     value=""/>
+            </div>
+          </div>
+
+          <div class="criteria-actions">
+              <button type="button" class="btn btn-sm btn-warning clearCriteria">Clear</button>
+              <button type="button" class="btn btn-sm btn-danger removeCriteria">Remove</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function populateFieldsForEntity(entity, $select, selectedValues) {
+      $select.empty();
+      if (!teiMapping[entity]) return;
+
+      teiMapping[entity].forEach(function(item) {
+        const $opt = $('<option>').val(item.value).text(item.label);
+        if (selectedValues.includes(item.value)) {
+          $opt.prop('selected', true);
+        }
+        $select.append($opt);
+      });
+    }
+
+    function renumberCriteriaBlocks() {
+      $('#criteriaContainer .criteria-block').each(function(i) {
+        const n = i + 1;
+        $(this).attr('data-index', n);
+
+        const logicalWrap = $(this).find('.logical-operator-block');
+        if (n === 1) {
+          logicalWrap.remove();
+        } else if (!logicalWrap.length) {
+          $(this).prepend(`
+            <div class="logical-operator-block">
+              <label for="logicalOperator_${n}">Operator</label>
+              <select class="form-control logicalOperator" id="logicalOperator_${n}" name="logicalOperator_${n}">
+                <option value="AND">AND</option>
+                <option value="OR">OR</option>
+                <option value="NOT">NOT</option>
+              </select>
+            </div>
+          `);
+        }
+
+        $(this).find('.searchTerm').attr('id', `searchTerm_${n}`).attr('name', `searchTerm_${n}`);
+        $(this).find('.searchType[value="similar"]').attr('name', `searchType_${n}`);
+        $(this).find('.searchType[value="exact"]').attr('name', `searchType_${n}`);
+        $(this).find('.entitySelect').attr('id', `entity_${n}`).attr('name', `entity_${n}`);
+        $(this).find('.logicalOperator').attr('id', `logicalOperator_${n}`).attr('name', `logicalOperator_${n}`);
+        $(this).find('.teiElementsSelect').attr('id', `teiElements_${n}`).attr('name', `teiElementsUi_${n}`);
+        $(this).find('.teiElementsHidden').attr('id', `teiElementsHidden_${n}`).attr('name', `teiElements_${n}`);
+      });
+
+      criteriaCount = $('#criteriaContainer .criteria-block').length;
+    }
+
+    function addCriteriaBlock() {
+      if (criteriaCount >= maxEntities) return;
+      criteriaCount += 1;
+      $('#criteriaContainer').append(createCriteriaBlock(criteriaCount));
+    }
+
+    function restoreFormFromQueryString() {
+      const params = new URLSearchParams(window.location.search);
+
+      $('#generalKeyword').val(params.get('generalKeyword') || '');
+      $('#startYear').val(params.get('startYear') || '');
+      $('#endYear').val(params.get('endYear') || '');
+
+      let highestBlock = 0;
+      for (let i = 1; i <= maxEntities; i++) {
+        const term = params.get(`searchTerm_${i}`);
+        const entity = params.get(`entity_${i}`);
+        const rawFields = params.get(`teiElements_${i}`);
+        const fields = rawFields ? rawFields.split(',').filter(Boolean) : [];
+
+        if ((term && term !== '') || (entity && entity !== '') || fields.length > 0) {
+          highestBlock = i;
+        }
+      }
+
+      $('#criteriaContainer').empty();
+      criteriaCount = 0;
+
+      const blocksToCreate = Math.max(1, highestBlock);
+      for (let i = 1; i <= blocksToCreate; i++) {
+        addCriteriaBlock();
+      }
+
+      for (let i = 1; i <= blocksToCreate; i++) {
+        const term = params.get(`searchTerm_${i}`);
+        const searchType = params.get(`searchType_${i}`);
+        const entity = params.get(`entity_${i}`);
+        const logicalOperator = params.get(`logicalOperator_${i}`);
+        const rawFields = params.get(`teiElements_${i}`);
+        const fields = rawFields ? rawFields.split(',').filter(Boolean) : [];
+
+        if (term !== null) {
+          $(`#searchTerm_${i}`).val(term);
+        }
+
+        if (searchType !== null) {
+          $(`input[name="searchType_${i}"][value="${searchType}"]`).prop('checked', true);
+        }
+
+        if (logicalOperator !== null) {
+          $(`#logicalOperator_${i}`).val(logicalOperator);
+        }
+
+        if (entity !== null && entity !== '') {
+          $(`#entity_${i}`).val(entity);
+
+          const $block = $(`#entity_${i}`).closest('.criteria-block');
+          const $cont = $block.find('.teiElementsContainer');
+          const $sel = $cont.find('.teiElementsSelect');
+
+          populateFieldsForEntity(entity, $sel, fields);
+          $cont.show();
+          $block.find('.teiElementsHidden').val(fields.join(','));
+        }
+      }
+    }
+
+    function resetAdvancedSearchFormToDefaults() {
+      const form = document.getElementById('advancedSearchForm');
+      if (form) {
+        form.reset();
+      }
+
+      $('#generalKeyword').val('');
+      $('#startYear').val('');
+      $('#endYear').val('');
+      $('#criteriaContainer').empty();
+      criteriaCount = 0;
+      addCriteriaBlock();
+    }
+
+    const keyboardLayouts = {
+      arabic: ['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي','ء','أ','إ','آ','ة','ى','ؤ','ئ','َ','ُ','ِ','ّ','ْ'],
+      hebrew: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת','ך','ם','ן','ף','ץ'],
+      translit: ['ā','ī','ū','ḍ','ḥ','ṣ','ṭ','ẓ','ʿ','ʾ','ē','ō','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    };
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderKeyboard(layoutName) {
+      const chars = keyboardLayouts[layoutName] || [];
+      const html = chars.map(function(ch) {
+        return `<button type="button" class="btn btn-default keyboard-insert" data-char="${escapeHtml(ch)}">${escapeHtml(ch)}</button>`;
+      }).join('');
+
+      $('#keyboardBody').html(html);
+      $('.keyboard-tab').removeClass('active');
+      $(`.keyboard-tab[data-keyboard="${layoutName}"]`).addClass('active');
+    }
+
+    function insertAtCursor(input, text) {
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      const value = input.value || '';
+      input.value = value.slice(0, start) + text + value.slice(end);
+      input.focus();
+      input.setSelectionRange(start + text.length, start + text.length);
+    }
+
+    function openSharedKeyboard(buttonEl) {
+      const $button = $(buttonEl);
+      const $group = $button.closest('.input-group');
+      const $input = $group.find('input[type="text"], textarea').first();
+
+      activeInput = $input.length ? $input.get(0) : null;
+      if (!activeInput) return;
+
+      const $menu = $('#sharedSearchKeyboard');
+      const offset = $button.offset();
+
+      renderKeyboard('arabic');
+
+      $menu.css({
+        position: 'absolute',
+        top: offset.top + $button.outerHeight() + 6,
+        left: Math.max(16, offset.left - 120),
+        zIndex: 9999
+      }).show();
+    }
+
+    $(document).ready(function() {
+      const shouldClearAfterSubmit =
+        sessionStorage.getItem('clearAdvancedSearchFormAfterSubmit') === '1' &&
+        window.location.search.length > 1;
+
+      if (shouldClearAfterSubmit) {
+        sessionStorage.removeItem('clearAdvancedSearchFormAfterSubmit');
+        resetAdvancedSearchFormToDefaults();
+      } else {
+        addCriteriaBlock();
+        restoreFormFromQueryString();
+      }
+
+      $('#addCriteria').on('click', function() {
+        addCriteriaBlock();
+      });
+
+      $(document).on('click', '.removeCriteria', function() {
+        $(this).closest('.criteria-block').remove();
+        renumberCriteriaBlocks();
+      });
+
+      $(document).on('click', '.clearCriteria', function() {
+        const $block = $(this).closest('.criteria-block');
+        $block.find('.searchTerm').val('');
+        $block.find('.searchType').prop('checked', false);
+        $block.find('.searchType[value="similar"]').prop('checked', true);
+        $block.find('.entitySelect').val('');
+        $block.find('.teiElementsContainer').hide();
+        $block.find('.teiElementsSelect').empty();
+        $block.find('.teiElementsHidden').val('');
+        $block.find('.logicalOperator').val('AND');
+      });
+
+      $(document).on('change', '.entitySelect', function() {
+        const ent = $(this).val();
+        const $block = $(this).closest('.criteria-block');
+        const $cont = $block.find('.teiElementsContainer');
+        const $sel = $cont.find('.teiElementsSelect');
+
+        $sel.empty();
+        $block.find('.teiElementsHidden').val('');
+
+        if (teiMapping[ent]) {
+          populateFieldsForEntity(ent, $sel, []);
+          $cont.show();
+        } else {
+          $cont.hide();
+        }
+      });
+
+      $(document).on('click', '.keyboard-trigger', function(e) {
+        e.preventDefault();
+        openSharedKeyboard(this);
+      });
+
+      $(document).on('click', '.keyboard-tab', function() {
+        const layoutName = $(this).attr('data-keyboard');
+        renderKeyboard(layoutName);
+      });
+
+      $(document).on('click', '.keyboard-insert', function() {
+        if (activeInput) {
+          insertAtCursor(activeInput, $(this).attr('data-char'));
+        }
+      });
+
+      $(document).on('click', '.keyboard-close', function() {
+        $('#sharedSearchKeyboard').hide();
+      });
+
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#sharedSearchKeyboard, .keyboard-trigger').length) {
+          $('#sharedSearchKeyboard').hide();
+        }
+      });
+
+      $('#advancedSearchForm').on('submit', function() {
+        $('.criteria-block').each(function() {
+          const $block = $(this);
+          const values = $block.find('.teiElementsSelect').val() || [];
+          $block.find('.teiElementsHidden').val(values.join(','));
+        });
+        sessionStorage.setItem('clearAdvancedSearchFormAfterSubmit', '1');
+      });
+    });
+  ]]></script>
 </div>
