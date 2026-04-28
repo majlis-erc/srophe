@@ -2453,13 +2453,43 @@
                     </div>
                 </xsl:if>
                 <xsl:for-each
-                    select="../t:physDesc/t:decoDesc[string-length(normalize-space(.)) gt 2]">
-                    <div class="row">
-                        <div class="col-md-2 inline-h4">Page layout </div>
-                        <div class="col-md-10">
-                            <xsl:apply-templates select="."/>
+                    select="ancestor::t:physDesc/t:decoDesc[string-length(normalize-space(.)) gt 2]">
+                    <xsl:if test="t:summary[. != '']">
+                        <div class="item row">
+                            <div class="col-md-1">
+                                <h4>Text layout summary </h4>
+                            </div>
+                            <div class="col-md-11">
+                                <xsl:for-each select="t:summary[string-length(normalize-space(.)) gt 2]">
+                                    <xsl:apply-templates/>
+                                </xsl:for-each>
+                            </div>
                         </div>
-                    </div>
+                    </xsl:if>
+                    <xsl:if test="t:decoNote/t:desc[. != '']">
+                        <div class="item row">
+                            <div class="col-md-1">
+                                <h4>Text layout </h4>
+                            </div>
+                            <div class="col-md-11">
+                                <xsl:for-each select="t:decoNote/t:desc[string-length(normalize-space(.)) gt 2]">
+                                    <xsl:apply-templates/>
+                                </xsl:for-each>
+                            </div>
+                        </div>
+                    </xsl:if>
+                    <xsl:if test="t:decoNote/t:note[. != '']">
+                        <div class="item row">
+                            <div class="col-md-1">
+                                <h4>Text layout note </h4>
+                            </div>
+                            <div class="col-md-11">
+                                <xsl:for-each select="t:decoNote/t:note[string-length(normalize-space(.)) gt 2]">
+                                    <xsl:apply-templates/>
+                                </xsl:for-each>
+                            </div>
+                        </div>
+                    </xsl:if>
                 </xsl:for-each>
             </div>
         </div>
@@ -2472,10 +2502,14 @@
             </h3>
             <div class="collapse" id="mainMenuPaleography">
                 <xsl:if test="t:summary[. != '']">
-                    <div class="row">
-                        <div class="col-md-1 inline-h4">Summary</div>
-                        <div class="col-md-10">
-                            <xsl:apply-templates/>
+                    <div class="item row">
+                        <div class="col-md-1">
+                            <h4>Summary</h4>
+                        </div>
+                        <div class="col-md-11">
+                            <xsl:for-each select="t:summary[string-length(normalize-space(.)) gt 2]">
+                                <xsl:apply-templates/>
+                            </xsl:for-each>
                         </div>
                     </div>
                 </xsl:if>
