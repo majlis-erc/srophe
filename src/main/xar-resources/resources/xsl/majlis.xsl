@@ -3,93 +3,83 @@
     xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns"
     exclude-result-prefixes="xs t x saxon local" version="2.0">
-
-
     <!-- Arabic/Hebrew comma! -->
     <xsl:function name="local:get-comma">
-      <xsl:param name="lang"/>
-
-      <xsl:choose>
-          <xsl:when test="not(contains($lang, 'Latn') or contains($lang, 'en'))">، </xsl:when>
-          <xsl:otherwise>, </xsl:otherwise>
-      </xsl:choose>
+        <xsl:param name="lang"/>
+        <xsl:choose>
+            <xsl:when test="not(contains($lang, 'Latn') or contains($lang, 'en'))">، </xsl:when>
+            <xsl:otherwise>, </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
-
-
     <!-- ================================================================== 
        MAJLIS custom srophe XSLT
        For main record display, manuscript
        
        ================================================================== -->
-
     <xsl:template match="t:TEI" mode="majlis">
         <!-- teiHeader -->
         <div class="row titleStmt">
             <div class="col-md-8">
-		<!--1st choose: Title of Works: t:text/t:body/t:bibl/t:title[@type='authorial' then 'majlis-headword']( lang=en is prefered in any case)
+                <!--1st choose: Title of Works: t:text/t:body/t:bibl/t:title[@type='authorial' then 'majlis-headword']( lang=en is prefered in any case)
 		2nd choose (otherwise): Title of other types than Works: teiHeader/t:fileDesc/t:titleStmt/t:title[@level='a'] -->
-		<h1>
-		  <!-- 1) If there's any bibl/title (i.e., Works only) -->
-		  <xsl:choose>
-		    <xsl:when test="t:text/t:body/t:bibl/t:title">
-		      
-		      <!-- 1a–1c) Handle title preference hierarchy -->
-		      <xsl:choose>
-
-			<!-- 1a-0) Prefer English, 'majlis-headword' if available -->
-			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='majlis-headword' and @xml:lang='en']">
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[@type='majlis-headword' and @xml:lang='en'][1]"/>
-			</xsl:when>
-
-			<!-- 1a-1) Else if any 'majlis-headword' (but no @xml:lang='en'), take the first 'authorial' -->
-			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='majlis-headword']">
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[@type='majlis-headword'][1]"/>
-			</xsl:when>
-
-			<!-- 1b) Prefer English, 'authorial' if available -->
-			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='authorial' and @xml:lang='en']">
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[@type='authorial' and @xml:lang='en'][1]"/>
-			</xsl:when>
-
-			<!-- 1b) Else if any 'authorial' (but no @xml:lang='en'), take the first 'authorial' -->
-			<xsl:when test="t:text/t:body/t:bibl/t:title[@type='authorial']">
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[@type='authorial'][1]"/>
-			</xsl:when>
-
-			<!-- 1c) Otherwise (none of above cases at all), take the very first title -->
-			<xsl:otherwise>
-			  <xsl:apply-templates
-			    select="t:text/t:body/t:bibl/t:title[1]"/>
-			</xsl:otherwise>
-
-		      </xsl:choose>
-		    </xsl:when>
-
-		    <!-- 2) NO ttl in bibl/title (i.e., other types than Works), get header titles -->
-		    <xsl:otherwise>
-		      <xsl:choose>
-
-			<!-- 2a) Try level="a" first -->
-			<xsl:when test="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level='a']">
-			  <xsl:apply-templates
-			    select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level='a'][1]"/>
-			</xsl:when>
-
-			<!-- 2b) Finally, just grab the very first title -->
-			<xsl:otherwise>
-			  <xsl:apply-templates
-			    select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
-			</xsl:otherwise>
-
-		      </xsl:choose>
-		    </xsl:otherwise>
-		  </xsl:choose>
-		</h1>
-
+                <h1>
+                    <!-- 1) If there's any bibl/title (i.e., Works only) -->
+                    <xsl:choose>
+                        <xsl:when test="t:text/t:body/t:bibl/t:title">
+                            <!-- 1a–1c) Handle title preference hierarchy -->
+                            <xsl:choose>
+                                <!-- 1a-0) Prefer English, 'majlis-headword' if available -->
+                                <xsl:when
+                                    test="t:text/t:body/t:bibl/t:title[@type = 'majlis-headword' and @xml:lang = 'en']">
+                                    <xsl:apply-templates
+                                        select="t:text/t:body/t:bibl/t:title[@type = 'majlis-headword' and @xml:lang = 'en'][1]"
+                                    />
+                                </xsl:when>
+                                <!-- 1a-1) Else if any 'majlis-headword' (but no @xml:lang='en'), take the first 'authorial' -->
+                                <xsl:when
+                                    test="t:text/t:body/t:bibl/t:title[@type = 'majlis-headword']">
+                                    <xsl:apply-templates
+                                        select="t:text/t:body/t:bibl/t:title[@type = 'majlis-headword'][1]"
+                                    />
+                                </xsl:when>
+                                <!-- 1b) Prefer English, 'authorial' if available -->
+                                <xsl:when
+                                    test="t:text/t:body/t:bibl/t:title[@type = 'authorial' and @xml:lang = 'en']">
+                                    <xsl:apply-templates
+                                        select="t:text/t:body/t:bibl/t:title[@type = 'authorial' and @xml:lang = 'en'][1]"
+                                    />
+                                </xsl:when>
+                                <!-- 1b) Else if any 'authorial' (but no @xml:lang='en'), take the first 'authorial' -->
+                                <xsl:when test="t:text/t:body/t:bibl/t:title[@type = 'authorial']">
+                                    <xsl:apply-templates
+                                        select="t:text/t:body/t:bibl/t:title[@type = 'authorial'][1]"
+                                    />
+                                </xsl:when>
+                                <!-- 1c) Otherwise (none of above cases at all), take the very first title -->
+                                <xsl:otherwise>
+                                    <xsl:apply-templates select="t:text/t:body/t:bibl/t:title[1]"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:when>
+                        <!-- 2) NO ttl in bibl/title (i.e., other types than Works), get header titles -->
+                        <xsl:otherwise>
+                            <xsl:choose>
+                                <!-- 2a) Try level="a" first -->
+                                <xsl:when
+                                    test="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level = 'a']">
+                                    <xsl:apply-templates
+                                        select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[@level = 'a'][1]"
+                                    />
+                                </xsl:when>
+                                <!-- 2b) Finally, just grab the very first title -->
+                                <xsl:otherwise>
+                                    <xsl:apply-templates
+                                        select="t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </h1>
             </div>
             <div class="col-md-4 actionButtons">
                 <xsl:if test="t:TEI/t:facsimile/t:graphic/@url">
@@ -97,12 +87,13 @@
                         href="{t:TEI/t:facsimile/t:graphic/@url}" target="_blank" type="button"
                         >Scan</a>
                 </xsl:if>
-                <a target="_blank" class="btn btn-default btn-grey btn-sm" href="" type="button">Feedback</a>
+                <a target="_blank" class="btn btn-default btn-grey btn-sm" href="" type="button"
+                    >Feedback</a>
                 <a target="_blank" class="btn btn-default btn-grey btn-sm"
-                    href="{concat($nav-base,substring-after(/descendant::t:idno[@type='URI'][1], $base-uri))}"
-                    >XML</a>
-                <a target="_blank" class="btn btn-default btn-grey btn-sm" href="javascript:window.print();"
-                    >Print</a>
+                    href="{concat($nav-base,substring-after(/descendant::t:idno[@type='URI'][1],
+                    $base-uri))}">XML</a>
+                <a target="_blank" class="btn btn-default btn-grey btn-sm"
+                    href="javascript:window.print();">Print</a>
             </div>
         </div>
         <xsl:choose>
@@ -310,10 +301,9 @@
                 select="ancestor::t:TEI/descendant::t:teiHeader/t:fileDesc/t:titleStmt"/>
         </xsl:variable>
         <xsl:variable name="ChangeLog">
-	    <xsl:apply-templates
-	      mode="majlis-changeLog"
-	      select="ancestor::t:TEI/descendant::t:teiHeader/t:revisionDesc"/>
-	</xsl:variable>
+            <xsl:apply-templates mode="majlis-changeLog"
+                select="ancestor::t:TEI/descendant::t:teiHeader/t:revisionDesc"/>
+        </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
                 <xsl:if
@@ -373,15 +363,13 @@
                             href="#mainMenuCredits" type="button">Credits</button>
                     </div>
                 </xsl:if>
-                <xsl:if test="$ChangeLog/descendant::*:div[@class='whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
-		   <div class="btn-group">
-		       <button
-			   class="btn btn-default btn-grey btn-lg"
-		           data-toggle="collapse"
-			   href="#mainMenuChangeLog"
-		           type="button">Change Log</button>
-		   </div>
-		</xsl:if>
+                <xsl:if
+                    test="$ChangeLog/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-grey btn-lg" data-toggle="collapse"
+                            href="#mainMenuChangeLog" type="button">Change Log</button>
+                    </div>
+                </xsl:if>
                 <div class="btn-group">
                     <button class="btn btn-default btn-grey btn-lg" id="expand-all" type="button"
                         >Open All</button>
@@ -1035,7 +1023,8 @@
                     <div class="item row">
                         <div class="col-md-12">
                             <a target="_blank"
-                                href="{concat($nav-base,substring-after(descendant::t:publicationStmt/t:idno[@type='URI'][1], $base-uri))}">
+                                href="{concat($nav-base,substring-after(descendant::t:publicationStmt/t:idno[@type='URI'][1],
+                                $base-uri))}">
                                 <xsl:apply-templates select="descendant::t:titleStmt/t:title[1]"/>
                             </a>
                         </div>
@@ -1188,59 +1177,46 @@
                                     <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
                                 </div>
                                 <div class="col-md-10">
-				    <xsl:choose>
-					<xsl:when test="@xml:lang = 'he' or contains(@xml:lang, 'he')">
-					    <xsl:value-of select="
-						string-join(
-						    (
-							normalize-space(string(t:forename)),
-							normalize-space(string(t:addName[@type = 'patronym'])),
-							normalize-space(string(t:addName[@type = 'epithet'])),
-							normalize-space(string(t:addName[@type = 'acronym']))
-						    )[. != ''],
-						    ' '
-						)
-					    "/>
-					    <xsl:if test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
-						<br/>
-						<xsl:text>(</xsl:text>
-						<i>
-						    <xsl:text>known as </xsl:text>
-						</i>
-						<xsl:value-of select="t:addName[@type = 'shuhra']"/>
-						<xsl:text>)</xsl:text>
-					    </xsl:if>
-					</xsl:when>
-					<xsl:when test="@xml:lang = 'ar' or contains(@xml:lang, 'ar')">
-					    <xsl:value-of select="
-						string-join(
-						    (
-							normalize-space(string(t:addName[@type = 'kunya'])),
-							normalize-space(string(t:addName[@type = 'ism'])),
-							normalize-space(replace(string(t:addName[@type = 'nasab']), 'ابن', 'بن')),
-							normalize-space(string(t:addName[@type = 'nisbah']))
-						    )[. != ''],
-						    ' '
-						)
-					    "/>
-					    <xsl:if test="t:addName[@type = 'laqab'][string-length(normalize-space(.)) gt 2]">
-						<!--<xsl:text>, </xsl:text>-->
-						<!-- use Arabic comma, for non-Latin script-->
-						<xsl:value-of select="local:get-comma(@xml:lang)"/>
-						<xsl:value-of select="t:addName[@type = 'laqab']"/>
-					    </xsl:if>
-					    <xsl:if test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
-						<br/>
-						<xsl:text>(</xsl:text>
-						<i>
-						    <xsl:text>known as </xsl:text>
-						</i>
-						<xsl:value-of select="t:addName[@type = 'shuhra']"/>
-						<xsl:text>)</xsl:text>
-					    </xsl:if>
-					</xsl:when>
-				    </xsl:choose>
-				</div>
+                                    <xsl:choose>
+                                        <xsl:when
+                                            test="@xml:lang = 'he' or contains(@xml:lang, 'he')">
+                                            <xsl:value-of
+                                                select="string-join((normalize-space(string(t:forename)), normalize-space(string(t:addName[@type = 'patronym'])), normalize-space(string(t:addName[@type = 'epithet'])), normalize-space(string(t:addName[@type = 'acronym'])))[. != ''], ' ')"/>
+                                            <xsl:if
+                                                test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
+                                                <br/>
+                                                <xsl:text>(</xsl:text>
+                                                <i>
+                                                  <xsl:text>known as </xsl:text>
+                                                </i>
+                                                <xsl:value-of select="t:addName[@type = 'shuhra']"/>
+                                                <xsl:text>)</xsl:text>
+                                            </xsl:if>
+                                        </xsl:when>
+                                        <xsl:when
+                                            test="@xml:lang = 'ar' or contains(@xml:lang, 'ar')">
+                                            <xsl:value-of
+                                                select="string-join((normalize-space(string(t:addName[@type = 'kunya'])), normalize-space(string(t:addName[@type = 'ism'])), normalize-space(replace(string(t:addName[@type = 'nasab']), 'ابن', 'بن')), normalize-space(string(t:addName[@type = 'nisbah'])))[. != ''], ' ')"/>
+                                            <xsl:if
+                                                test="t:addName[@type = 'laqab'][string-length(normalize-space(.)) gt 2]">
+                                                <!--<xsl:text>, </xsl:text>-->
+                                                <!-- use Arabic comma, for non-Latin script-->
+                                                <xsl:value-of select="local:get-comma(@xml:lang)"/>
+                                                <xsl:value-of select="t:addName[@type = 'laqab']"/>
+                                            </xsl:if>
+                                            <xsl:if
+                                                test="t:addName[@type = 'shuhra'][string-length(normalize-space(.)) gt 2]">
+                                                <br/>
+                                                <xsl:text>(</xsl:text>
+                                                <i>
+                                                  <xsl:text>known as </xsl:text>
+                                                </i>
+                                                <xsl:value-of select="t:addName[@type = 'shuhra']"/>
+                                                <xsl:text>)</xsl:text>
+                                            </xsl:if>
+                                        </xsl:when>
+                                    </xsl:choose>
+                                </div>
                             </div>
                         </xsl:for-each>
                         <!--<xsl:for-each
@@ -1266,7 +1242,8 @@
                                 </div>
                             </div>
                         </xsl:for-each>-->
-                        <xsl:for-each select="t:note[@type='names'][string-length(normalize-space(.)) gt 2]">
+                        <xsl:for-each
+                            select="t:note[@type = 'names'][string-length(normalize-space(.)) gt 2]">
                             <div class="row">
                                 <div class="col-md-1 inline-h4">Note </div>
                                 <div class="col-md-10">
@@ -1279,80 +1256,84 @@
             </div>
         </xsl:if>
     </xsl:template>
-<xsl:template match="t:person" mode="attestedNames">
-  <xsl:if test="t:persName[@type='attested']/t:name[string-length(normalize-space(.)) gt 0]">
-    <div class="whiteBoxwShadow">
-      <div class="row">
-        <h3>
-          <!-- keep as-is because the main menu button points to it -->
-          <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestedNames">Attested Names</a>
-        </h3>
-
-        <div class="collapse" id="mainMenuAttestedNames">
-          <div class="row">
-            <script type="text/javascript">
+    <xsl:template match="t:person" mode="attestedNames">
+        <xsl:if test="t:persName[@type = 'attested']/t:name[string-length(normalize-space(.)) gt 0]">
+            <div class="whiteBoxwShadow">
+                <div class="row">
+                    <h3>
+                        <!-- keep as-is because the main menu button points to it -->
+                        <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestedNames"
+                            >Attested Names</a>
+                    </h3>
+                    <div class="collapse" id="mainMenuAttestedNames">
+                        <div class="row">
+                            <script type="text/javascript">
                 <![CDATA[
-                    $(document).ready(function () {
-                        $("#toggle-english-aN").on("click", function () {
-                            $(this).toggleClass("highlight");
-                            $(".englishANames").toggle();
-                        });
-                        $("#toggle-hebrew-aN").on("click", function () {
-                            $(this).toggleClass("highlight");
-                            $(".hebrewANames").toggle();
-                        });
-                        $("#toggle-arabic-aN").on("click", function () {
-                            $(this).toggleClass("highlight");
-                            $(".arabicANames").toggle();
-                        });
-                    });//]]>
+                            $(document).ready(function () {
+                                $("#toggle-english-aN").on("click", function () {
+                                    $(this).toggleClass("highlight");
+                                    $(".englishANames").toggle();
+                                });
+                                $("#toggle-hebrew-aN").on("click", function () {
+                                    $(this).toggleClass("highlight");
+                                    $(".hebrewANames").toggle();
+                                });
+                                $("#toggle-arabic-aN").on("click", function () {
+                                    $(this).toggleClass("highlight");
+                                    $(".arabicANames").toggle();
+                                });
+                            });//]]>
             </script>
-            <div class="col-md-12 inline-h4">
-              <div class="tri-state-toggle">
-                <!-- use classes instead of duplicate IDs -->
-                <span class="tri-state-toggle-button highlight"
+                            <div class="col-md-12 inline-h4">
+                                <div class="tri-state-toggle">
+                                    <!-- use classes instead of duplicate IDs -->
+                                    <span class="tri-state-toggle-button highlight"
                                         href="#englishANames" id="toggle-english-aN">
-		  <span lang="en">E</span>
-		</span>
-		<span class="tri-state-toggle-button" data-toggle="collapse"
-		        href="#hebrewANames" id="toggle-hebrew-aN">
-		        <span lang="he">ע</span>
-		</span>
-		<span class="tri-state-toggle-button" data-toggle="collapse"
-		        href="#arabicANames" id="toggle-arabic-aN">
-		        <span lang="ar"> ع </span>
-		</span>
-              </div>
+                                        <span lang="en">E</span>
+                                    </span>
+                                    <span class="tri-state-toggle-button" data-toggle="collapse"
+                                        href="#hebrewANames" id="toggle-hebrew-aN">
+                                        <span lang="he">ע</span>
+                                    </span>
+                                    <span class="tri-state-toggle-button" data-toggle="collapse"
+                                        href="#arabicANames" id="toggle-arabic-aN">
+                                        <span lang="ar"> ع </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Rows carry the SAME language classes as in Names template -->
+                        <xsl:for-each
+                            select="t:persName[@type = 'attested'][t:name[string-length(normalize-space(.)) gt 0]]">
+                            <xsl:variable name="langClass">
+                                <xsl:choose>
+                                    <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang = 'en'"
+                                        >englishANames</xsl:when>
+                                    <xsl:when
+                                        test="@xml:lang = 'he' or contains(@xml:lang, 'he') or contains(@xml:lang, 'Hebr')"
+                                        >hebrewANames</xsl:when>
+                                    <xsl:when
+                                        test="@xml:lang = 'ar' or contains(@xml:lang, 'ar') or contains(@xml:lang, 'Arab')"
+                                        >arabicANames</xsl:when>
+                                    <xsl:otherwise>englishANames</xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:variable>
+                            <div class="row {$langClass}">
+                                <div class="col-md-1 inline-h4">
+                                    <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+                                </div>
+                                <div class="col-md-10">
+                                    <xsl:apply-templates select="t:name" mode="attestedNames"/>
+                                </div>
+                            </div>
+                        </xsl:for-each>
+                    </div>
+                    <!-- /.collapse -->
+                </div>
             </div>
-          </div>
-
-          <!-- Rows carry the SAME language classes as in Names template -->
-          <xsl:for-each select="t:persName[@type='attested'][t:name[string-length(normalize-space(.)) gt 0]]">
-            <xsl:variable name="langClass">
-              <xsl:choose>
-                <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang='en'">englishANames</xsl:when>
-                <xsl:when test="@xml:lang='he' or contains(@xml:lang,'he') or contains(@xml:lang,'Hebr')">hebrewANames</xsl:when>
-                <xsl:when test="@xml:lang='ar' or contains(@xml:lang,'ar') or contains(@xml:lang,'Arab')">arabicANames</xsl:when>
-                <xsl:otherwise>englishANames</xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
-
-            <div class="row {$langClass}">
-              <div class="col-md-1 inline-h4">
-                <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-              </div>
-              <div class="col-md-10">
-                <xsl:apply-templates select="t:name" mode="attestedNames"/>
-              </div>
-            </div>
-          </xsl:for-each>
-        </div><!-- /.collapse -->
-      </div>
-    </div><!-- /.attestedNames block -->
-  </xsl:if>
-</xsl:template>
-
-
+            <!-- /.attestedNames block -->
+        </xsl:if>
+    </xsl:template>
     <xsl:template match="t:person" mode="biography">
         <xsl:if
             test="t:note | t:birth | t:death | t:floruit | t:sex | t:faith | t:occupation | t:residence">
@@ -1362,7 +1343,8 @@
                         >Biography</a>
                 </h3>
                 <div class="collapse" id="mainMenuBiography">
-                    <xsl:for-each select="t:note[@type='biography'][string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each
+                        select="t:note[@type = 'biography'][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
@@ -1683,82 +1665,80 @@
     </xsl:template>
     <!-- majlis-works -->
     <xsl:template match="*:works" mode="relatedWorks">
-    <!-- Make collapsible if there are any titles[@type != 'majlis-headword']-->
-        <xsl:if test="descendant::t:title[@type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
+        <!-- Make collapsible if there are any titles[@type != 'majlis-headword']-->
+        <xsl:if
+            test="descendant::t:title[@type != 'majlis-headword'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" data-toggle="collapse" href="#mainMenuRelatedWorks"
                         >Works</a>
                 </h3>
                 <div class="collapse" id="mainMenuRelatedWorks">
-                      <!-- LANGUAGE TOGGLES -->
-  	            <div class="row">
-                      <script type="text/javascript">
+                    <!-- LANGUAGE TOGGLES -->
+                    <div class="row">
+                        <script type="text/javascript">
 	                <![CDATA[
-	  		  $(function(){
-			    // 0) force the collapse open immediately
-			    //    (Bootstrap 3: adds “in”; BS 4/5: this calls .show() under the hood)
-			    //$('#mainMenuRelatedWorks').collapse('show');
-			    
-			    $(".hebrewTitles, .arabicTitles").hide();
-			    // immediately update dividers for that initial state, on page-load
-			    updateGroupDividers();
-
-			    $("#toggle-englishW").on("click", function(){
-			      $(this).toggleClass("highlight");
-			      $(".englishTitles").toggle();
- 		              updateGroupDividers();
-			    });
-			    $("#toggle-hebrewW").on("click", function(){
-			      $(this).toggleClass("highlight");
-			      $(".hebrewTitles").toggle();
-	  	              updateGroupDividers();
-			    });
-			    $("#toggle-arabicW").on("click", function(){
-			      $(this).toggleClass("highlight");
-			      $(".arabicTitles").toggle();
-			      updateGroupDividers();
-			    });
-			    
-			    // now hide any <hr> under a .work-group that has no visible .row
-			    function updateGroupDividers() {
-			      // build a selector for all “active” lang-classes
-			      const active = [];
-			      if ($("#toggle-englishW").hasClass("highlight")) active.push(".englishTitles");
-			      if ($("#toggle-hebrewW").hasClass("highlight")) active.push(".hebrewTitles");
-			      if ($("#toggle-arabicW").hasClass("highlight")) active.push(".arabicTitles");
-
-			      const sel = active.join(", ");
-
-			      // for each group: “does it have ANY .row in an active language?”
-			      $(".work-group").each(function(){
-				const $g = $(this);
-				const keepHr = sel && $g.find(sel).length > 0;
-				$g.find("hr.group-divider").toggle(keepHr);
-			      });
-			    }
-
-  			  });
-	                ]]>
+                        $(function () {
+                            // 0) force the collapse open immediately
+                            //    (Bootstrap 3: adds “in”; BS 4/5: this calls .show() under the hood)
+                            //$('#mainMenuRelatedWorks').collapse('show');
+                            
+                            $(".hebrewTitles, .arabicTitles").hide();
+                            // immediately update dividers for that initial state, on page-load
+                            updateGroupDividers();
+                            
+                            $("#toggle-englishW").on("click", function () {
+                                $(this).toggleClass("highlight");
+                                $(".englishTitles").toggle();
+                                updateGroupDividers();
+                            });
+                            $("#toggle-hebrewW").on("click", function () {
+                                $(this).toggleClass("highlight");
+                                $(".hebrewTitles").toggle();
+                                updateGroupDividers();
+                            });
+                            $("#toggle-arabicW").on("click", function () {
+                                $(this).toggleClass("highlight");
+                                $(".arabicTitles").toggle();
+                                updateGroupDividers();
+                            });
+                            
+                            // now hide any <hr> under a .work-group that has no visible .row
+                            function updateGroupDividers() {
+                                // build a selector for all “active” lang-classes
+                                const active =[];
+                                if ($("#toggle-englishW").hasClass("highlight")) active.push(".englishTitles");
+                                if ($("#toggle-hebrewW").hasClass("highlight")) active.push(".hebrewTitles");
+                                if ($("#toggle-arabicW").hasClass("highlight")) active.push(".arabicTitles");
+                                
+                                const sel = active.join(", ");
+                                
+                                // for each group: “does it have ANY .row in an active language?”
+                                $(".work-group").each(function () {
+                                    const $g = $(this);
+                                    const keepHr = sel && $g.find(sel).length > 0;
+                                    $g.find("hr.group-divider").toggle(keepHr);
+                                });
+                            }
+                        });//]]>
   	              </script>
-	                <div class="col-md-12 inline-h4">
-	 	          <div class="tri-state-toggle">
-		            <span class="tri-state-toggle-button highlight"
-                                href="#englishTitles" id="toggle-englishW">
-                                <span lang="en">E</span>
-                            </span>
-                            <span class="tri-state-toggle-button" data-toggle="collapse"
-                                 href="#hebrewTitles" id="toggle-hebrewW">
-                                <span lang="he">ע</span>
-                            </span>
-                            <span class="tri-state-toggle-button" data-toggle="collapse"
-                                href="#arabicTitles" id="toggle-arabicW">
-                                <span lang="ar"> ع </span>
-                            </span>
-		          </div>
-	  	        </div>
-	            </div>
-
+                        <div class="col-md-12 inline-h4">
+                            <div class="tri-state-toggle">
+                                <span class="tri-state-toggle-button highlight"
+                                    href="#englishTitles" id="toggle-englishW">
+                                    <span lang="en">E</span>
+                                </span>
+                                <span class="tri-state-toggle-button" data-toggle="collapse"
+                                    href="#hebrewTitles" id="toggle-hebrewW">
+                                    <span lang="he">ע</span>
+                                </span>
+                                <span class="tri-state-toggle-button" data-toggle="collapse"
+                                    href="#arabicTitles" id="toggle-arabicW">
+                                    <span lang="ar"> ع </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                     <!--<xsl:for-each select="descendant::t:body/t:bibl">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Title </div>
@@ -1796,220 +1776,196 @@
 		    Now group all the <t:title>[@type='majlis-headword'] elements by their work-ID tail. 
 		    Each group is one work-ID, and position() here is the *group* index.
 		    -->
-		    <xsl:for-each-group 
-		       select="descendant::t:body/t:bibl/t:title[@type != 'majlis-headword'][string-length(normalize-space(.)) > 0]" 
-		       group-by="
-		         tokenize(
-		           substring-after(
-		             ancestor::t:TEI
-		               /descendant::t:publicationStmt
-		               /t:idno[@type='URI'][1],
-		             $base-uri
-		           ),
-		           '/'
-		         )[last()]
-		       ">
-		                   
-		      <!-- this is the *grouping key* (the work-ID tail) -->
-		      <xsl:variable name="work-id" select="current-grouping-key()"/>
-		      <!--  shades of original colors from https://www.lmu.de/de/die-lmu/struktur/zentrale-universitaetsverwaltung/kommunikation-und-presse/lmu-brand-guide/designgrundsaetze/farben/
+                    <xsl:for-each-group
+                        select="descendant::t:body/t:bibl/t:title[@type != 'majlis-headword'][string-length(normalize-space(.)) > 0]"
+                        group-by="tokenize(substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type = 'URI'][1], $base-uri), '/')[last()]">
+                        <!-- this is the *grouping key* (the work-ID tail) -->
+                        <xsl:variable name="work-id" select="current-grouping-key()"/>
+                        <!--  shades of original colors from https://www.lmu.de/de/die-lmu/struktur/zentrale-universitaetsverwaltung/kommunikation-und-presse/lmu-brand-guide/designgrundsaetze/farben/
                 		('#626468', '#C0C1C3', '#E6E6E7', '#F5F5F5')"
                 	    -->
-                      <xsl:variable name="palette" as="xs:string*"
-				select="('#505255', '#959697')"/>
-<!--					'#3F4144', '#505255', '#626468', '#777A7F',
+                        <xsl:variable name="palette" as="xs:string*" select="('#505255', '#959697')"/>
+                        <!--					'#3F4144', '#505255', '#626468', '#777A7F',
 					'#959697', '#AEB0B2', '#C0C1C3', '#D4D5D6',
 					'#CFCFD0', '#D9D9DA', '#E6E6E7', '#F0F0F1',
 					'#E0E0E0', '#EBEBEB', '#F2F2F2', '#F5F5F5'
 			        	)" />
 -->
-		      <!-- map group (work id) position → a slot in [1..palette-length] -->
-	              <xsl:variable name="slot"
-          			  select="(position() - 1) mod count($palette) + 1"/>
-          	      <!-- the one colour for this entire group (work id) -->
-	              <xsl:variable name="swatch-color"
-          			  select="$palette[$slot]"/>
- 		      <!-- now emit *all* titles in this group with the same swatch -->
-<!--                      <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]"> -->
-
-		      <!-- now the language-aware divider: -->
-		      <xsl:variable name="langs" 
-			    select="distinct-values(current-group()/@xml:lang)"/>
-		      <xsl:variable name="lang-classes"
-			    select="
-				for $l in $langs
-				return
-				  if ($l = 'en' or contains($l,'Latn'))
-				  then 'englishTitles'
-				  else if ($l = 'he' or contains($l,'Hebr'))
-				  then 'hebrewTitles'
-				  else if ($l = 'ar' or contains($l,'Arab'))
-				  then 'arabicTitles'
-				  else ()
-		     "/>
-		      <!-- start the group wrapper -->
-		      <div class="work-group">
-		      <xsl:for-each select="current-group()">
-			    <xsl:variable name="langClass">
-			      <xsl:choose>
-				<xsl:when test="@xml:lang = 'en'
-				               or contains(@xml:lang, 'Latn')">
-				  englishTitles
-				</xsl:when>
-				<xsl:when test="@xml:lang = 'he'
-				               or contains(@xml:lang, 'Hebr')">
-				  hebrewTitles
-				</xsl:when>
-				<xsl:when test="@xml:lang = 'ar'
-				               or contains(@xml:lang, 'Arab')">
-				  arabicTitles
-				</xsl:when>
-
-				<xsl:otherwise>englishTitles</xsl:otherwise>
-			      </xsl:choose>
-			    </xsl:variable>
-			    
-			    <!-- get the full URI out of the first <t:idno> -->
-			    <xsl:variable name="full" 
-					select="ancestor::t:TEI
-						/descendant::t:publicationStmt
-						/t:idno[@type='URI'][1]" />
-			    <!-- strip off your base -->
-			    <xsl:variable name="rel" 
-					select="substring-after($full, $base-uri)" />
-		   	    <!-- split on “/” and keep the last bit -->
-			    <xsl:variable name="idno-tail" 
-					select="tokenize($rel, '/')[last()]" />
-			    
-			    
-			    <div class="row {$langClass} row-swatch">
-			      <!-- swatch bar: same for every row (work title) in this group (work id) -->
-			      <!-- <div class="swatch"
+                        <!-- map group (work id) position → a slot in [1..palette-length] -->
+                        <xsl:variable name="slot" select="(position() - 1) mod count($palette) + 1"/>
+                        <!-- the one colour for this entire group (work id) -->
+                        <xsl:variable name="swatch-color" select="$palette[$slot]"/>
+                        <!-- now emit *all* titles in this group with the same swatch -->
+                        <!--                      <xsl:for-each select="t:title[string-length(normalize-space(.)) &gt; 0]"> -->
+                        <!-- now the language-aware divider: -->
+                        <xsl:variable name="langs"
+                            select="distinct-values(current-group()/@xml:lang)"/>
+                        <xsl:variable name="lang-classes" select="
+                                for $l in $langs
+                                return
+                                    if ($l = 'en' or contains($l, 'Latn')) then
+                                        'englishTitles'
+                                    else
+                                        if ($l = 'he' or contains($l, 'Hebr')) then
+                                            'hebrewTitles'
+                                        else
+                                            if ($l = 'ar' or contains($l, 'Arab')) then
+                                                'arabicTitles'
+                                            else
+                                                ()"/>
+                        <!-- start the group wrapper -->
+                        <div class="work-group">
+                            <xsl:for-each select="current-group()">
+                                <xsl:variable name="langClass">
+                                    <xsl:choose>
+                                        <xsl:when
+                                            test="@xml:lang = 'en' or contains(@xml:lang, 'Latn')">
+                                            englishTitles </xsl:when>
+                                        <xsl:when
+                                            test="@xml:lang = 'he' or contains(@xml:lang, 'Hebr')">
+                                            hebrewTitles </xsl:when>
+                                        <xsl:when
+                                            test="@xml:lang = 'ar' or contains(@xml:lang, 'Arab')">
+                                            arabicTitles </xsl:when>
+                                        <xsl:otherwise>englishTitles</xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
+                                <!-- get the full URI out of the first <t:idno> -->
+                                <xsl:variable name="full"
+                                    select="ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type = 'URI'][1]"/>
+                                <!-- strip off your base -->
+                                <xsl:variable name="rel" select="substring-after($full, $base-uri)"/>
+                                <!-- split on “/” and keep the last bit -->
+                                <xsl:variable name="idno-tail" select="tokenize($rel, '/')[last()]"/>
+                                <div class="row {$langClass} row-swatch">
+                                    <!-- swatch bar: same for every row (work title) in this group (work id) -->
+                                    <!-- <div class="swatch"
 			           style="background-color:{$swatch-color};"/>
-			      -->     
-			      <div class="col-md-1 inline-h4">
-				<xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-			      </div>
-			      <div class="col-md-10">
-				<a target="_blank"
-				   href="{concat($nav-base, $rel)}">
-				  <!--
+			      -->
+                                    <div class="col-md-1 inline-h4">
+                                        <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <a target="_blank" href="{concat($nav-base, $rel)}">
+                                            <!--
 				    "{concat($nav-base, substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1],$base-uri))}" -->
-				  <xsl:apply-templates/>
-				  <!-- a space ( as separator -->
-				  <!--<xsl:text> (Work ID: </xsl:text> -->
-				  <!-- the numeric tail, work id -->
-				  <!--<xsl:value-of select="$idno-tail"/> -->
-				  <!--<xsl:text>)</xsl:text> -->
-				</a>
-			      </div>
-			    </div>
-          		</xsl:for-each>
-          		
-          		<!-- Insert group separator here -->
-			<xsl:if test="position() != last()">
-			    <hr class="group-divider"/>
-			</xsl:if>
-			</div>
-		    </xsl:for-each-group>
+                                            <xsl:apply-templates/>
+                                            <!-- a space ( as separator -->
+                                            <!--<xsl:text> (Work ID: </xsl:text> -->
+                                            <!-- the numeric tail, work id -->
+                                            <!--<xsl:value-of select="$idno-tail"/> -->
+                                            <!--<xsl:text>)</xsl:text> -->
+                                        </a>
+                                    </div>
+                                </div>
+                            </xsl:for-each>
+                            <!-- Insert group separator here -->
+                            <xsl:if test="position() != last()">
+                                <hr class="group-divider"/>
+                            </xsl:if>
+                        </div>
+                    </xsl:for-each-group>
                 </div>
             </div>
         </xsl:if>
     </xsl:template>
-<!-- Work Titles -->
+    <!-- Work Titles -->
     <xsl:template match="t:bibl" mode="work-title">
-    	      <!-- Exclude 'majlis-headword' and 'alternate' titles from this collapsible as well as 'attested'-->
-      <xsl:if test="t:title[@type != 'attested' and @type != 'majlis-headword' and @type != 'alternate'][string-length(normalize-space(.)) gt 2]">
-	  <xsl:variable name="workId" select="generate-id(.)"/>
-
-	  <div class="whiteBoxwShadow">
-	    <h3>
-	      <a aria-expanded="true" data-toggle="collapse" href="#mainMenuTitle">Title</a>
-	    </h3>
-	    <div class="collapse" id="mainMenuTitle">
-		
-		<!-- LANGUAGE TOGGLE BUTTONS -->
-	      <div class="row">
-		  <!-- JS to support toggle, initialized only once -->
-		<script type="text/javascript">
+        <!-- Exclude 'majlis-headword' and 'alternate' titles from this collapsible as well as 'attested'-->
+        <xsl:if
+            test="t:title[@type != 'attested' and @type != 'majlis-headword' and @type != 'alternate'][string-length(normalize-space(.)) gt 2]">
+            <xsl:variable name="workId" select="generate-id(.)"/>
+            <div class="whiteBoxwShadow">
+                <h3>
+                    <a aria-expanded="true" data-toggle="collapse" href="#mainMenuTitle">Title</a>
+                </h3>
+                <div class="collapse" id="mainMenuTitle">
+                    <!-- LANGUAGE TOGGLE BUTTONS -->
+                    <div class="row">
+                        <!-- JS to support toggle, initialized only once -->
+                        <script type="text/javascript">
 		    <![CDATA[
-		      (function () {
-		        if (window.jalitAttestedToggleInit) return;
-		        window.jalitAttestedToggleInit = true;
-		        $(document).on("click", ".tri-state-toggle[data-target] .tri-state-toggle-button", function () {
-		          var $bar = $(this).closest(".tri-state-toggle");
-		          var target = $bar.data("target");
-		          var lang = $(this).data("lang");
-		          $(this).toggleClass("highlight");
-		          $(target + " ." + lang).toggle();
-		          $(target + " ." + lang + " [data-toggle='tooltip']").tooltip('hide');
-		        });
-		      })();
-		    ]]>
+                            (function () {
+                                if (window.jalitAttestedToggleInit) return;
+                                window.jalitAttestedToggleInit = true;
+                                $(document).on("click", ".tri-state-toggle[data-target] .tri-state-toggle-button", function () {
+                                    var $bar = $(this).closest(".tri-state-toggle");
+                                    var target = $bar.data("target");
+                                    var lang = $(this).data("lang");
+                                    $(this).toggleClass("highlight");
+                                    $(target + " ." + lang).toggle();
+                                    $(target + " ." + lang + " [data-toggle='tooltip']").tooltip('hide');
+                                });
+                            })();//]]>
 		</script>
-
-		<div class="col-md-12 inline-h4">
-		  <div class="tri-state-toggle" data-target="#workTitles-{$workId}">
-		    <span class="tri-state-toggle-button highlight" data-lang="englishNames">
-		      <span lang="en">E</span>
-		    </span>
-		    <span class="tri-state-toggle-button" data-lang="hebrewNames">
-		      <span lang="he">ע</span>
-		    </span>
-		    <span class="tri-state-toggle-button" data-lang="arabicNames">
-		      <span lang="ar">ع</span>
-		    </span>
-		  </div>
-		</div>
-	      </div>
-
-		<!-- TITLE BLOCK SCOPED BY ID -->
-	      <div id="workTitles-{$workId}">
-	      <!-- Exclude 'majlis-headword' and 'alternate' titles from the rows as well as 'attested'-->
-		<xsl:for-each select="t:title[@type != 'attested' and @type != 'majlis-headword' and @type != 'alternate'][string-length(normalize-space(.)) gt 2]">
-		  <xsl:variable name="langClass">
-		    <xsl:choose>
-		      <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang='en'">englishNames</xsl:when>
-		      <xsl:when test="@xml:lang='he' or contains(@xml:lang,'he') or contains(@xml:lang,'Hebr')">hebrewNames</xsl:when>
-		      <xsl:when test="@xml:lang='ar' or contains(@xml:lang,'ar') or contains(@xml:lang,'Arab')">arabicNames</xsl:when>
-		      <xsl:otherwise>englishNames</xsl:otherwise>
-		    </xsl:choose>
-		  </xsl:variable>
-
-		  <!-- Title row -->
-		  <div class="row {$langClass}">
-		    <div class="col-md-1 inline-h4">
-		      <!--Title-->
-		      <xsl:if test="@xml:lang">
-		        <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-		      </xsl:if>
-		    </div>
-		    <div class="col-md-10">
-		      <xsl:apply-templates select="."/>
-		    </div>
-		  </div>
-
-		    <!-- Type row -->
-		  <div class="row {$langClass}">
-		    <div class="col-md-1 inline-h4">Type</div>
-		    <div class="col-md-10">
-		      <xsl:choose>
-		        <!--<xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>-->
-		        <!-- Changed to set 'descriptive' title as the 1st priority--> 
-		        <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
-			<xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
-		        <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
-		      </xsl:choose>
-		    </div>
-		  </div>
-		</xsl:for-each>
-	      </div>
-
-	    </div>
-	  </div>
-	</xsl:if>
+                        <div class="col-md-12 inline-h4">
+                            <div class="tri-state-toggle" data-target="#workTitles-{$workId}">
+                                <span class="tri-state-toggle-button highlight"
+                                    data-lang="englishNames">
+                                    <span lang="en">E</span>
+                                </span>
+                                <span class="tri-state-toggle-button" data-lang="hebrewNames">
+                                    <span lang="he">ע</span>
+                                </span>
+                                <span class="tri-state-toggle-button" data-lang="arabicNames">
+                                    <span lang="ar">ع</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- TITLE BLOCK SCOPED BY ID -->
+                    <div id="workTitles-{$workId}">
+                        <!-- Exclude 'majlis-headword' and 'alternate' titles from the rows as well as 'attested'-->
+                        <xsl:for-each
+                            select="t:title[@type != 'attested' and @type != 'majlis-headword' and @type != 'alternate'][string-length(normalize-space(.)) gt 2]">
+                            <xsl:variable name="langClass">
+                                <xsl:choose>
+                                    <xsl:when test="contains(@xml:lang, 'Latn') or @xml:lang = 'en'"
+                                        >englishNames</xsl:when>
+                                    <xsl:when
+                                        test="@xml:lang = 'he' or contains(@xml:lang, 'he') or contains(@xml:lang, 'Hebr')"
+                                        >hebrewNames</xsl:when>
+                                    <xsl:when
+                                        test="@xml:lang = 'ar' or contains(@xml:lang, 'ar') or contains(@xml:lang, 'Arab')"
+                                        >arabicNames</xsl:when>
+                                    <xsl:otherwise>englishNames</xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:variable>
+                            <!-- Title row -->
+                            <div class="row {$langClass}">
+                                <div class="col-md-1 inline-h4">
+                                    <!--Title-->
+                                    <xsl:if test="@xml:lang">
+                                        <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
+                                    </xsl:if>
+                                </div>
+                                <div class="col-md-10">
+                                    <xsl:apply-templates select="."/>
+                                </div>
+                            </div>
+                            <!-- Type row -->
+                            <div class="row {$langClass}">
+                                <div class="col-md-1 inline-h4">Type</div>
+                                <div class="col-md-10">
+                                    <xsl:choose>
+                                        <!--<xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>-->
+                                        <!-- Changed to set 'descriptive' title as the 1st priority-->
+                                        <xsl:when test="@type = 'descriptive'">Descriptive
+                                            title</xsl:when>
+                                        <xsl:when test="@type = 'authorial'">Authorial
+                                            title</xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="@type"/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </div>
+                            </div>
+                        </xsl:for-each>
+                    </div>
+                </div>
+            </div>
+        </xsl:if>
     </xsl:template>
-
     <xsl:template match="t:bibl" mode="work-attestedTitles">
         <xsl:if test="t:title[@type = 'attested'][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
@@ -2272,16 +2228,17 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                     <!-- only do anything if t:citedRange has non-blank content -->
-				    <xsl:if test="string-length(normalize-space(t:citedRange)) &gt; 0">
-	                                <xsl:choose>
-	                                    <xsl:when
-	                                        test="t:citedRange[contains(., '-')] or t:citedRange[contains(., '–')]">
-	                                        <xsl:text> fols. </xsl:text>
-	                                    </xsl:when>
-	                                    <xsl:otherwise>
-	                                        <xsl:text> fol. </xsl:text>
-	                                    </xsl:otherwise>
-	                                </xsl:choose>
+                                    <xsl:if
+                                        test="string-length(normalize-space(t:citedRange)) &gt; 0">
+                                        <xsl:choose>
+                                            <xsl:when
+                                                test="t:citedRange[contains(., '-')] or t:citedRange[contains(., '–')]">
+                                                <xsl:text>, fols. </xsl:text>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:text>, fol. </xsl:text>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                     </xsl:if>
                                     <xsl:value-of select="t:citedRange"/>
                                 </p>
@@ -2307,8 +2264,7 @@
                         </div>
                     </div>
                 </xsl:for-each>
-                <xsl:for-each
-                    select="t:supportDesc/t:extent/t:measure[. != '']">
+                <xsl:for-each select="t:supportDesc/t:extent/t:measure[. != '']">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Extent </div>
                         <div class="col-md-10">
@@ -2343,9 +2299,11 @@
                                     <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
                                         <xsl:text> fols. </xsl:text>
                                     </xsl:when>
-                                    <xsl:otherwise>
+                                    <xsl:when
+                                        test=".[normalize-space(.) != '' and not(contains(., '-')) and not(contains(., '–'))]">
                                         <xsl:text> fol. </xsl:text>
-                                    </xsl:otherwise>
+                                    </xsl:when>
+                                    <xsl:otherwise/>
                                 </xsl:choose>
                                 <xsl:apply-templates select="."/>
                             </xsl:for-each>
@@ -2362,12 +2320,16 @@
                             />
                         </div>
                         <div class="col-md-10">
-                            <xsl:value-of select="t:formula"/>
-                            <xsl:text> folios per quire. </xsl:text>
-                            <xsl:for-each select="t:catchwords">
-                                <xsl:value-of select="."/>
-                                <xsl:text>. </xsl:text>
-                            </xsl:for-each>
+                            <xsl:if test="t:formula[. != '']">
+                                <xsl:value-of select="t:formula"/>
+                                <xsl:text> folios per quire. </xsl:text>
+                            </xsl:if>
+                            <xsl:if test="t:catchwords[. != '']">
+                                <xsl:for-each select="t:catchwords">
+                                    <xsl:value-of select="."/>
+                                    <xsl:text>. </xsl:text>
+                                </xsl:for-each>
+                            </xsl:if>
                             <xsl:apply-templates select="t:note"/>
                         </div>
                     </div>
@@ -2391,8 +2353,10 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">State of writing </div>
                         <div class="col-md-10">
-                            <xsl:value-of select="@rend"/>
-                            <xsl:text>. </xsl:text>
+                            <xsl:if test="@rend[. != '']">
+                                <xsl:value-of select="@rend"/>
+                                <xsl:text>. </xsl:text>
+                            </xsl:if>
                             <xsl:value-of select="."/>
                         </div>
                     </div>
@@ -2437,7 +2401,7 @@
                 </xsl:for-each>
                 <xsl:for-each select="t:layoutDesc/t:layout[@columns != '']/@columns">
                     <div class="row">
-                        <div class="col-md-2 inline-h4">Columns</div>
+                        <div class="col-md-2 inline-h4">Columns </div>
                         <div class="col-md-10">
                             <xsl:value-of select="."/>
                         </div>
@@ -2491,7 +2455,7 @@
                 <xsl:for-each
                     select="../t:physDesc/t:decoDesc[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
-                        <div class="col-md-2 inline-h4">Page layout</div>
+                        <div class="col-md-2 inline-h4">Page layout </div>
                         <div class="col-md-10">
                             <xsl:apply-templates select="."/>
                         </div>
@@ -2522,15 +2486,17 @@
                         <div class="col-md-10">
                             <xsl:if test="@xml:lang != ''">
                                 <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
-                                <xsl:text>, </xsl:text>
                             </xsl:if>
-                            <xsl:value-of select="@script"/>
-                            <xsl:text>, </xsl:text>
-                            <xsl:if test="@style != ''">
-                                <xsl:value-of select="@style"/>
+                            <xsl:if test="@script != ''">
                                 <xsl:text>, </xsl:text>
+                                <xsl:value-of select="@script"/>
+                            </xsl:if>
+                            <xsl:if test="@style != ''">
+                                <xsl:text>, </xsl:text>
+                                <xsl:value-of select="@style"/>
                             </xsl:if>
                             <xsl:if test="@rend != ''">
+                                <xsl:text>, </xsl:text>
                                 <xsl:value-of select="@rend"/>
                             </xsl:if>
                             <xsl:apply-templates select="t:note"/>
@@ -2596,7 +2562,16 @@
                             <xsl:for-each
                                 select="t:metamark[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
-                                    <div class="col-md-2 inline-h4"/>
+                                    <div class="col-md-2 inline-h4">
+                                        <xsl:choose>
+                                            <xsl:when test="@function != ''">
+                                                <xsl:value-of
+                                                  select="concat(upper-case(substring(@function, 1, 1)), substring(@function, 2))"
+                                                />
+                                            </xsl:when>
+                                            <xsl:otherwise>Special graphic sign </xsl:otherwise>
+                                        </xsl:choose>
+                                    </div>
                                     <div class="col-md-10">
                                         <xsl:apply-templates select="."/>
                                     </div>
@@ -2604,7 +2579,7 @@
                             </xsl:for-each>
                             <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
-                                    <div class="col-md-2 inline-h4"/>
+                                    <div class="col-md-2 inline-h4">Paleography note </div>
                                     <div class="col-md-10">
                                         <xsl:apply-templates select="."/>
                                     </div>
@@ -2629,27 +2604,29 @@
                             <xsl:value-of select="position()"/>
                         </div>
                         <div class="col-md-10">
-                            <!-- only output objectType + ", " if objectType is non-empty -->
-			    <xsl:if test="string-length(normalize-space(t:objectType)) &gt; 0">
-			      <xsl:value-of select="t:objectType"/>
-			      <xsl:text>, </xsl:text>
-			    </xsl:if>
-                            <!-- only fire choose when from or to is non-empty -->
-			    <xsl:if test="
-			       string-length(normalize-space(t:locus/@from)) &gt; 0
-			       or string-length(normalize-space(t:locus/@to)) &gt; 0">
-                                <xsl:choose>
-                                    <xsl:when test="t:locus/@from and t:locus/@to">
-                                        <xsl:text>fols. </xsl:text>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:text>fol. </xsl:text>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:if>
-                            <xsl:value-of select="t:locus/@from"/>
-                            <xsl:if test="t:locus/@to != ''"> - <xsl:value-of select="t:locus/@to"/>
-                            </xsl:if>
+                            <h4>
+                                <!-- only output objectType + ", " if objectType is non-empty -->
+                                <xsl:if test="string-length(normalize-space(t:objectType)) &gt; 0">
+                                    <xsl:value-of select="t:objectType"/>
+                                    <xsl:text>, </xsl:text>
+                                </xsl:if>
+                                <!-- only fire choose when from or to is non-empty -->
+                                <xsl:if
+                                    test="string-length(normalize-space(t:locus/@from)) &gt; 0 or string-length(normalize-space(t:locus/@to)) &gt; 0">
+                                    <xsl:choose>
+                                        <xsl:when test="t:locus/@from and t:locus/@to">
+                                            <xsl:text>fols. </xsl:text>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:text>fol. </xsl:text>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:if>
+                                <xsl:value-of select="t:locus/@from"/>
+                                <xsl:if test="t:locus/@to != ''"> - <xsl:value-of
+                                        select="t:locus/@to"/>
+                                </xsl:if>
+                            </h4>
                             <xsl:for-each select="t:quote[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Transcription </div>
@@ -2971,8 +2948,8 @@
                 <div class="row">
                     <div class="col-md-2 inline-h4">Principal Investigator(s): </div>
                     <div class="col-md-10">
-<!--                        <xsl:for-each select="t:editor[@role = 'general']">-->
-			    <xsl:for-each select="t:principal">
+                        <!--                        <xsl:for-each select="t:editor[@role = 'general']">-->
+                        <xsl:for-each select="t:principal">
                             <xsl:apply-templates select="."/>
                             <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
@@ -2996,7 +2973,7 @@
 			    <xsl:variable name="step1" select="replace($raw, '\(\s+', '(')"/>
 			    <xsl:variable name="fixed" select="replace($step1, '(\S)\(', '$1 (')" />
 			    <xsl:value-of select="$fixed"/>-->
-			    <xsl:if test="position() != last()">, </xsl:if>
+                            <xsl:if test="position() != last()">, </xsl:if>
                         </xsl:for-each>
                     </div>
                 </div>
@@ -3016,7 +2993,7 @@
                     </div>
                 </div>
                 <xsl:if test="normalize-space(t:editor[@role = 'entry-editor']) != ''">
-                   <div class="row">
+                    <div class="row">
                         <div class="col-md-2 inline-h4">Entry Editor(s): </div>
                         <div class="col-md-10">
                             <xsl:for-each select="t:editor[@role = 'entry-editor']">
@@ -3031,8 +3008,7 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Project: </div>
                         <div class="col-md-10">
-                            <xsl:apply-templates select="../t:editionStmt/t:edition[1]"
-                            />
+                            <xsl:apply-templates select="../t:editionStmt/t:edition[1]"/>
                         </div>
                     </div>
                 </xsl:if>
@@ -3041,10 +3017,10 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Principal Investigator(s): </div>
                         <div class="col-md-10">
-	                    <xsl:for-each select="../t:editionStmt/t:principal">
+                            <xsl:for-each select="../t:editionStmt/t:principal">
                                 <xsl:apply-templates select="."/>
-        		        <xsl:if test="position() != last()">, </xsl:if>
-      			    </xsl:for-each>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
                         </div>
                     </div>
                 </xsl:if>
@@ -3053,10 +3029,10 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Associate Researcher(s): </div>
                         <div class="col-md-10">
-	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'contributor']">
+                            <xsl:for-each select="../t:editionStmt/t:editor[@role = 'contributor']">
                                 <xsl:apply-templates select="normalize-space(.)"/>
-        		        <xsl:if test="position() != last()">, </xsl:if>
-      			    </xsl:for-each>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
                         </div>
                     </div>
                 </xsl:if>
@@ -3065,10 +3041,10 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">Funded through: </div>
                         <div class="col-md-10">
-	                    <xsl:for-each select="../t:editionStmt/t:funder">
+                            <xsl:for-each select="../t:editionStmt/t:funder">
                                 <xsl:apply-templates select="."/>
-        		        <xsl:if test="position() != last()">, </xsl:if>
-      			    </xsl:for-each>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
                         </div>
                     </div>
                 </xsl:if>
@@ -3077,26 +3053,26 @@
                     <div class="row">
                         <div class="col-md-2 inline-h4">General Editor(s): </div>
                         <div class="col-md-10">
-	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'general']">
+                            <xsl:for-each select="../t:editionStmt/t:editor[@role = 'general']">
                                 <xsl:apply-templates select="."/>
-        		        <xsl:if test="position() != last()">, </xsl:if>
-      			    </xsl:for-each>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
                         </div>
                     </div>
                 </xsl:if>
                 <!-- Entry editors of 2nd project in editionStmt (only if there's at least one) -->
-                <xsl:if test="normalize-space(../t:editionStmt/t:editor[@role = 'entry-editor']) != ''">
+                <xsl:if
+                    test="normalize-space(../t:editionStmt/t:editor[@role = 'entry-editor']) != ''">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Entry Editor(s): </div>
                         <div class="col-md-10">
-	                    <xsl:for-each select="../t:editionStmt/t:editor[@role = 'entry-editor']">
+                            <xsl:for-each select="../t:editionStmt/t:editor[@role = 'entry-editor']">
                                 <xsl:apply-templates select="."/>
-        		        <xsl:if test="position() != last()">, </xsl:if>
-      			    </xsl:for-each>
+                                <xsl:if test="position() != last()">, </xsl:if>
+                            </xsl:for-each>
                         </div>
                     </div>
                 </xsl:if>
-                
             </div>
         </div>
         <div class="whiteBoxwShadow panel panel-default">
@@ -3113,8 +3089,8 @@
                         <xsl:if test="position() != last()"> and </xsl:if>
                     </xsl:for-each>
                     <xsl:text> et. al. Accessed </xsl:text>
-                    <xsl:value-of
-                        select="format-date(current-date(),&#34;[D] [MNn] [Y]&#34;, &#34;en&#34;, (), ())"/>
+                    <xsl:value-of select="format-date(current-date(),&#34;[D] [MNn] [Y]&#34;,
+                        &#34;en&#34;, (), ())"/>
                     <xsl:text>, </xsl:text>
                     <xsl:apply-templates
                         select="ancestor-or-self::t:TEI/descendant::t:teiHeader/t:fileDesc/t:publicationStmt/t:idno[1]"
@@ -3124,67 +3100,62 @@
         </div>
     </xsl:template>
     <xsl:template match="t:revisionDesc" mode="majlis-changeLog">
-  	<div class="whiteBoxwShadow">
-    	    <h3>
-	        <a aria-expanded="false"
-		   data-toggle="collapse"
-		   href="#mainMenuChangeLog">
-		  Change Log
-	        </a>
-    	    </h3>
-    	    <div class="collapse" id="mainMenuChangeLog">
-	       <xsl:for-each
-		    select="t:change[string-length(normalize-space(.)) gt 2]">
-		    <div class="row">
-			<div class="col-md-2 inline-h4"> Change log:</div>
-			<div class="col-md-10">
-			    <xsl:variable name="who" select="replace(@who, '#', '')"/>
-			    <xsl:variable name="when">
-			        <xsl:variable name="date" select="substring(@when, 1, 10)"/>
-			        <xsl:choose>
-			            <xsl:when test="$date castable as xs:date">
-			                <xsl:value-of
-			                    select="format-date(xs:date($date), '[D] [MNn] [Y]', 'en', (), ())"
-			                />
-			            </xsl:when>
-			            <xsl:otherwise>
-			                <xsl:value-of select="$date"/>
-			            </xsl:otherwise>
-			        </xsl:choose>
-			    </xsl:variable>
-			    <xsl:variable name="name">
-			        <xsl:choose>
-			            <xsl:when test="descendant::t:editor[@xml:id[. = $who]]">
-			                <xsl:for-each
-			                    select="descendant::t:editor[@xml:id[. = $who]][1]">
-			                    <xsl:choose>
-			                        <xsl:when test="t:persName">
-			                          <xsl:value-of select="t:persName"/>
-			                        </xsl:when>
-			                        <xsl:otherwise>
-			                          <xsl:value-of
-			                          select="string-join(descendant-or-self::text(), ' ')"
-			                          />
-			                        </xsl:otherwise>
-			                    </xsl:choose>
-			                </xsl:for-each>
-			            </xsl:when>
-			            <xsl:otherwise>
-			                <xsl:value-of select="$who"/>
-			            </xsl:otherwise>
-			        </xsl:choose>
-			    </xsl:variable>
-			    <xsl:value-of select="$name"/>
-			    <xsl:if test="@when[. != '']"> (<xsl:value-of select="$when"/>)</xsl:if>
-			    <xsl:text>: </xsl:text>
-			    <xsl:value-of select="."/>
+        <div class="whiteBoxwShadow">
+            <h3>
+                <a aria-expanded="false" data-toggle="collapse" href="#mainMenuChangeLog"> Change
+                    Log </a>
+            </h3>
+            <div class="collapse" id="mainMenuChangeLog">
+                <xsl:for-each select="t:change[string-length(normalize-space(.)) gt 2]">
+                    <div class="row">
+                        <div class="col-md-2 inline-h4"> Change log:</div>
+                        <div class="col-md-10">
+                            <xsl:variable name="who" select="replace(@who, '#', '')"/>
+                            <xsl:variable name="when">
+                                <xsl:variable name="date" select="substring(@when, 1, 10)"/>
+                                <xsl:choose>
+                                    <xsl:when test="$date castable as xs:date">
+                                        <xsl:value-of
+                                            select="format-date(xs:date($date), '[D] [MNn] [Y]', 'en', (), ())"
+                                        />
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="$date"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:variable>
+                            <xsl:variable name="name">
+                                <xsl:choose>
+                                    <xsl:when test="descendant::t:editor[@xml:id[. = $who]]">
+                                        <xsl:for-each
+                                            select="descendant::t:editor[@xml:id[. = $who]][1]">
+                                            <xsl:choose>
+                                                <xsl:when test="t:persName">
+                                                  <xsl:value-of select="t:persName"/>
+                                                </xsl:when>
+                                                <xsl:otherwise>
+                                                  <xsl:value-of
+                                                  select="string-join(descendant-or-self::text(), ' ')"
+                                                  />
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                        </xsl:for-each>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="$who"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:variable>
+                            <xsl:value-of select="$name"/>
+                            <xsl:if test="@when[. != '']"> (<xsl:value-of select="$when"/>)</xsl:if>
+                            <xsl:text>: </xsl:text>
+                            <xsl:value-of select="."/>
                         </div>
-	            </div>
-	        </xsl:for-each>
-	    </div>
+                    </div>
+                </xsl:for-each>
+            </div>
         </div>
     </xsl:template>
-
     <xsl:template match="t:textLang">
         <xsl:for-each select="@otherLangs | @mainLang">
             <xsl:variable name="langCode" select="."/>
@@ -3196,15 +3167,14 @@
     </xsl:template>
     <xsl:template name="locus">
         <!-- only do anything when from or to has non-whitespace content -->
-        <xsl:if test="
-              string-length(normalize-space(@from)) &gt; 0
-           or string-length(normalize-space(@to)) &gt; 0">
+        <xsl:if
+            test="string-length(normalize-space(@from)) &gt; 0 or string-length(normalize-space(@to)) &gt; 0">
             <xsl:choose>
                 <xsl:when test="@to != ''">
-                    <xsl:text> fols. </xsl:text>
+                    <xsl:text>fols. </xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:text> fol. </xsl:text>
+                    <xsl:text>fol. </xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:value-of select="@from"/>
@@ -3229,7 +3199,6 @@
                 <xsl:apply-templates select="t:title"/>
             </xsl:otherwise>
         </xsl:choose>
-
         <xsl:if test="t:citedRange[. != '']">
             <xsl:text>, </xsl:text>
         </xsl:if>
@@ -3256,7 +3225,7 @@
                 <h4>Persons referenced</h4>
                 <ul>
                     <xsl:for-each-group group-by="text()"
-                        select="descendant::t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''] | descendant::t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != '']">
+                        select="descendant::t:msDesc/descendant-or-self::t:persName[descendant-or-self::text() != ''][not(ancestor::t:accMat)] | descendant::t:msDesc/descendant-or-self::t:author[descendant-or-self::text() != ''][not(ancestor::t:accMat)]">
                         <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates select="."/>
@@ -3295,7 +3264,7 @@
                 <h4>Works referenced</h4>
                 <ul>
                     <xsl:for-each-group group-by="text()"
-                        select="descendant::t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][descendant-or-self::text() != '']">
+                        select="descendant::t:msDesc/descendant-or-self::t:title[not(ancestor::t:additional)][not(ancestor::t:accMat)][descendant-or-self::text() != '']">
                         <xsl:sort select="current-grouping-key()"/>
                         <li>
                             <xsl:apply-templates mode="majlis" select="."/>
@@ -3332,115 +3301,101 @@
     </xsl:template>
     <!-- clean up whitespace around parentheses in all text under a funder -->
     <xsl:template match="text()[ancestor::t:funder]">
-      <xsl:value-of select="
-        replace(
-          replace(., '\(\s+', '('),
-      	  '\s*\(', ' ('
-      	)
-      "/>
+        <xsl:value-of select="replace(replace(., '\(\s+', '('), '\s*\(', ' (')"/>
     </xsl:template>
-    
-    
     <!-- Custom template for t:name elements to wrap text content of attested names for a Person in <a> tags -->
-<!--    <xsl:template match="t:name" mode="attestedNames">-->
-<xsl:template match="t:persName[@type='attested']/t:name" mode="attestedNames">
-  <span class="tei-name">
-    <xsl:sequence select="local:attributes(.)"/>
-
-    <!-- Tooltip content -->
-    <xsl:variable name="tooltipContent">
-	  <xsl:choose>
-	    <xsl:when test="@source">
-	      <xsl:variable name="sourceRef" select="@source"/>
-	      <xsl:variable name="targetId"
-		select="if (starts-with($sourceRef, '#'))
-		        then substring-after($sourceRef, '#')
-		        else $sourceRef"/>
-	      <xsl:variable name="matchingBibl"
-		select="ancestor::t:person//t:bibl[@xml:id = $targetId][@type = 'manuscript'][1]"/>
-	      <xsl:choose>
-		<xsl:when test="$matchingBibl">
-		  <xsl:variable name="title" select="normalize-space($matchingBibl/t:title[1])"/>
-		  <xsl:variable name="range" select="normalize-space($matchingBibl/t:citedRange[1])"/>
-		  <xsl:choose>
-		    <!-- both title and range -->
-		    <xsl:when test="$title and $range">
-		      <xsl:value-of select="concat($title, ' — ', $range)"/>
-		    </xsl:when>
-		    <!-- only title -->
-		    <xsl:when test="$title">
-		      <xsl:value-of select="$title"/>
-		    </xsl:when>
-		    <!-- only range -->
-		    <xsl:when test="$range">
-		      <xsl:value-of select="$range"/>
-		    </xsl:when>
-		    <!-- neither -->
-		    <xsl:otherwise/>
-		  </xsl:choose>
-		</xsl:when>
-		<xsl:otherwise/>
-	      </xsl:choose>
-	    </xsl:when>
-	    <xsl:otherwise/>
-	  </xsl:choose>
-    </xsl:variable>
-
-
-    <!-- Link building -->
-    <xsl:choose>
-      <xsl:when test="@source">
-        <xsl:variable name="refid" select="substring-after(@source, '#')" />
-        <xsl:variable name="ref-element"
-          select="id($refid) | /*/descendant::*[@xml:id = $refid][1]" />
-        <xsl:variable name="target" select="$ref-element/t:ptr/@target" />
-
-        <!-- NEW: Check if target contains /manuscript/ -->
-        <xsl:variable name="isManuscriptLink" select="contains($target, '/manuscript/')"/>
-
-        <!-- Generate href ONLY if it's a manuscript link -->
-        <xsl:variable name="href">
-          <xsl:choose>
-            <xsl:when test="$isManuscriptLink and starts-with($target, $base-uri)">
-              <xsl:value-of select="concat($nav-base, substring-after($target, $base-uri))"/>
-            </xsl:when>
-            <xsl:when test="$isManuscriptLink">
-              <xsl:value-of select="$target"/>
-            </xsl:when>
-            <xsl:otherwise/>
-          </xsl:choose>
-        </xsl:variable>
-
-        <!-- Final <a> output with tooltip -->
-	<xsl:choose>
-	  <!-- Case: valid href, wrap in <a> -->
-	  <xsl:when test="string-length($href) gt 0">
-	    <a href="{$href}" target="_blank" class="expandFromAnchor"
-	       data-toggle="tooltip" data-container="body"
-	       title="{normalize-space($tooltipContent)}">
-	      <xsl:apply-templates/>
-	    </a>
-	  </xsl:when>
-
-	  <!-- Case: no href → just text, no <a> -->
-	  <xsl:otherwise>
-	    <span class="expandFromAnchor"
-		  data-toggle="tooltip" data-container="body"
-		  title="{normalize-space($tooltipContent)}">
-	      <xsl:apply-templates/>
-	    </span>
-	  </xsl:otherwise>
-	</xsl:choose>
-
-      </xsl:when>
-
-      <!-- No source: fallback (render name without link) -->
-      <xsl:otherwise>
-        <xsl:apply-templates/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </span>
-</xsl:template>
-
-
+    <!--    <xsl:template match="t:name" mode="attestedNames">-->
+    <xsl:template match="t:persName[@type = 'attested']/t:name" mode="attestedNames">
+        <span class="tei-name">
+            <xsl:sequence select="local:attributes(.)"/>
+            <!-- Tooltip content -->
+            <xsl:variable name="tooltipContent">
+                <xsl:choose>
+                    <xsl:when test="@source">
+                        <xsl:variable name="sourceRef" select="@source"/>
+                        <xsl:variable name="targetId" select="
+                                if (starts-with($sourceRef, '#')) then
+                                    substring-after($sourceRef, '#')
+                                else
+                                    $sourceRef"/>
+                        <xsl:variable name="matchingBibl"
+                            select="ancestor::t:person//t:bibl[@xml:id = $targetId][@type = 'manuscript'][1]"/>
+                        <xsl:choose>
+                            <xsl:when test="$matchingBibl">
+                                <xsl:variable name="title"
+                                    select="normalize-space($matchingBibl/t:title[1])"/>
+                                <xsl:variable name="range"
+                                    select="normalize-space($matchingBibl/t:citedRange[1])"/>
+                                <xsl:choose>
+                                    <!-- both title and range -->
+                                    <xsl:when test="$title and $range">
+                                        <xsl:value-of select="concat($title, ' — ', $range)"/>
+                                    </xsl:when>
+                                    <!-- only title -->
+                                    <xsl:when test="$title">
+                                        <xsl:value-of select="$title"/>
+                                    </xsl:when>
+                                    <!-- only range -->
+                                    <xsl:when test="$range">
+                                        <xsl:value-of select="$range"/>
+                                    </xsl:when>
+                                    <!-- neither -->
+                                    <xsl:otherwise/>
+                                </xsl:choose>
+                            </xsl:when>
+                            <xsl:otherwise/>
+                        </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise/>
+                </xsl:choose>
+            </xsl:variable>
+            <!-- Link building -->
+            <xsl:choose>
+                <xsl:when test="@source">
+                    <xsl:variable name="refid" select="substring-after(@source, '#')"/>
+                    <xsl:variable name="ref-element"
+                        select="id($refid) | /*/descendant::*[@xml:id = $refid][1]"/>
+                    <xsl:variable name="target" select="$ref-element/t:ptr/@target"/>
+                    <!-- NEW: Check if target contains /manuscript/ -->
+                    <xsl:variable name="isManuscriptLink" select="contains($target, '/manuscript/')"/>
+                    <!-- Generate href ONLY if it's a manuscript link -->
+                    <xsl:variable name="href">
+                        <xsl:choose>
+                            <xsl:when test="$isManuscriptLink and starts-with($target, $base-uri)">
+                                <xsl:value-of
+                                    select="concat($nav-base, substring-after($target, $base-uri))"
+                                />
+                            </xsl:when>
+                            <xsl:when test="$isManuscriptLink">
+                                <xsl:value-of select="$target"/>
+                            </xsl:when>
+                            <xsl:otherwise/>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <!-- Final <a> output with tooltip -->
+                    <xsl:choose>
+                        <!-- Case: valid href, wrap in <a> -->
+                        <xsl:when test="string-length($href) gt 0">
+                            <a href="{$href}" target="_blank" class="expandFromAnchor"
+                                data-toggle="tooltip" data-container="body"
+                                title="{normalize-space($tooltipContent)}">
+                                <xsl:apply-templates/>
+                            </a>
+                        </xsl:when>
+                        <!-- Case: no href → just text, no <a> -->
+                        <xsl:otherwise>
+                            <span class="expandFromAnchor" data-toggle="tooltip"
+                                data-container="body" title="{normalize-space($tooltipContent)}">
+                                <xsl:apply-templates/>
+                            </span>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <!-- No source: fallback (render name without link) -->
+                <xsl:otherwise>
+                    <xsl:apply-templates/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </span>
+    </xsl:template>
 </xsl:stylesheet>
