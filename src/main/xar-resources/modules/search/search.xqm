@@ -28,7 +28,7 @@ declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 (: Variables:)
 declare variable $search:start {request:get-parameter('start', 1) cast as xs:integer};
-declare variable $search:perpage {request:get-parameter('perpage', 20) cast as xs:integer};
+declare variable $search:perpage {request:get-parameter('perpage', 25) cast as xs:integer};
 
 (:~
  : Builds search result, saves to model("hits") for use in HTML display
@@ -63,9 +63,20 @@ declare %templates:wrap function search:search-data(
       )
 
   let $hits := data:search($collection, $queryExpr, $sort-element)
+  let $entity-type := request:get-parameter('entity-type', '')
+  let $filtered-hits :=
+      if($entity-type != '')
+      then $hits[contains(replace(descendant::tei:idno[1],'/tei',''), concat('/', $entity-type, '/'))]
+      else $hits
 
   return map {
     "hits" :
+      if(exists(request:get-parameter-names()))
+      then $filtered-hits
+      else if(ends-with(request:get-url(), 'search.html'))
+      then ()
+      else $filtered-hits,
+    "all-hits" :
       if(exists(request:get-parameter-names()))
       then $hits
       else if(ends-with(request:get-url(), 'search.html'))
@@ -73,6 +84,43 @@ declare %templates:wrap function search:search-data(
       else $hits,
     "queryExpr" : $queryExpr
   }
+};
+
+(:~
+ : Renders entity-type filter buttons above search results
+:)
+declare %templates:wrap function search:entity-type-buttons($node as node()*, $model as map(*)) {
+  let $all-hits := if(exists($model("all-hits"))) then $model("all-hits") else $model("hits")
+  let $current-type := request:get-parameter('entity-type', '')
+  let $base-params :=
+      string-join(
+          for $p in request:get-parameter-names()
+          where $p != 'entity-type' and $p != 'start'
+          for $v in request:get-parameter($p, ())
+          return concat($p, '=', encode-for-uri($v))
+      , '&amp;')
+  let $base-url := concat('search.html?', $base-params)
+  return
+    if(exists($all-hits)) then
+      <div class="entity-type-filter" style="margin-bottom:0.75em;">
+        <a href="{$base-url}"
+           class="btn btn-xs {if($current-type = '') then 'btn-primary' else 'btn-default'}"
+           style="margin-right:3px;">
+          All ({count($all-hits)})
+        </a>
+        {
+          for $type in ('person','work','manuscript','place','bibl')
+          let $count := count($all-hits[contains(replace(descendant::tei:idno[1],'/tei',''), concat('/', $type, '/'))])
+          where $count > 0
+          return
+            <a href="{$base-url}&amp;entity-type={$type}"
+               class="btn btn-xs {if($current-type = $type) then 'btn-primary' else 'btn-default'}"
+               style="margin-right:3px; text-transform:capitalize;">
+              {$type} ({$count})
+            </a>
+        }
+      </div>
+    else ()
 };
 
 (: Search summary for new search - start :)

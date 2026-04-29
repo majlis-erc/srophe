@@ -78,6 +78,7 @@
 	       data-template-search-string="yes"
 	       data-template-sort-options="title,author,pubDate"></div>
 	  <div data-template="search:search-summary"></div>
+	  <div data-template="search:entity-type-buttons"></div>
 	  <div class="whiteBoxwShadow search-results-panel">
             <div data-template="search:show-hits" data-template-kwic="yes"></div>
 	  </div>
@@ -385,17 +386,8 @@
     }
 
     $(document).ready(function() {
-      const shouldClearAfterSubmit =
-        sessionStorage.getItem('clearAdvancedSearchFormAfterSubmit') === '1' &&
-        window.location.search.length > 1;
-
-      if (shouldClearAfterSubmit) {
-        sessionStorage.removeItem('clearAdvancedSearchFormAfterSubmit');
-        resetAdvancedSearchFormToDefaults();
-      } else {
-        addCriteriaBlock();
-        restoreFormFromQueryString();
-      }
+      addCriteriaBlock();
+      restoreFormFromQueryString();
 
       $('#addCriteria').on('click', function() {
         addCriteriaBlock();
@@ -467,7 +459,6 @@
           const values = $block.find('.teiElementsSelect').val() || [];
           $block.find('.teiElementsHidden').val(values.join(','));
         });
-        sessionStorage.setItem('clearAdvancedSearchFormAfterSubmit', '1');
       });
     });
   ]]></script>
