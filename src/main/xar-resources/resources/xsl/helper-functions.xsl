@@ -24,7 +24,7 @@
                         <xsl:value-of select="'ltr'"/>
                     </xsl:attribute>
                 </xsl:when>
-                <xsl:when test="$node/@xml:lang = ('syr','ar','syc','syr-Syrj','he')">
+                <xsl:when test="$node/@xml:lang = ('ar', 'ar-Hebr', 'he', 'he-Arab')">
                     <xsl:attribute name="dir">
                         <xsl:value-of select="'rtl'"/>
                     </xsl:attribute>
