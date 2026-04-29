@@ -44,12 +44,31 @@ declare %templates:wrap function search:search-data(
   $sort-element as xs:string?
 ){
   let $has-advanced :=
-      normalize-space(request:get-parameter('generalKeyword', '')) != '' or
-      normalize-space(request:get-parameter('searchTerm_1', '')) != '' or
-      normalize-space(request:get-parameter('searchTerm_2', '')) != '' or
-      normalize-space(request:get-parameter('searchTerm_3', '')) != '' or
-      normalize-space(request:get-parameter('startYear', '')) != '' or
-      normalize-space(request:get-parameter('endYear', '')) != ''
+      normalize-space(request:get-parameter('generalKeyword',    '')) != '' or
+      normalize-space(request:get-parameter('searchTerm_1',      '')) != '' or
+      normalize-space(request:get-parameter('searchTerm_2',      '')) != '' or
+      normalize-space(request:get-parameter('searchTerm_3',      '')) != '' or
+      normalize-space(request:get-parameter('notBefore_1',       '')) != '' or
+      normalize-space(request:get-parameter('notAfter_1',        '')) != '' or
+      normalize-space(request:get-parameter('when_1',            '')) != '' or
+      normalize-space(request:get-parameter('exactYear_1',       '')) != '' or
+      normalize-space(request:get-parameter('notBefore_2',       '')) != '' or
+      normalize-space(request:get-parameter('notAfter_2',        '')) != '' or
+      normalize-space(request:get-parameter('when_2',            '')) != '' or
+      normalize-space(request:get-parameter('exactYear_2',       '')) != '' or
+      normalize-space(request:get-parameter('notBefore_3',       '')) != '' or
+      normalize-space(request:get-parameter('notAfter_3',        '')) != '' or
+      normalize-space(request:get-parameter('when_3',            '')) != '' or
+      normalize-space(request:get-parameter('exactYear_3',       '')) != '' or
+      normalize-space(request:get-parameter('birthNotBefore_1',  '')) != '' or
+      normalize-space(request:get-parameter('deathNotBefore_1',  '')) != '' or
+      normalize-space(request:get-parameter('floritNotBefore_1', '')) != '' or
+      normalize-space(request:get-parameter('birthNotBefore_2',  '')) != '' or
+      normalize-space(request:get-parameter('deathNotBefore_2',  '')) != '' or
+      normalize-space(request:get-parameter('floritNotBefore_2', '')) != '' or
+      normalize-space(request:get-parameter('birthNotBefore_3',  '')) != '' or
+      normalize-space(request:get-parameter('deathNotBefore_3',  '')) != '' or
+      normalize-space(request:get-parameter('floritNotBefore_3', '')) != ''
 
   let $queryExpr :=
       if($has-advanced)

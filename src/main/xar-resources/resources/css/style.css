@@ -758,7 +758,8 @@ pre {
 .criteria-block .search-term-group,
 .criteria-block .search-type-group,
 .criteria-block .entity-group,
-.criteria-block .fields-group {
+.criteria-block .fields-group,
+.criteria-block .date-filter-section {
   margin-left: 10px;
   display: flex;
   flex-direction: column;
@@ -897,7 +898,17 @@ pre {
 }
 
 .search-submit-btn {
+  background-color: #0a9444;
+  border-color: #0a9444;
+  color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.search-submit-btn:hover,
+.search-submit-btn:focus {
+  background-color: #087a38;
+  border-color: #087a38;
+  color: #fff;
 }
 
 .search-results-wrap {
@@ -1077,4 +1088,87 @@ pre {
   .add-criteria-row {
     text-align: left;
   }
+}
+
+/* Date filter section inside criteria blocks */
+.date-filter-section {
+  padding-top: 0.5rem;
+  margin-top: 0.3rem;
+  border-top: 1px dashed #d8e5dc;
+}
+
+.date-filter-section h5 {
+  font-size: 0.8em;
+  color: #555;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.4rem 0;
+}
+
+.date-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  margin-bottom: 0.35rem;
+}
+
+.date-group strong {
+  font-size: inherit;
+  min-width: 46px;
+  flex-shrink: 0;
+  padding-bottom: 7px;
+}
+
+.date-inputs-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.date-inputs-grid .form-group {
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-inputs-grid label {
+  font-size: inherit;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.date-inputs-grid input[type="number"] {
+  width: 72px !important;
+  min-width: 72px;
+  height: 30px;
+  padding: 2px 5px;
+  font-size: inherit;
+}
+
+.date-type-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.date-type-row label {
+  font-size: inherit;
+  margin-bottom: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.date-type-row select {
+  width: auto;
+  min-width: 140px;
+  max-width: 180px;
+  height: 30px;
+  padding: 2px 6px;
+  font-size: inherit;
 }

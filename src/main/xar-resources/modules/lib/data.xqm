@@ -752,28 +752,98 @@ declare function data:all-entity-fields-clause(
   return string-join($clauses, ' or ')
 };
 
-declare function data:advanced-block-query($n as xs:integer) as xs:string? {
-  let $term := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
-  let $entity := normalize-space(request:get-parameter(concat('entity_', $n), ''))
-  let $type := normalize-space(request:get-parameter(concat('searchType_', $n), 'similar'))
-  let $fields :=
-    let $raw := normalize-space(request:get-parameter(concat('teiElements_', $n), ''))
-    return
-      if($raw = '') then ()
-      else tokenize($raw, ',\s*')
+declare function data:date-single-block(
+  $path as xs:string,
+  $nb as xs:string, $na as xs:string,
+  $wh as xs:string, $ex as xs:string
+) as xs:string {
+  let $conditions := string-join((
+      if($nb != '') then concat('@notBefore = "', $nb, '"') else (),
+      if($na != '') then concat('@notAfter = "',  $na, '"') else (),
+      if($wh != '') then concat('@when = "',      $wh, '"') else (),
+      if($ex != '') then concat('. = "',          $ex, '"') else ()
+  ), ' and ')
+  return if($conditions = '') then '' else concat($path, '[', $conditions, ']')
+};
 
-  let $fieldClause :=
-    if($entity = '' and empty($fields)) then
-      data:all-entity-fields-clause($term, $type)
-    else
-      data:advanced-field-clause($entity, $fields, $term, $type)
+declare function data:date-predicate(
+  $entity as xs:string, $dateType as xs:string, $n as xs:integer
+) as xs:string {
+  if($entity = 'work') then
+    data:date-single-block(
+      'tei:text/tei:body/tei:bibl/tei:date',
+      normalize-space(request:get-parameter(concat('notBefore_',  $n), '')),
+      normalize-space(request:get-parameter(concat('notAfter_',   $n), '')),
+      normalize-space(request:get-parameter(concat('when_',       $n), '')),
+      normalize-space(request:get-parameter(concat('exactYear_',  $n), '')))
+  else if($entity = 'person') then
+    let $birth  := data:date-single-block(
+      'tei:text/tei:body/tei:listPerson//tei:birth/tei:date',
+      normalize-space(request:get-parameter(concat('birthNotBefore_',  $n), '')),
+      normalize-space(request:get-parameter(concat('birthNotAfter_',   $n), '')),
+      normalize-space(request:get-parameter(concat('birthWhen_',       $n), '')),
+      normalize-space(request:get-parameter(concat('birthExactYear_',  $n), '')))
+    let $death  := data:date-single-block(
+      'tei:text/tei:body/tei:listPerson//tei:death/tei:date',
+      normalize-space(request:get-parameter(concat('deathNotBefore_',  $n), '')),
+      normalize-space(request:get-parameter(concat('deathNotAfter_',   $n), '')),
+      normalize-space(request:get-parameter(concat('deathWhen_',       $n), '')),
+      normalize-space(request:get-parameter(concat('deathExactYear_',  $n), '')))
+    let $florit := data:date-single-block(
+      'tei:text/tei:body/tei:listPerson//tei:floruit/tei:date',
+      normalize-space(request:get-parameter(concat('floritNotBefore_', $n), '')),
+      normalize-space(request:get-parameter(concat('floritNotAfter_',  $n), '')),
+      normalize-space(request:get-parameter(concat('floritWhen_',      $n), '')),
+      normalize-space(request:get-parameter(concat('floritExactYear_', $n), '')))
+    let $parts := ($birth[$birth != ''], $death[$death != ''], $florit[$florit != ''])
+    return if(empty($parts)) then ''
+           else if(count($parts) = 1) then $parts[1]
+           else concat('(', string-join($parts, ' and '), ')')
+  else if($entity = 'manuscript') then
+    let $path :=
+      if($dateType = 'provenance') then
+        'tei:text/tei:body/tei:listBibl/tei:msDesc/tei:history/tei:provenance/tei:date'
+      else if($dateType = 'acquisition') then
+        'tei:text/tei:body/tei:listBibl/tei:msDesc/tei:history/tei:acquisition/tei:date'
+      else if($dateType = 'relation') then
+        'tei:text/tei:body/tei:listBibl/tei:msDesc/tei:physDesc/tei:additions/tei:list/tei:item/tei:listRelation/tei:relation/tei:desc/tei:date'
+      else ''
+    return if($path = '') then ''
+           else data:date-single-block(
+             $path,
+             normalize-space(request:get-parameter(concat('notBefore_',  $n), '')),
+             normalize-space(request:get-parameter(concat('notAfter_',   $n), '')),
+             normalize-space(request:get-parameter(concat('when_',       $n), '')),
+             normalize-space(request:get-parameter(concat('exactYear_',  $n), '')))
+  else ''
+};
+
+declare function data:advanced-block-query($n as xs:integer) as xs:string? {
+  let $term     := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
+  let $entity   := normalize-space(request:get-parameter(concat('entity_',     $n), ''))
+  let $type     := normalize-space(request:get-parameter(concat('searchType_', $n), 'similar'))
+  let $dateType := normalize-space(request:get-parameter(concat('dateType_',   $n), ''))
+  let $fields   :=
+      let $raw := normalize-space(request:get-parameter(concat('teiElements_', $n), ''))
+      return if($raw = '') then () else tokenize($raw, ',\s*')
+
+  let $datePredicate := data:date-predicate($entity, $dateType, $n)
+  let $hasDate       := $datePredicate != ''
 
   return
-    if($term = '') then ''
-    else if($entity != '') then
-      concat("[(", data:advanced-entity-filter($entity), ") and (", $fieldClause, ")]")
+    if($term = '' and not($hasDate)) then ''
     else
-      concat("[", $fieldClause, "]")
+      let $fieldClause :=
+          if($term = '') then ''
+          else if($entity = '' and empty($fields))
+               then data:all-entity-fields-clause($term, $type)
+          else data:advanced-field-clause($entity, $fields, $term, $type)
+      let $parts := string-join((
+          if($entity != '')      then concat('(', data:advanced-entity-filter($entity), ')') else (),
+          if($fieldClause != '') then concat('(', $fieldClause, ')')                         else (),
+          if($hasDate)           then concat('(', $datePredicate, ')')                       else ()
+      ), ' and ')
+      return concat('[', $parts, ']')
 };
 
 declare function data:advanced-boolean-op($op as xs:string?) as xs:string {
@@ -827,9 +897,30 @@ declare function data:create-advanced-query($collection as xs:string?) as xs:str
   let $combined := data:combine-advanced-blocks($block1, $block2, $block3)
 
   let $hasAdvancedTerms :=
-    normalize-space(request:get-parameter('searchTerm_1', '')) != '' or
-    normalize-space(request:get-parameter('searchTerm_2', '')) != '' or
-    normalize-space(request:get-parameter('searchTerm_3', '')) != ''
+    normalize-space(request:get-parameter('searchTerm_1',      '')) != '' or
+    normalize-space(request:get-parameter('searchTerm_2',      '')) != '' or
+    normalize-space(request:get-parameter('searchTerm_3',      '')) != '' or
+    normalize-space(request:get-parameter('notBefore_1',       '')) != '' or
+    normalize-space(request:get-parameter('notAfter_1',        '')) != '' or
+    normalize-space(request:get-parameter('when_1',            '')) != '' or
+    normalize-space(request:get-parameter('exactYear_1',       '')) != '' or
+    normalize-space(request:get-parameter('notBefore_2',       '')) != '' or
+    normalize-space(request:get-parameter('notAfter_2',        '')) != '' or
+    normalize-space(request:get-parameter('when_2',            '')) != '' or
+    normalize-space(request:get-parameter('exactYear_2',       '')) != '' or
+    normalize-space(request:get-parameter('notBefore_3',       '')) != '' or
+    normalize-space(request:get-parameter('notAfter_3',        '')) != '' or
+    normalize-space(request:get-parameter('when_3',            '')) != '' or
+    normalize-space(request:get-parameter('exactYear_3',       '')) != '' or
+    normalize-space(request:get-parameter('birthNotBefore_1',  '')) != '' or
+    normalize-space(request:get-parameter('deathNotBefore_1',  '')) != '' or
+    normalize-space(request:get-parameter('floritNotBefore_1', '')) != '' or
+    normalize-space(request:get-parameter('birthNotBefore_2',  '')) != '' or
+    normalize-space(request:get-parameter('deathNotBefore_2',  '')) != '' or
+    normalize-space(request:get-parameter('floritNotBefore_2', '')) != '' or
+    normalize-space(request:get-parameter('birthNotBefore_3',  '')) != '' or
+    normalize-space(request:get-parameter('deathNotBefore_3',  '')) != '' or
+    normalize-space(request:get-parameter('floritNotBefore_3', '')) != ''
 
   let $general :=
     if($hasAdvancedTerms) then ''
