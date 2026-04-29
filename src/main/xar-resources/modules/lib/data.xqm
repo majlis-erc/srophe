@@ -831,7 +831,7 @@ declare function data:advanced-block-query($n as xs:integer) as xs:string? {
   let $hasDate       := $datePredicate != ''
 
   return
-    if($term = '' and not($hasDate)) then ''
+    if($term = '' and not($hasDate) and $entity = '') then ''
     else
       let $fieldClause :=
           if($term = '') then ''
