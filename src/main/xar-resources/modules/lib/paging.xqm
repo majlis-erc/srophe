@@ -74,7 +74,7 @@ let $pagination-links :=
                 <ul class="pagination pull-right">
                     {((: Show 'Previous' for all but the 1st page of results :)
                         if ($current-page = 1) then ()
-                        else <li><a href="{concat($param-string, $perpage * ($current-page - 2)) }">Prev</a></li>,
+                        else <li><a href="{concat($param-string, max((1, $start - $perpage)))}">Prev</a></li>,
                         (: Show links to each page of results :)
                         let $max-pages-to-show := 8
                         let $padding := xs:integer(round($max-pages-to-show div 2))
@@ -88,8 +88,8 @@ let $pagination-links :=
                                       else $current-page + $padding - 1
                         for $page in ($start-page to $end-page)
                         let $newstart := 
-                                      if($page = 1) then 1 
-                                      else $perpage * ($page - 1)
+                                      if($page = 1) then 1
+                                      else $perpage * ($page - 1) + 1
                         return 
                             if ($newstart eq $start) then <li class="active"><a href="#" >{$page}</a></li>
                              else <li><a href="{concat($param-string, $newstart)}">{$page}</a></li>,
