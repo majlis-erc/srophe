@@ -315,8 +315,6 @@
     function restoreFormFromQueryString() {
       const params = new URLSearchParams(window.location.search);
 
-      $('#generalKeyword').val(params.get('generalKeyword') || '');
-
       let highestBlock = 0;
       for (let i = 1; i <= maxEntities; i++) {
         const term = params.get(`searchTerm_${i}`);
@@ -331,6 +329,8 @@
           highestBlock = i;
         }
       }
+
+      $('#generalKeyword').val(highestBlock === 0 ? (params.get('generalKeyword') || '') : '');
 
       $('#criteriaContainer').empty();
       criteriaCount = 0;
@@ -542,6 +542,18 @@
           const values = $block.find('.teiElementsSelect').val() || [];
           $block.find('.teiElementsHidden').val(values.join(','));
         });
+
+        const hasAdvancedInput = $('.criteria-block').toArray().some(function(block) {
+          const $b = $(block);
+          return $b.find('.searchTerm').val().trim() !== '' ||
+                 $b.find('.entitySelect').val() !== '' ||
+                 $b.find('input[type="number"]').toArray().some(function(inp) {
+                   return $(inp).val() !== '';
+                 });
+        });
+        if (hasAdvancedInput) {
+          $('#generalKeyword').val('');
+        }
       });
     });
   ]]></script>
