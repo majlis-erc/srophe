@@ -1837,15 +1837,34 @@
                                 <xsl:variable name="rel" select="substring-after($full, $base-uri)"/>
                                 <!-- split on “/” and keep the last bit -->
                                 <xsl:variable name="idno-tail" select="tokenize($rel, '/')[last()]"/>
+                                <xsl:variable name="typeLabel">
+                                    <xsl:choose>
+                                        <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
+                                        <xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
+                                        <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
+                                <xsl:variable name="typeAbbr">
+                                    <xsl:choose>
+                                        <xsl:when test="@type = 'descriptive'">DT</xsl:when>
+                                        <xsl:when test="@type = 'authorial'">AT</xsl:when>
+                                        <xsl:otherwise><xsl:value-of select="upper-case(substring(@type, 1, 2))"/></xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
                                 <div class="row {$langClass} row-swatch">
                                     <!-- swatch bar: same for every row (work title) in this group (work id) -->
-                                    <!-- <div class="swatch"
+                                    <!-- <div class=”swatch”
 			           style="background-color:{$swatch-color};"/>
 			      -->
                                     <div class="col-md-1 inline-h4">
                                         <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
                                     </div>
                                     <div class="col-md-10">
+                                        <xsl:if test="@type">
+                                            <span class="title-type-badge" data-toggle="tooltip" data-placement="top" title="{$typeLabel}">
+                                                <xsl:value-of select="$typeAbbr"/>
+                                            </span>
+                                        </xsl:if>
                                         <a target="_blank" href="{concat($nav-base, $rel)}">
                                             <!--
 				    "{concat($nav-base, substring-after(ancestor::t:TEI/descendant::t:publicationStmt/t:idno[@type='URI'][1],$base-uri))}" -->
@@ -1853,7 +1872,7 @@
                                             <!-- a space ( as separator -->
                                             <!--<xsl:text> (Work ID: </xsl:text> -->
                                             <!-- the numeric tail, work id -->
-                                            <!--<xsl:value-of select="$idno-tail"/> -->
+                                            <!--<xsl:value-of select=”$idno-tail”/> -->
                                             <!--<xsl:text>)</xsl:text> -->
                                         </a>
                                     </div>
