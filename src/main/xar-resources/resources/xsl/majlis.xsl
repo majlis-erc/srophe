@@ -1931,6 +1931,20 @@
                                     <xsl:otherwise>englishNames</xsl:otherwise>
                                 </xsl:choose>
                             </xsl:variable>
+                            <xsl:variable name="typeLabel">
+                                <xsl:choose>
+                                    <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
+                                    <xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
+                                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:variable>
+                            <xsl:variable name="typeAbbr">
+                                <xsl:choose>
+                                    <xsl:when test="@type = 'descriptive'">DT</xsl:when>
+                                    <xsl:when test="@type = 'authorial'">AT</xsl:when>
+                                    <xsl:otherwise><xsl:value-of select="upper-case(substring(@type, 1, 2))"/></xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:variable>
                             <!-- Title row -->
                             <div class="row {$langClass}">
                                 <div class="col-md-1 inline-h4">
@@ -1940,26 +1954,28 @@
                                     </xsl:if>
                                 </div>
                                 <div class="col-md-10">
+                                    <xsl:if test="@type">
+                                        <span class="title-type-badge" data-toggle="tooltip" data-placement="top" title="{$typeLabel}">
+                                            <xsl:value-of select="$typeAbbr"/>
+                                        </span>
+                                    </xsl:if>
                                     <xsl:apply-templates select="."/>
                                 </div>
                             </div>
-                            <!-- Type row -->
+                            <!--
                             <div class="row {$langClass}">
                                 <div class="col-md-1 inline-h4">Type</div>
                                 <div class="col-md-10">
                                     <xsl:choose>
-                                        <!--<xsl:when test="@type = 'majlis-headword'">Descriptive title</xsl:when>-->
-                                        <!-- Changed to set 'descriptive' title as the 1st priority-->
-                                        <xsl:when test="@type = 'descriptive'">Descriptive
-                                            title</xsl:when>
-                                        <xsl:when test="@type = 'authorial'">Authorial
-                                            title</xsl:when>
+                                        <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
+                                        <xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
                                         <xsl:otherwise>
                                             <xsl:value-of select="@type"/>
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </div>
                             </div>
+                            -->
                         </xsl:for-each>
                     </div>
                 </div>
