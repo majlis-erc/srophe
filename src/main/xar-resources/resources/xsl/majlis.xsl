@@ -698,6 +698,19 @@
                             </span>
                         </div>
                     </xsl:if>
+                    <!-- AUTHORSHIP NOTES — moved here from the Content Information collapsible.
+                         Label matches Author line style (inline-h4); note content rendered
+                         smaller and with apply-templates to preserve any inline markup. -->
+                    <xsl:if test="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
+                        <xsl:for-each select="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
+                            <div class="item row">
+                                <span class="inline-h4 col-md-3"><small>Authorship note</small></span>
+                                <span class="col-md-9">
+                                    <small><xsl:apply-templates mode="note-inline"/></small>
+                                </span>
+                            </div>
+                        </xsl:for-each>
+                    </xsl:if>
                     <xsl:if test="t:persName[@type = 'compilator'][. != '']">
                         <div class="item row">
                             <span class="inline-h4 col-md-3">Compilator</span>
@@ -2026,8 +2039,10 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:bibl" mode="work-content">
+        <!-- Guard: authorship notes excluded here; they are now rendered above
+             the collapsibles after the Author line. -->
         <xsl:if
-            test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[string-length(normalize-space(.)) gt 2]">
+            test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[not(@type='authorship')][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" data-toggle="collapse"
@@ -2058,7 +2073,31 @@
                             </div>
                         </div>
                     </xsl:for-each>
+                    <!-- Original note loop — commented out; replaced below to exclude
+                         authorship notes which are now rendered above the collapsibles. -->
+                    <!--
                     <xsl:for-each select="t:note[string-length(normalize-space(.)) gt 2]">
+                        <div class="row">
+                            <div class="col-md-1 inline-h4">Description </div>
+                            <div class="col-md-10">
+                                <xsl:value-of select="."/>
+                            </div>
+                        </div>
+                    </xsl:for-each>
+                    -->
+                    <!-- AUTHORSHIP NOTES — relocated above the collapsibles after the
+                         Author line. Commented out here to preserve original location
+                         for reference. -->
+                    <!--
+                    <xsl:for-each select="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
+                        <div class="row">
+                            <div class="col-md-1 inline-h4">Description </div>
+                            <div class="col-md-10"><xsl:value-of select="."/></div>
+                        </div>
+                    </xsl:for-each>
+                    -->
+                    <!-- All notes except authorship (which has been moved). -->
+                    <xsl:for-each select="t:note[not(@type='authorship')][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
@@ -3467,4 +3506,21 @@
             </xsl:choose>
         </span>
     </xsl:template>
+
+    <!-- note-inline mode: renders note content inline by stripping t:p block
+         wrappers and replacing t:lb line breaks with spaces. Used for notes
+         displayed outside of collapsibles (e.g. authorship notes after Author). -->
+    <xsl:template match="t:p" mode="note-inline">
+        <xsl:apply-templates mode="note-inline"/>
+    </xsl:template>
+    <xsl:template match="t:lb" mode="note-inline">
+        <xsl:text> </xsl:text>
+    </xsl:template>
+    <xsl:template match="*" mode="note-inline">
+        <xsl:apply-templates select="."/>
+    </xsl:template>
+    <xsl:template match="text()" mode="note-inline">
+        <xsl:value-of select="."/>
+    </xsl:template>
+
 </xsl:stylesheet>
