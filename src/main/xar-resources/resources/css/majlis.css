@@ -149,6 +149,22 @@ h3 a {text-decoration:none; color:black;}
 .tooltip-inner {
     max-width: 100% !important;
 }
+.title-type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4em;
+    height: 2.4em;
+    border-radius: 50%;
+    background-color: #7AAC7A;
+    color: white;
+    font-size: 0.82em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: default;
+    margin-right: 0.7em;
+    vertical-align: middle;
+}
 
 .tei-em {
   font-style: italic;
