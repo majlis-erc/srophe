@@ -2052,6 +2052,16 @@
                             </div>
                             <div class="col-md-10">
                                 <xsl:apply-templates select="."/>
+                                <xsl:if test="@source">
+                                    <xsl:variable name="idnoText"
+                                        select="id(substring-after(@source, '#'), .)/t:idno[1]"/>
+                                    <xsl:if test="normalize-space($idnoText) != ''">
+                                        <img src="/exist/apps/majlis/resources/images/book.png"
+                                            height="18px" style="margin-left:.5em; cursor:default;"
+                                            data-toggle="tooltip" data-placement="top"
+                                            title="{$idnoText}"/>
+                                    </xsl:if>
+                                </xsl:if>
                             </div>
                         </div>
                     </xsl:for-each>
