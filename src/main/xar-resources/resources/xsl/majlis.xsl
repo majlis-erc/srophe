@@ -1032,6 +1032,10 @@
         <!-- MANUSCRIPT NOTES — passed in from the work bibl context and appended
              at the end of the attestations list, rendered inline in italic. -->
         <xsl:param name="manuscriptNotes"/>
+        <!-- Work URI derived from sibling record; used to look up the matching msItem
+             (and its folio locus) inside each manuscript TEI. -->
+        <xsl:variable name="work-uri"
+            select="ancestor::*:result/*:record/descendant::t:publicationStmt/t:idno[@type='URI'][1]"/>
         <div class="whiteBoxwShadow">
             <h3>
                 <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestations"
@@ -1046,6 +1050,15 @@
                                 $base-uri))}">
                                 <xsl:apply-templates select="descendant::t:titleStmt/t:title[1]"/>
                             </a>
+                            <xsl:variable name="msItem"
+                                select="descendant::t:msItem[t:title[@ref = $work-uri]][1]"/>
+                            <xsl:if test="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                <xsl:text> (</xsl:text>
+                                <xsl:for-each select="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                    <xsl:call-template name="locus"/>
+                                </xsl:for-each>
+                                <xsl:text>)</xsl:text>
+                            </xsl:if>
                         </div>
                     </div>
                 </xsl:for-each>
