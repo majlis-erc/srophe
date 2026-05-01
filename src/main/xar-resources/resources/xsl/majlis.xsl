@@ -699,17 +699,17 @@
                         </div>
                     </xsl:if>
                     <!-- AUTHORSHIP NOTES — moved here from the Content Information collapsible.
-                         Label matches Author line style (inline-h4); note content rendered
-                         smaller and with apply-templates to preserve any inline markup. -->
+                         Single label for all notes; each note on its own line. -->
                     <xsl:if test="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
-                        <xsl:for-each select="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
-                            <div class="item row">
-                                <span class="inline-h4 col-md-3"><small>Authorship note</small></span>
-                                <span class="col-md-9">
+                        <div class="item row">
+                            <span class="inline-h4 col-md-3"><small>Authorship note</small></span>
+                            <span class="col-md-9">
+                                <xsl:for-each select="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
                                     <small><xsl:apply-templates mode="note-inline"/></small>
-                                </span>
-                            </div>
-                        </xsl:for-each>
+                                    <xsl:if test="position() != last()"><br/></xsl:if>
+                                </xsl:for-each>
+                            </span>
+                        </div>
                     </xsl:if>
                     <xsl:if test="t:persName[@type = 'compilator'][. != '']">
                         <div class="item row">
@@ -792,7 +792,10 @@
             <xsl:apply-templates mode="work-attestedTitles" select="t:bibl"/>
         </xsl:variable>
         <xsl:variable name="attestations">
-            <xsl:apply-templates mode="work-attestations" select="ancestor::*:result/*:mss"/>
+            <!-- Pass manuscript notes so they can be appended to the attestations list. -->
+            <xsl:apply-templates mode="work-attestations" select="ancestor::*:result/*:mss">
+                <xsl:with-param name="manuscriptNotes" select="t:bibl/t:note[@type='manuscripts'][string-length(normalize-space(.)) gt 2]"/>
+            </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="translations">
             <xsl:apply-templates mode="work-translations" select="t:bibl"/>
@@ -1026,6 +1029,9 @@
         </div>
     </xsl:template>
     <xsl:template match="*:mss" mode="work-attestations">
+        <!-- MANUSCRIPT NOTES — passed in from the work bibl context and appended
+             at the end of the attestations list, rendered inline in italic. -->
+        <xsl:param name="manuscriptNotes"/>
         <div class="whiteBoxwShadow">
             <h3>
                 <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestations"
@@ -1040,6 +1046,13 @@
                                 $base-uri))}">
                                 <xsl:apply-templates select="descendant::t:titleStmt/t:title[1]"/>
                             </a>
+                        </div>
+                    </div>
+                </xsl:for-each>
+                <xsl:for-each select="$manuscriptNotes">
+                    <div class="item row">
+                        <div class="col-md-12">
+                            <em>Note: <xsl:apply-templates mode="note-inline"/></em>
                         </div>
                     </div>
                 </xsl:for-each>
@@ -2039,10 +2052,11 @@
         </xsl:if>
     </xsl:template>
     <xsl:template match="t:bibl" mode="work-content">
-        <!-- Guard: authorship notes excluded here; they are now rendered above
-             the collapsibles after the Author line. -->
+        <!-- Guard: authorship notes excluded (rendered after Author line above
+             collapsibles); manuscript notes excluded (rendered in Attestations
+             in Manuscripts collapsible). -->
         <xsl:if
-            test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[not(@type='authorship')][string-length(normalize-space(.)) gt 2]">
+            test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[not(@type='authorship') and not(@type='manuscripts')][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" data-toggle="collapse"
@@ -2096,8 +2110,9 @@
                         </div>
                     </xsl:for-each>
                     -->
-                    <!-- All notes except authorship (which has been moved). -->
-                    <xsl:for-each select="t:note[not(@type='authorship')][string-length(normalize-space(.)) gt 2]">
+                    <!-- All notes except authorship (moved above collapsibles) and
+                         manuscript (moved to Attestations in Manuscripts collapsible). -->
+                    <xsl:for-each select="t:note[not(@type='authorship') and not(@type='manuscripts')][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
@@ -2105,6 +2120,17 @@
                             </div>
                         </div>
                     </xsl:for-each>
+
+                    <!-- MANUSCRIPT NOTES — relocated to Attestations in Manuscripts collapsible.
+                         Commented out here to preserve original location for reference. -->
+                    <!--
+                    <xsl:for-each select="t:note[@type='manuscripts'][string-length(normalize-space(.)) gt 2]">
+                        <div class="row">
+                            <div class="col-md-1 inline-h4">Description </div>
+                            <div class="col-md-10"><xsl:value-of select="."/></div>
+                        </div>
+                    </xsl:for-each>
+                    -->
                 </div>
             </div>
         </xsl:if>
