@@ -700,13 +700,21 @@
                     </xsl:if>
                     <!-- AUTHORSHIP NOTES — moved here from the Content Information collapsible.
                          Single label for all notes; each note on its own line. -->
-                    <xsl:if test="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
+                    <xsl:if
+                        test="t:note[@type = 'authorship'][string-length(normalize-space(.)) gt 2]">
                         <div class="item row">
-                            <span class="inline-h4 col-md-3"><small>Authorship note</small></span>
+                            <span class="inline-h4 col-md-3">
+                                <small>Authorship note</small>
+                            </span>
                             <span class="col-md-9">
-                                <xsl:for-each select="t:note[@type='authorship'][string-length(normalize-space(.)) gt 2]">
-                                    <small><xsl:apply-templates mode="note-inline"/></small>
-                                    <xsl:if test="position() != last()"><br/></xsl:if>
+                                <xsl:for-each
+                                    select="t:note[@type = 'authorship'][string-length(normalize-space(.)) gt 2]">
+                                    <small>
+                                        <xsl:apply-templates mode="note-inline"/>
+                                    </small>
+                                    <xsl:if test="position() != last()">
+                                        <br/>
+                                    </xsl:if>
                                 </xsl:for-each>
                             </span>
                         </div>
@@ -794,7 +802,9 @@
         <xsl:variable name="attestations">
             <!-- Pass manuscript notes so they can be appended to the attestations list. -->
             <xsl:apply-templates mode="work-attestations" select="ancestor::*:result/*:mss">
-                <xsl:with-param name="manuscriptNotes" select="t:bibl/t:note[@type='manuscripts'][string-length(normalize-space(.)) gt 2]"/>
+                <xsl:with-param name="manuscriptNotes"
+                    select="t:bibl/t:note[@type = 'manuscripts'][string-length(normalize-space(.)) gt 2]"
+                />
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="translations">
@@ -1035,7 +1045,7 @@
         <!-- Work URI derived from sibling record; used to look up the matching msItem
              (and its folio locus) inside each manuscript TEI. -->
         <xsl:variable name="work-uri"
-            select="ancestor::*:result/*:record/descendant::t:publicationStmt/t:idno[@type='URI'][1]"/>
+            select="ancestor::*:result/*:record/descendant::t:publicationStmt/t:idno[@type = 'URI'][1]"/>
         <div class="whiteBoxwShadow">
             <h3>
                 <a aria-expanded="true" data-toggle="collapse" href="#mainMenuAttestations"
@@ -1052,9 +1062,11 @@
                             </a>
                             <xsl:variable name="msItem"
                                 select="descendant::t:msItem[t:title[@ref = $work-uri]][1]"/>
-                            <xsl:if test="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                            <xsl:if
+                                test="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
                                 <xsl:text> (</xsl:text>
-                                <xsl:for-each select="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                <xsl:for-each
+                                    select="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
                                     <xsl:call-template name="locus"/>
                                 </xsl:for-each>
                                 <xsl:text>)</xsl:text>
@@ -1124,6 +1136,9 @@
                                                 <xsl:variable name="locus">
                                                   <xsl:for-each
                                                   select="preceding-sibling::t:locus | following-sibling::t:locus">
+                                                  <xsl:if test="position() > 1">
+                                                  <xsl:text>, </xsl:text>
+                                                  </xsl:if>
                                                   <xsl:call-template name="locus"/>
                                                   </xsl:for-each>
                                                 </xsl:variable>
@@ -1878,16 +1893,23 @@
                                 <xsl:variable name="idno-tail" select="tokenize($rel, '/')[last()]"/>
                                 <xsl:variable name="typeLabel">
                                     <xsl:choose>
-                                        <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
-                                        <xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
-                                        <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                                        <xsl:when test="@type = 'descriptive'">Descriptive
+                                            title</xsl:when>
+                                        <xsl:when test="@type = 'authorial'">Authorial
+                                            title</xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="@type"/>
+                                        </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
                                 <xsl:variable name="typeAbbr">
                                     <xsl:choose>
                                         <xsl:when test="@type = 'descriptive'">DT</xsl:when>
                                         <xsl:when test="@type = 'authorial'">AT</xsl:when>
-                                        <xsl:otherwise><xsl:value-of select="upper-case(substring(@type, 1, 2))"/></xsl:otherwise>
+                                        <xsl:otherwise>
+                                            <xsl:value-of
+                                                select="upper-case(substring(@type, 1, 2))"/>
+                                        </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
                                 <div class="row {$langClass} row-swatch">
@@ -1900,7 +1922,8 @@
                                     </div>
                                     <div class="col-md-10">
                                         <xsl:if test="@type">
-                                            <span class="title-type-badge" data-toggle="tooltip" data-placement="top" title="{$typeLabel}">
+                                            <span class="title-type-badge" data-toggle="tooltip"
+                                                data-placement="top" title="{$typeLabel}">
                                                 <xsl:value-of select="$typeAbbr"/>
                                             </span>
                                         </xsl:if>
@@ -1991,9 +2014,12 @@
                             </xsl:variable>
                             <xsl:variable name="typeLabel">
                                 <xsl:choose>
-                                    <xsl:when test="@type = 'descriptive'">Descriptive title</xsl:when>
+                                    <xsl:when test="@type = 'descriptive'">Descriptive
+                                        title</xsl:when>
                                     <xsl:when test="@type = 'authorial'">Authorial title</xsl:when>
-                                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="@type"/>
+                                    </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:variable>
                             <xsl:variable name="typeAbbr"
@@ -2008,7 +2034,8 @@
                                 </div>
                                 <div class="col-md-10">
                                     <xsl:if test="@type">
-                                        <span class="title-type-badge" data-toggle="tooltip" data-placement="top" title="{$typeLabel}">
+                                        <span class="title-type-badge" data-toggle="tooltip"
+                                            data-placement="top" title="{$typeLabel}">
                                             <xsl:value-of select="$typeAbbr"/>
                                         </span>
                                     </xsl:if>
@@ -2074,7 +2101,7 @@
              collapsibles); manuscript notes excluded (rendered in Attestations
              in Manuscripts collapsible). -->
         <xsl:if
-            test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[not(@type='authorship') and not(@type='manuscripts')][string-length(normalize-space(.)) gt 2]">
+            test="t:incipit[string-length(normalize-space(.)) gt 2] | t:explicit[string-length(normalize-space(.)) gt 2] | t:quote[string-length(normalize-space(.)) gt 2] | t:note[not(@type = 'authorship') and not(@type = 'manuscripts')][string-length(normalize-space(.)) gt 2]">
             <div class="whiteBoxwShadow">
                 <h3>
                     <a aria-expanded="true" data-toggle="collapse"
@@ -2130,7 +2157,8 @@
                     -->
                     <!-- All notes except authorship (moved above collapsibles) and
                          manuscript (moved to Attestations in Manuscripts collapsible). -->
-                    <xsl:for-each select="t:note[not(@type='authorship') and not(@type='manuscripts')][string-length(normalize-space(.)) gt 2]">
+                    <xsl:for-each
+                        select="t:note[not(@type = 'authorship') and not(@type = 'manuscripts')][string-length(normalize-space(.)) gt 2]">
                         <div class="row">
                             <div class="col-md-1 inline-h4">Description </div>
                             <div class="col-md-10">
@@ -2138,7 +2166,6 @@
                             </div>
                         </div>
                     </xsl:for-each>
-
                     <!-- MANUSCRIPT NOTES — relocated to Attestations in Manuscripts collapsible.
                          Commented out here to preserve original location for reference. -->
                     <!--
@@ -2574,11 +2601,10 @@
                     select="ancestor::t:physDesc/t:decoDesc[string-length(normalize-space(.)) gt 2]">
                     <xsl:if test="t:summary[. != '']">
                         <div class="item row">
-                            <div class="col-md-1">
-                                <h4>Text layout summary </h4>
-                            </div>
-                            <div class="col-md-11">
-                                <xsl:for-each select="t:summary[string-length(normalize-space(.)) gt 2]">
+                            <div class="col-md-2 inline-h4">Text layout summary </div>
+                            <div class="col-md-10">
+                                <xsl:for-each
+                                    select="t:summary[string-length(normalize-space(.)) gt 2]">
                                     <xsl:apply-templates/>
                                 </xsl:for-each>
                             </div>
@@ -2586,11 +2612,10 @@
                     </xsl:if>
                     <xsl:if test="t:decoNote/t:desc[. != '']">
                         <div class="item row">
-                            <div class="col-md-1">
-                                <h4>Text layout </h4>
-                            </div>
-                            <div class="col-md-11">
-                                <xsl:for-each select="t:decoNote/t:desc[string-length(normalize-space(.)) gt 2]">
+                            <div class="col-md-2 inline-h4">Text layout </div>
+                            <div class="col-md-10">
+                                <xsl:for-each
+                                    select="t:decoNote/t:desc[string-length(normalize-space(.)) gt 2]">
                                     <xsl:apply-templates/>
                                 </xsl:for-each>
                             </div>
@@ -2598,11 +2623,10 @@
                     </xsl:if>
                     <xsl:if test="t:decoNote/t:note[. != '']">
                         <div class="item row">
-                            <div class="col-md-1">
-                                <h4>Text layout note </h4>
-                            </div>
-                            <div class="col-md-11">
-                                <xsl:for-each select="t:decoNote/t:note[string-length(normalize-space(.)) gt 2]">
+                            <div class="col-md-2 inline-h4">Text layout note </div>
+                            <div class="col-md-10">
+                                <xsl:for-each
+                                    select="t:decoNote/t:note[string-length(normalize-space(.)) gt 2]">
                                     <xsl:apply-templates/>
                                 </xsl:for-each>
                             </div>
@@ -2634,7 +2658,9 @@
                 <xsl:for-each select="../t:scriptDesc/t:scriptNote[@script != '']">
                     <!-- <scriptNote xml:lang="arabic" script="naskh" style="" rend="calligraphic"> -->
                     <div class="row">
-                        <div class="col-md-1 inline-h4">Script</div>
+                        <div class="col-md-1">
+                            <h4>Script </h4>
+                        </div>
                         <div class="col-md-10">
                             <xsl:if test="@xml:lang != ''">
                                 <xsl:value-of select="local:expand-lang(@xml:lang, '')"/>
@@ -2657,17 +2683,24 @@
                 </xsl:for-each>
                 <xsl:for-each select="t:handNote[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
-                        <div class="col-md-1 inline-h4">Hand <xsl:value-of select="position()"/>
+                        <div class="col-md-1">
+                            <h4>Hand <xsl:value-of select="position()"/> </h4>
                         </div>
-                        <div class="col-md-10">
-                            <xsl:for-each select="t:locus[@from != '' or @to != '']">
+                        <div class="col-md-11">
+                            <xsl:if test="t:locus[@from != '' or @to != '']">
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Range of hand </div>
                                     <div class="col-md-10">
-                                        <xsl:apply-templates select="."/>
+                                        <xsl:for-each
+                                            select="t:locus[normalize-space(@from) or normalize-space(@to)]">
+                                            <xsl:if test="position() > 1">
+                                                <xsl:text>, </xsl:text>
+                                            </xsl:if>
+                                            <xsl:call-template name="locus"/>
+                                        </xsl:for-each>
                                     </div>
                                 </div>
-                            </xsl:for-each>
+                            </xsl:if>
                             <xsl:for-each
                                 select="t:persName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
@@ -2680,7 +2713,7 @@
                             <xsl:for-each
                                 select="t:placeName[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
-                                    <div class="col-md-2 inline-h4">Place of origin </div>
+                                    <div class="col-md-2 inline-h4">Place of production </div>
                                     <div class="col-md-10">
                                         <xsl:apply-templates select="."/>
                                     </div>
@@ -2689,7 +2722,7 @@
                             <xsl:for-each
                                 select="t:origDate[string-length(normalize-space(.)) gt 2]">
                                 <div class="row">
-                                    <div class="col-md-2 inline-h4">Date of origin </div>
+                                    <div class="col-md-2 inline-h4">Date of production </div>
                                     <div class="col-md-10">
                                         <xsl:apply-templates select="."/>
                                     </div>
@@ -3550,7 +3583,6 @@
             </xsl:choose>
         </span>
     </xsl:template>
-
     <!-- note-inline mode: renders note content inline by stripping t:p block
          wrappers and replacing t:lb line breaks with spaces. Used for notes
          displayed outside of collapsibles (e.g. authorship notes after Author). -->
@@ -3566,5 +3598,4 @@
     <xsl:template match="text()" mode="note-inline">
         <xsl:value-of select="."/>
     </xsl:template>
-
 </xsl:stylesheet>
