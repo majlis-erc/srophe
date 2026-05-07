@@ -2110,7 +2110,17 @@
                 <div class="collapse" id="mainMenuContentInformation">
                     <xsl:for-each select="t:incipit[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
-                            <div class="col-md-1 inline-h4">Incipit </div>
+                            <div class="col-md-1 inline-h4">Incipit 
+                                <xsl:if
+                                    test="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                    <xsl:text> (</xsl:text>
+                                    <xsl:for-each
+                                        select="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                        <xsl:call-template name="locus"/>
+                                    </xsl:for-each>
+                                    <xsl:text>)</xsl:text>
+                                </xsl:if>
+                            </div>
                             <div class="col-md-10">
                                 <xsl:value-of select="."/>
                             </div>
@@ -2118,7 +2128,17 @@
                     </xsl:for-each>
                     <xsl:for-each select="t:explicit[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
-                            <div class="col-md-1 inline-h4">Explicit </div>
+                            <div class="col-md-1 inline-h4">Explicit 
+                                <xsl:if
+                                    test="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                    <xsl:text> (</xsl:text>
+                                    <xsl:for-each
+                                        select="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                        <xsl:call-template name="locus"/>
+                                    </xsl:for-each>
+                                    <xsl:text>)</xsl:text>
+                                </xsl:if>
+                            </div>
                             <div class="col-md-10">
                                 <xsl:value-of select="."/>
                             </div>
@@ -2126,7 +2146,17 @@
                     </xsl:for-each>
                     <xsl:for-each select="t:quote[string-length(normalize-space(.)) gt 2]">
                         <div class="row">
-                            <div class="col-md-1 inline-h4">Chapter heading </div>
+                            <div class="col-md-1 inline-h4">Chapter heading 
+                                <xsl:if
+                                    test="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                    <xsl:text> (</xsl:text>
+                                    <xsl:for-each
+                                        select="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                        <xsl:call-template name="locus"/>
+                                    </xsl:for-each>
+                                    <xsl:text>)</xsl:text>
+                                </xsl:if>
+                            </div>
                             <div class="col-md-10">
                                 <xsl:value-of select="."/>
                             </div>
