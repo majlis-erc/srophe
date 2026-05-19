@@ -2639,6 +2639,10 @@
                                 <xsl:for-each
                                     select="t:summary[string-length(normalize-space(.)) gt 2]">
                                     <xsl:apply-templates/>
+                                    <xsl:if test="not(ends-with(normalize-space(.), '.'))">
+                                        <xsl:text>.</xsl:text>
+                                    </xsl:if>
+                                    <xsl:text> </xsl:text>
                                 </xsl:for-each>
                             </div>
                         </div>
@@ -2650,6 +2654,10 @@
                                 <xsl:for-each
                                     select="t:decoNote/t:desc[string-length(normalize-space(.)) gt 2]">
                                     <xsl:apply-templates/>
+                                    <xsl:if test="not(ends-with(normalize-space(.), '.'))">
+                                        <xsl:text>.</xsl:text>
+                                    </xsl:if>
+                                    <xsl:text> </xsl:text>
                                 </xsl:for-each>
                             </div>
                         </div>
@@ -2661,6 +2669,10 @@
                                 <xsl:for-each
                                     select="t:decoNote/t:note[string-length(normalize-space(.)) gt 2]">
                                     <xsl:apply-templates/>
+                                    <xsl:if test="not(ends-with(normalize-space(.), '.'))">
+                                        <xsl:text>.</xsl:text>
+                                    </xsl:if>
+                                    <xsl:text> </xsl:text>
                                 </xsl:for-each>
                             </div>
                         </div>
