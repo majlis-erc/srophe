@@ -2532,10 +2532,10 @@
                         <div class="col-md-2 inline-h4">State of writing </div>
                         <div class="col-md-10">
                             <xsl:if test="@rend[. != '']">
-                                <xsl:value-of select="@rend"/>
+                                <xsl:value-of select="concat(upper-case(substring(@rend, 1, 1)), substring(@rend, 2))"/>
                                 <xsl:text>. </xsl:text>
                             </xsl:if>
-                            <xsl:value-of select="."/>
+                            <xsl:value-of select="concat(upper-case(substring(., 1, 1)), substring(., 2))"/>
                         </div>
                     </div>
                 </xsl:for-each>
