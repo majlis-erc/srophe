@@ -2540,13 +2540,22 @@
                     </div>
                 </xsl:for-each>
                 <xsl:for-each
-                    select="t:physDesc/t:objectDesc/t:layoutDesc/t:summary[string-length(normalize-space(.)) gt 2]">
+                    select="t:layoutDesc/t:summary[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Layout summary </div>
                         <div class="col-md-10">
-                            <xsl:apply-templates select="t:desc"/>
-                            <xsl:text>. </xsl:text>
-                            <xsl:apply-templates select="t:note"/>
+                            <xsl:if test="normalize-space(t:desc) != ''">
+                                <xsl:value-of select="normalize-space(t:desc)"/>
+                                <xsl:if test="normalize-space(t:note) != ''">
+                                    <xsl:if test="not(ends-with(normalize-space(t:desc), '.'))">
+                                        <xsl:text>.</xsl:text>
+                                    </xsl:if>
+                                    <xsl:text> </xsl:text>
+                                </xsl:if>
+                            </xsl:if>
+                            <xsl:if test="normalize-space(t:note) != ''">
+                                <xsl:value-of select="normalize-space(t:note)"/>
+                            </xsl:if>
                         </div>
                     </div>
                 </xsl:for-each>
