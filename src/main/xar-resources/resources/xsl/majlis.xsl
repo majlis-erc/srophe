@@ -1067,6 +1067,9 @@
                                 <xsl:text> (</xsl:text>
                                 <xsl:for-each
                                     select="$msItem/t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                    <xsl:if test="position() > 1">
+                                        <xsl:text>, </xsl:text>
+                                    </xsl:if>
                                     <xsl:call-template name="locus"/>
                                 </xsl:for-each>
                                 <xsl:text>)</xsl:text>
