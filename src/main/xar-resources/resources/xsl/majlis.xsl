@@ -2473,16 +2473,6 @@
                                         select="concat(upper-case(substring(@rendition, 1, 1)), substring(@rendition, 2))"/>
                                     <xsl:text> foliation. </xsl:text>
                                 </xsl:if>
-                                <xsl:choose>
-                                    <xsl:when test=".[contains(., '-')] or .[contains(., '–')]">
-                                        <xsl:text> fols. </xsl:text>
-                                    </xsl:when>
-                                    <xsl:when
-                                        test=".[normalize-space(.) != '' and not(contains(., '-')) and not(contains(., '–'))]">
-                                        <xsl:text> fol. </xsl:text>
-                                    </xsl:when>
-                                    <xsl:otherwise/>
-                                </xsl:choose>
                                 <xsl:apply-templates select="."/>
                             </xsl:for-each>
                         </div>
