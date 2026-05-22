@@ -371,11 +371,13 @@ button.clipboard {
 .listEntities .whiteBoxwShadow.entityList h4:after {
     
 }
+/* Use LMU green for all "Persons/Places/Works referenced" lits under the manuscript heading at the top of the page. */
 .listEntities .collapse li a, .listEntities .collapse li > span {
     font-size:15px; 
     color:#000;
-    border-bottom:3px solid #53a3e9;
+    border-bottom:3px solid #01883B; /*initially: #53a3e9- Changed to MU green #01883B;*/
 }
+/* DEACTIVATE the individual colors for each list and use LMU green for all cases, which is applied right above
 .listEntities #personEntities li a, .listEntities #personEntities li > span {
     border-color:#53a3e9;
 }
@@ -384,10 +386,15 @@ button.clipboard {
 }
 .listEntities #workEntities li a, .listEntities #workEntities li > span {
     border-color:#F8C380;
-}
-.listEntities #personEntities li a:hover {
+}*/
+/* Use no text decoration for other lists (places and works) too! Not just for #personEntities. Applied in the next lines*/
+/*.listEntities #personEntities li a:hover {
     text-decoration:none;
+}*/
+.listEntities .collapse li a:hover {
+      text-decoration: none;
 }
+  
 .datasliketable .row:nth-child(2n) {
     background:#F5F5F5;
 }
