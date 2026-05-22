@@ -1905,16 +1905,8 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
-                                <xsl:variable name="typeAbbr">
-                                    <xsl:choose>
-                                        <xsl:when test="@type = 'descriptive'">DT</xsl:when>
-                                        <xsl:when test="@type = 'authorial'">AT</xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:value-of
-                                                select="upper-case(substring(@type, 1, 2))"/>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:variable>
+                                <xsl:variable name="typeAbbr"
+                                    select="upper-case(substring(@type, 1, 3))"/>
                                 <div class="row {$langClass} row-swatch">
                                     <!-- swatch bar: same for every row (work title) in this group (work id) -->
                                     <!-- <div class=”swatch”
