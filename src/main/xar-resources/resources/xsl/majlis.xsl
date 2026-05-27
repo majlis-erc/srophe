@@ -1156,8 +1156,17 @@
                                                 </xsl:for-each>
                                             </xsl:when>
                                             <xsl:when test="local-name(.) = ('incipit', 'explicit')">
-                                                <!-- WS:NOTE - not applying locus?? -->
-                                                <xsl:apply-templates/>
+                                                <!-- collect the child locus range (e.g. fol. 1r or fols. 1r–4v);
+                                                     locus is a child of incipit/explicit, not a sibling like it is for title -->
+                                                <xsl:variable name="locus">
+                                                  <xsl:for-each select="t:locus[normalize-space(@from) != '' or normalize-space(@to) != '']">
+                                                  <xsl:call-template name="locus"/>
+                                                  </xsl:for-each>
+                                                </xsl:variable>
+                                                <!-- show folio range in parentheses before the quote text, omit if empty -->
+                                                <xsl:if test="$locus != ''">(<xsl:sequence select="$locus"/>) </xsl:if>
+                                                <!-- exclude locus from apply-templates since it is already handled above -->
+                                                <xsl:apply-templates select="* except t:locus"/>
                                             </xsl:when>
                                             <xsl:otherwise>
                                                 <xsl:apply-templates select="."/>
