@@ -2765,8 +2765,8 @@
                                 </div>
                             </xsl:for-each>
                             <xsl:for-each
-                                select="t:origDate[string-length(normalize-space(.)) gt 2]">
-                                <xsl:if test="@when[. != '']">
+                                select="t:origDate[string-length(normalize-space(.)) gt 2 or @when != '']">
+                                <xsl:if test="@when != ''">
                                     <div class="row">
                                         <div class="col-md-2 inline-h4">When </div>
                                         <div class="col-md-10">
@@ -2774,12 +2774,14 @@
                                         </div>
                                     </div>
                                 </xsl:if>
-                                <div class="row">
-                                    <div class="col-md-2 inline-h4">Date of production </div>
-                                    <div class="col-md-10">
-                                        <xsl:apply-templates select="."/>
+                                <xsl:if test="string-length(normalize-space(.)) gt 2">
+                                    <div class="row">
+                                        <div class="col-md-2 inline-h4">Date of production </div>
+                                        <div class="col-md-10">
+                                            <xsl:apply-templates select="."/>
+                                        </div>
                                     </div>
-                                </div>
+                                </xsl:if>
                             </xsl:for-each>
                             <xsl:if test="@script[. != ''] | @mode[. != ''] | @quality[. != '']">
                                 <div class="row">
