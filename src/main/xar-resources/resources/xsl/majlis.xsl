@@ -2766,6 +2766,14 @@
                             </xsl:for-each>
                             <xsl:for-each
                                 select="t:origDate[string-length(normalize-space(.)) gt 2]">
+                                <xsl:if test="@when[. != '']">
+                                    <div class="row">
+                                        <div class="col-md-2 inline-h4">When </div>
+                                        <div class="col-md-10">
+                                            <xsl:value-of select="@when"/>
+                                        </div>
+                                    </div>
+                                </xsl:if>
                                 <div class="row">
                                     <div class="col-md-2 inline-h4">Date of production </div>
                                     <div class="col-md-10">
