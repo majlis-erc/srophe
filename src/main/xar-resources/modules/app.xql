@@ -136,7 +136,17 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
                     for $p in $paths
                     return util:eval(concat('$record/',$p))
                   else $record/descendant::tei:text
-    let $doc := if(count($works) gt 0 and count($works) lt 20) then
+    (: The original conditions capped display at lt 20 related records, silently hiding
+       the Works collapsible for prolific authors (e.g. person 9 has 34 works) and the
+       Attestations collapsible for well-attested works. The upper bound has been removed
+       so all related records are shown regardless of count. The DB query already runs
+       unconditionally before this point, so removing the cap adds no query overhead —
+       only XSLT processing and response size scale with count, both negligible at current
+       data scale. If performance becomes a concern with very large counts, the preferred
+       fix is to pass a lightweight URI+title structure instead of full TEI documents.
+       See README-works-mss-limit.md for full analysis. :)
+    (: let $doc := if(count($works) gt 0 and count($works) lt 20) then :)
+    let $doc := if(count($works) gt 0) then
                     <result>
                         <record>{$record}</record>
                         <works>
@@ -147,7 +157,8 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
                         }
                         </works>
                     </result>
-                else if(count($mss) gt 0 and count($mss) lt 20) then 
+                (: else if(count($mss) gt 0 and count($mss) lt 20) then :)
+                else if(count($mss) gt 0) then
                     <result>
                         <record>{$record}</record>
                         <mss>
