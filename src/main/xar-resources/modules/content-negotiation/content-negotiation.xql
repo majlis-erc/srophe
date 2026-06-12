@@ -12,6 +12,8 @@ import module namespace config="http://srophe.org/srophe/config" at "../config.x
 import module namespace cntneg="http://srophe.org/srophe/cntneg" at "content-negotiation.xqm";
 import module namespace tei2html="http://srophe.org/srophe/tei2html" at "tei2html.xqm";
 
+import module namespace rh = "http://localhost/manuForma/request-helper" at "../request-helper.xqm";
+
 (: Data processing module. :)
 import module namespace data="http://srophe.org/srophe/data" at "../lib/data.xqm";
 
@@ -25,6 +27,22 @@ declare namespace tei = "http://www.tei-c.org/ns/1.0";
 declare namespace rest = "http://exquery.org/ns/restxq";
 declare namespace http="http://expath.org/ns/http-client";
 declare namespace srophe="https://srophe.app";
+
+declare variable $local:api as xs:string? := rh:request-param("api");
+declare variable $local:collection as xs:string? := rh:request-param("collection");
+declare variable $local:doc as xs:string? := rh:request-param("doc");
+declare variable $local:element as xs:string? := rh:request-param("element");
+declare variable $local:exist-collection as xs:string? := rh:request-param("existCollection");
+declare variable $local:format as xs:string := rh:request-param("format", "xml");
+declare variable $local:geo as xs:string? := rh:request-param("geo");
+declare variable $local:id as xs:string? := rh:request-param("id");
+declare variable $local:limit as xs:string? := rh:request-param("limit");
+declare variable $local:per-page as xs:integer := rh:request-param-integer("perpage", 10);
+declare variable $local:q as xs:string* := rh:request-param("q");
+declare variable $local:results as xs:string? := rh:request-param("results");
+declare variable $local:start as xs:integer := rh:request-param-integer("start", 1);
+declare variable $local:type as xs:string? := rh:request-param("type");
+declare variable $local:wrap-element as xs:QName? := rh:request-param("wrapElement") ! xs:QName(.);
 
 (:~
  : Search API
@@ -48,10 +66,10 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     for $c in tokenize($collection,',')
                     return data:apiSearch($c, $e, $q, ())
                 else data:apiSearch($collection, $e, $q, ())
-   let $hits := if(request:get-parameter('limit', '') != '') then
+   let $hits := if($local:limit) then
                     for $hit in $hits
                     let $id := replace($hit/ancestor-or-self::tei:TEI/descendant::tei:publicationStmt/tei:idno[@type='URI'][1],'/tei','')
-                    where contains($id,request:get-parameter('limit', ''))
+                    where contains($id, $limit)
                     return $hit 
                  else $hits
     return 
@@ -104,8 +122,10 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                    <bibl xmlns="http://www.tei-c.org/ns/1.0">
                                         <bibl xmlns="http://www.tei-c.org/ns/1.0" xml:id="{$xmlID[1]}">
                                             {
-                                            element {xs:QName(request:get-parameter('wrapElement', ''))}
-                                            {attribute { "ref" } { $recID }, $headword[1]}
+                                                element { ($local:wrap-element, 'value')[1] } {
+                                                    attribute { "ref" } { $recID },
+                                                    $headword[1]
+                                                }
                                             }
                                             <ptr target="{$recID}"/>
                                         </bibl>
@@ -143,19 +163,20 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                                 {attribute { "ref" } { $recID }, concat($type,$headword[1]) }
                                             </passive>
                                         else ()                                       
-                                else if(request:get-parameter('wrapElement', '') != '') then
-                                    if(request:get-parameter('wrapElement', '') = 'author') then 
-                                        element {xs:QName(request:get-parameter('wrapElement', ''))}
-                                            {attribute { "ref" } { $recID }, $headword[1]}
-                                    else if(request:get-parameter('wrapElement', '') = 'relation') then 
-                                        element {xs:QName(request:get-parameter('wrapElement', ''))}
-                                            {attribute { "ref" } { $recID }, $headword[1]}                                            
+                                else if ($local:wrap-element) then
+                                    if (local-name-from-QName($local:wrap-element) = ('author', 'relation')) then 
+                                        element { $local:wrap-element } {
+                                            attribute { "ref" } { $recID },
+                                            $headword[1]
+                                        }
                                     else 
-                                        element {xs:QName(request:get-parameter('wrapElement', ''))}
-                                            {attribute { "ref" } { $recID }, 
-                                                element {xs:QName($element)}
-                                                {attribute { "ref" } { $recID }, $headword[1] }
+                                        element { $local:wrap-element } {
+                                            attribute { "ref" } { $recID }, 
+                                            element { xs:QName($element) } {
+                                                attribute { "ref" } { $recID },
+                                                $headword[1]
                                             }
+                                        }
                                 else 
                                     element {xs:QName($element)}
                                         {attribute { "ref" } { $recID }, $headword[1] }
@@ -211,25 +232,21 @@ declare function local:coordinates($type as xs:string?, $collection as xs:string
      return util:eval($path)
 };
 
-let $path := if(request:get-parameter('id', '')  != '') then 
-                request:get-parameter('id', '')
-             else if(request:get-parameter('doc', '') != '') then
-                request:get-parameter('doc', '')
-             else ()   
+let $path as xs:string? := ($local:id, $local:doc)[1] 
 let $data :=
-    if(request:get-parameter('id', '') != '' or request:get-parameter('doc', '') != '') then
+    if ($path) then
         data:get-document()
-    else if(request:get-parameter-names() != '') then 
-        if(request:get-parameter('api', '') != '') then
-            if(request:get-parameter('element', '') !='' and request:get-parameter('q', '') != '') then
-                local:search-element(request:get-parameter('element', ''), request:get-parameter('q', ''), if(request:get-parameter('collection', '')) then request:get-parameter('collection', '') else ())
-            else if(request:get-parameter('geo', '') != '') then
-               local:coordinates(request:get-parameter('type', ''), request:get-parameter('collection', ''))
+    else if (exists(request:get-parameter-names())) then 
+        if ($local:api) then
+            if (exists($local:element) and exist($local:q)) then
+                local:search-element($local:element, $local:q, $local:collection)
+            else if ($local:geo) then
+               local:coordinates($local:type, $local:collection)
             else <div>Nothing, check params: {request:get-parameter-names()}</div>
         else
             let $collectionParam := 
-                if(request:get-parameter('existCollection','') != '') then
-                    tokenize(replace(request:get-parameter('existCollection',''),'/tei',''),'/')[last()]
+                if ($local:exist-collection) then
+                    tokenize(replace($local:exist-collection, '/tei', ''), '/')[last()]
                 else ()
 let $collection := $collectionParam  
             let $hits := data:search($collection,'','')
@@ -241,24 +258,22 @@ let $collection := $collectionParam
                                     return concat('&amp;',$param, '=',request:get-parameter($param, '')),'')}</action>
                         <info count="{count($hits)}">hits: {count($hits)}</info>
                         {
-                            let $start := if(request:get-parameter('start','') != '') then request:get-parameter('start','') else '1'
-                            let $perpage := if(request:get-parameter('perpage', 10)) then request:get-parameter('perpage', 10) else 10
-                            let $next := xs:integer($start) + xs:integer($perpage)
+                            let $next := xs:integer($local:start) + xs:integer($local:per-page)
                             return 
-                                (<start>{$start}</start>,
+                                (<start>{$local:start}</start>,
                                  if($next lt count($hits)) then
                                     <next>{$next}</next>
                                  else (),
                                 <results>{
 
-                                    for $hit in subsequence($hits,$start,$perpage)
+                                    for $hit in subsequence($hits, $local:start, $local:per-page)
                                     let $id := replace($hit/descendant::tei:idno[starts-with(.,$config:base-uri)][1],'/tei','')
                                     let $title := $hit/descendant::tei:titleStmt/tei:title[1]
                                     let $expanded := kwic:expand($hit)
                                     return 
                                         <json:value json:array="true">
                                             {   
-                                                if(request:get-parameter('results', '') = 'manuForma') then 
+                                                if ($local:results = 'manuForma') then 
                                                     <record src="{document-uri(root($hit))}" name="{$title}" idno="{concat('[',$id,']')}"/>
                                                 else () 
                                             }
@@ -319,16 +334,15 @@ let $collection := $collectionParam
                         </json:value>
                     </root>
        else ()
-let $format := if(request:get-parameter('format', '') != '') then request:get-parameter('format', '') else 'xml'    
 return  
     if(not(empty($data))) then
-        if(request:get-parameter('api', '') != '') then
-            if(request:get-parameter('geo', '')) then
-                if($format = 'kml') then 
+        if ($local:api) then
+            if ($local:geo) then
+                if($local:format = 'kml') then 
                     cntneg:content-negotiation($data,'kml',())
                 else cntneg:content-negotiation($data,'geojson',())
             else 
-                let $format := if(request:get-parameter('format', '') = 'xml') then 'xml' else 'json'
+                let $format := if ($local:format eq 'xml' then 'xml' else 'json'
                 return cntneg:content-negotiation($data, $format, ())
         else cntneg:content-negotiation($data, $format, $path)    
     else ()
