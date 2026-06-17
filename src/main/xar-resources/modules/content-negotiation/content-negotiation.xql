@@ -66,10 +66,10 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                     for $c in tokenize($collection,',')
                     return data:apiSearch($c, $e, $q, ())
                 else data:apiSearch($collection, $e, $q, ())
-   let $hits := if($local:limit) then
+   let $hits := if(exists($local:limit)) then
                     for $hit in $hits
                     let $id := replace($hit/ancestor-or-self::tei:TEI/descendant::tei:publicationStmt/tei:idno[@type='URI'][1],'/tei','')
-                    where contains($id, $limit)
+                    where contains($id, $local:limit)
                     return $hit 
                  else $hits
     return 
@@ -163,7 +163,7 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                                 {attribute { "ref" } { $recID }, concat($type,$headword[1]) }
                                             </passive>
                                         else ()                                       
-                                else if ($local:wrap-element) then
+                                else if (exists($local:wrap-element)) then
                                     if (local-name-from-QName($local:wrap-element) = ('author', 'relation')) then 
                                         element { $local:wrap-element } {
                                             attribute { "ref" } { $recID },
@@ -237,15 +237,15 @@ let $data :=
     if ($path) then
         data:get-document()
     else if (exists(request:get-parameter-names())) then 
-        if ($local:api) then
-            if (exists($local:element) and exist($local:q)) then
+        if (exists($local:api)) then
+            if (exists($local:element) and exists($local:q)) then
                 local:search-element($local:element, $local:q, $local:collection)
-            else if ($local:geo) then
+            else if (exists($local:geo)) then
                local:coordinates($local:type, $local:collection)
             else <div>Nothing, check params: {request:get-parameter-names()}</div>
         else
             let $collectionParam := 
-                if ($local:exist-collection) then
+                if (exists($local:exist-collection)) then
                     tokenize(replace($local:exist-collection, '/tei', ''), '/')[last()]
                 else ()
 let $collection := $collectionParam  
@@ -336,13 +336,13 @@ let $collection := $collectionParam
        else ()
 return  
     if(not(empty($data))) then
-        if ($local:api) then
-            if ($local:geo) then
+        if (exists($local:api)) then
+            if (exists($local:geo)) then
                 if($local:format = 'kml') then 
                     cntneg:content-negotiation($data,'kml',())
                 else cntneg:content-negotiation($data,'geojson',())
             else 
-                let $format := if ($local:format eq 'xml' then 'xml' else 'json'
+                let $format := if ($local:format = 'xml') then 'xml' else 'json'
                 return cntneg:content-negotiation($data, $format, ())
-        else cntneg:content-negotiation($data, $format, $path)    
+        else cntneg:content-negotiation($data, $local:format, $path)    
     else ()
