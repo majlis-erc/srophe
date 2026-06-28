@@ -2406,20 +2406,49 @@
                                             <xsl:value-of select="t:idno"/>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <!-- only do anything if t:citedRange has non-blank content -->
-                                    <xsl:if
-                                        test="string-length(normalize-space(t:citedRange)) &gt; 0">
-                                        <xsl:choose>
-                                            <xsl:when
-                                                test="t:citedRange[contains(., '-')] or t:citedRange[contains(., '–')]">
-                                                <xsl:text>, fols. </xsl:text>
-                                            </xsl:when>
-                                            <xsl:otherwise>
-                                                <xsl:text>, fol. </xsl:text>
-                                            </xsl:otherwise>
-                                        </xsl:choose>
+                                    <!--
+                                        MANUSCRIPT JOIN ONLY: render the citedRange folio reference(s).
+                                        Reads BOTH the text value AND @from/@to so no data is missed:
+                                        prefer the citedRange text; if it is empty, build the value
+                                        from @from/@to. Handles multiple citedRanges (comma-separated)
+                                        and recognises hyphen / en dash / em dash when deciding
+                                        fol. vs fols.
+                                    -->
+                                    <!--
+                                        citedRanges that carry data in either the text or @from
+                                    -->
+                                    <xsl:variable name="mjCitedRanges"
+                                        select="t:citedRange[normalize-space(.) != '' or normalize-space(@from) != '']"/>
+                                    <xsl:if test="exists($mjCitedRanges)">
+                                        <!--
+                                            plural 'fols.' if any range spans (a dash in the text,
+                                            or @to differs from @from), or there is more than one range
+                                        -->
+                                        <xsl:variable name="mjAnyRange" select="
+                                                some $c in $mjCitedRanges
+                                                    satisfies (contains($c, '-') or contains($c, '–') or contains($c, '—')
+                                                    or (normalize-space($c/@to) != '' and $c/@to != $c/@from))"/>
+                                        <xsl:value-of
+                                            select="if ($mjAnyRange or count($mjCitedRanges) gt 1) then ', fols. ' else ', fol. '"/>
+                                        <xsl:for-each select="$mjCitedRanges">
+                                            <xsl:if test="position() gt 1">, </xsl:if>
+                                            <!--
+                                                prefer the text value; fall back to @from/@to so an
+                                                attribute-only citedRange is not dropped
+                                            -->
+                                            <xsl:choose>
+                                                <xsl:when test="normalize-space(.) != ''">
+                                                    <xsl:value-of select="normalize-space(.)"/>
+                                                </xsl:when>
+                                                <xsl:when test="normalize-space(@to) != '' and @to != @from">
+                                                    <xsl:value-of select="concat(@from, '–', @to)"/>
+                                                </xsl:when>
+                                                <xsl:when test="normalize-space(@from) != ''">
+                                                    <xsl:value-of select="@from"/>
+                                                </xsl:when>
+                                            </xsl:choose>
+                                        </xsl:for-each>
                                     </xsl:if>
-                                    <xsl:value-of select="t:citedRange"/>
                                 </p>
                             </xsl:for-each>
                         </div>
