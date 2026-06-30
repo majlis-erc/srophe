@@ -43,6 +43,7 @@ declare variable $local:results as xs:string? := rh:request-param("results");
 declare variable $local:start as xs:integer := rh:request-param-integer("start", 1);
 declare variable $local:type as xs:string? := rh:request-param("type");
 declare variable $local:wrap-element as xs:QName? := rh:request-param("wrapElement") ! xs:QName(.);
+declare variable $local:prefix-element as xs:string? := rh:request-param("prefixElement");
 
 (:~
  : Search API
@@ -177,9 +178,18 @@ declare function local:search-element($element as xs:string?, $q as xs:string*, 
                                                 $headword[1]
                                             }
                                         }
-                                else 
-                                    element {xs:QName($element)}
-                                        {attribute { "ref" } { $recID }, $headword[1] }
+                                else if (exists($local:prefix-element)) then
+                                    let $prefixed-element := $local:prefix-element || ":" || local-name-from-QName(xs:QName($element))
+                                    return
+                                        element {xs:QName($prefixed-element)} {
+                                            attribute { "ref" } { $recID },
+                                            $headword[1]
+                                        }
+                                else
+                                    element {xs:QName($element)} {
+                                        attribute { "ref" } { $recID },
+                                        $headword[1]
+                                    }
                                 }
                             </title>
                             {'' (:Not sure what the utility is here :)
