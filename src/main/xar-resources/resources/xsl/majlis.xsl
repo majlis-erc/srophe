@@ -2464,7 +2464,7 @@
                     </div>
                 </xsl:for-each>
                 <xsl:for-each
-                    select="t:supportDesc/t:support/t:note[string-length(normalize-space(.)) gt 2]">
+                    select="t:supportDesc/t:support/t:note[string-length(normalize-space(.)) gt 2] | parent::t:physDesc/t:ab/t:note[string-length(normalize-space(.)) gt 2]">
                     <div class="row">
                         <div class="col-md-2 inline-h4">Note </div>
                         <div class="col-md-10">
