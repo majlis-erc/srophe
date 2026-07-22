@@ -1,0 +1,341 @@
+
+<div id="wrap" style="position:relative;width:100%;height:620px;background:#fff;overflow:hidden;font-family:sans-serif">
+
+  <div style="position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:20">
+    <button onclick="togglePanel('entities',event)" id="btn-entities" title="Entities"
+      style="width:28px;height:28px;border:none;border-radius:6px;background:#00883A;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
+        <i class="ti ti-circle" style="font-size:14px;line-height:1" aria-hidden="true">○</i>
+    </button>
+    <button onclick="togglePanel('rels',event)" id="btn-rels" title="Relationships"
+      style="width:28px;height:28px;border:none;border-radius:6px;background:#00883A;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
+      <i class="ti ti-minus" style="font-size:14px;line-height:1" aria-hidden="true">–</i>
+    </button>
+    <button onclick="relayout(event)" title="Refresh graph"
+      style="width:28px;height:28px;border:none;border-radius:6px;background:#888;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin-top:6px">
+      <i class="ti ti-refresh" style="font-size:14px;line-height:1" aria-hidden="true">↺</i>
+    </button>
+  </div>
+
+  <div style="position:absolute;top:8px;left:46px;z-index:20">
+    <input id="search" type="text" placeholder="Search entities"
+      style="width:200px;padding:5px 10px;font-size:12px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#111;outline:none"
+      oninput="doSearch(this.value)">
+  </div>
+
+  <div id="panel-entities"
+    style="position:absolute;top:0;bottom:0;right:0;width:200px;background:#E6E6E7;border-left:1px solid #bbb;z-index:10;overflow-y:auto;transform:translateX(100%);transition:transform .2s"
+    onclick="event.stopPropagation()">
+    <div style="padding:9px 12px 7px;font-size:10px;font-weight:600;color:#111;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #bbb">Entities</div>
+    <div id="ef"></div>
+  </div>
+
+  <div id="panel-rels"
+    style="position:absolute;top:0;bottom:0;right:0;width:200px;background:#E6E6E7;border-left:1px solid #bbb;z-index:10;overflow-y:auto;transform:translateX(100%);transition:transform .2s"
+    onclick="event.stopPropagation()">
+    <div style="padding:9px 12px 7px;font-size:10px;font-weight:600;color:#111;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #bbb">Relationships</div>
+    <div id="rf"></div>
+  </div>
+
+  <div id="tip" style="position:absolute;background:#fff;border:1px solid #ccc;border-radius:5px;padding:6px 10px;font-size:11px;pointer-events:none;opacity:0;z-index:40;max-width:270px;line-height:1.6;box-shadow:0 2px 8px rgba(0,0,0,.12)"></div>
+
+  <svg id="svg" style="position:absolute;top:0;left:0;width:100%;height:100%">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1.5L8 5L2 8.5" fill="none" stroke="#ccc" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+    <g id="ll"></g>
+    <g id="rl"></g>
+    <g id="nl"></g>
+  </svg>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function(){
+
+var wrap = document.getElementById('wrap');
+var W = wrap.offsetWidth || 720;
+var H = 620;
+
+var COLORS = {manuscript:'#00883A',person:'#009FE3',place:'#8C4091',work:'#F18700',org:'#C0392B'};
+var ICONS  = {manuscript:'M',person:'P',place:'L',work:'W',org:'O'};
+
+var NR = 14, RR = 7;
+var LABEL_FS = 13, ICON_FS = 10, REL_FS = 8;
+
+var nodes = [
+  {id:'ms1',type:'manuscript',name:'Vatican Pal. Heb. 142'},
+  {id:'ms2',type:'manuscript',name:'Montserrat MS 31'},
+  {id:'ms3',type:'manuscript',name:'BnF hébreu 845'},
+  {id:'ms4',type:'manuscript',name:'London, BL, Or. 915'},
+  {id:'p1', type:'person',    name:'Moses Wilhelm Shapira'},
+  {id:'p2', type:'person',    name:'Konstantin von Tischendorf'},
+  {id:'p3', type:'person',    name:'Abraham Firkovitch'},
+  {id:'p4', type:'person',    name:'Yefet ben Eli'},
+  {id:'pl1',type:'place',     name:'London'},
+  {id:'pl2',type:'place',     name:'Jerusalem'},
+  {id:'pl3',type:'place',     name:'St. Petersburg'},
+  {id:'w1', type:'work',      name:'Commentary on Genesis'},
+  {id:'w2', type:'work',      name:'Commentary on Exodus'},
+  {id:'o1', type:'org',       name:'Bibliotheca Palatina'},
+  {id:'o2', type:'org',       name:'Biblioteca de Montserrat'},
+];
+
+var links = [
+  {source:'p1', target:'w1', rel:'created',
+   sources:['MS London, BL, Or. 9165, fol. 5r','BnF hébreu 845, fol. 12v']},
+  {source:'p3', target:'w2', rel:'commissioned',
+   sources:['Vatican Pal. Heb. 142, fol. 3r','MS Vienna, ÖNB Cod. Hebr. 4, fol. 1v']},
+  {source:'p2', target:'o1', rel:'donated to',
+   sources:['Lehmann, Fugger und die Kunst (1900), p. 42','Schiedl, Hebraica in der Palatina (1958), p. 17']},
+  {source:'p2', target:'ms1',rel:'owned',
+   sources:['Vatican Pal. Heb. 142, fol. 1r (ownership inscription)','Neubauer, Cat. Bodl. Hebr. MSS no. 1204']},
+  {source:'p4', target:'pl3',rel:'active in',
+   sources:['Capsali, Seder Eliyahu Zuta, vol. I, p. 3']},
+  {source:'p4', target:'ms1',rel:'copied',
+   sources:['Vatican Pal. Heb. 142, fol. 87v (colophon)','MS London, BL, Or. 9165, fol. 5r','BnF hébreu 845, fol. 44r']},
+  {source:'p4', target:'o2', rel:'acquired for',
+   sources:['Ubach, Viaje por Oriente (1913), p. 211','Gudiol, Cat. des libres manuscrits (1934), p. 8']},
+  {source:'p4', target:'ms2',rel:'catalogued',
+   sources:['Roca-Puig, Manuscrits hebreus de Montserrat (1956), p. 3']},
+  {source:'ms1',target:'o1', rel:'held by',
+   sources:['Lerner, Hebrew MSS in the Vatican (2008)','Beit-Arié, MSS at the Vatican, no. 76']},
+  {source:'ms2',target:'o2', rel:'held by',
+   sources:['Roca-Puig, Manuscrits hebreus de Montserrat (1956)']},
+  {source:'ms3',target:'pl1',rel:'produced in',
+   sources:['BnF hébreu 845, fol. 89r (colophon)','Zotenberg, Cat. des MSS hébreux de la BnF (1866), p. 155']},
+  {source:'w1', target:'ms3',rel:'contained in',
+   sources:['BnF hébreu 845, fols. 10r–44v','MS London, BL, Or. 9165, fol. 5r']},
+  {source:'w2', target:'ms1',rel:'referenced in',
+   sources:['Vatican Pal. Heb. 142, fol. 3r']},
+  {source:'pl2',target:'o1', rel:'location of',
+   sources:['Schiedl, Hebraica in der Palatina (1958), p. 5']},
+  {source:'pl3',target:'ms1',rel:'origin of',
+   sources:['Vatican Pal. Heb. 142, fol. 87v (colophon)','Capsali, Seder Eliyahu Zuta, vol. I, p. 14','MS London, BL, Or. 9165, fol. 22r']},
+  {source:'p1', target:'pl1',rel:'active in',
+   sources:['Postel, De originibus (1538), title page','Kuntz, Guillaume Postel (1981), p. 44']},
+  {source:'p3', target:'pl2',rel:'active in',
+   sources:['H. Wolf to Fugger, 12 Sept. 1554, SB München Clm 10368','Striedl, Hebraica in der Palatina (1958), p. 12']},
+  {source:'ms4',target:'p4', rel:'copied by',
+   sources:['MS London, BL, Or. 9165, fol. 5r (colophon)','Margoliouth, Cat. Hebr. MSS BM, vol. I, no. 741']},
+];
+
+var entityTypes = [...new Set(nodes.map(function(d){return d.type;}))];
+var relTypes    = [...new Set(links.map(function(d){return d.rel;}))];
+var hiddenEnt = new Set(), hiddenRel = new Set();
+
+var efEl = document.getElementById('ef');
+entityTypes.forEach(function(t){
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer';
+  row.innerHTML = '<div style="width:10px;height:10px;border-radius:50%;background:'+COLORS[t]+';flex-shrink:0;border:1.5px solid rgba(0,0,0,.15)"></div>'
+    +'<input type="checkbox" checked id="et-'+t+'" style="margin:0;cursor:pointer">'
+    +'<label for="et-'+t+'" style="color:#111;font-size:12px;cursor:pointer">'+t.charAt(0).toUpperCase()+t.slice(1)+'</label>';
+  row.querySelector('input').addEventListener('change',function(e){
+    e.target.checked ? hiddenEnt.delete(t) : hiddenEnt.add(t); applyFilters();
+  });
+  efEl.appendChild(row);
+});
+
+var rfEl = document.getElementById('rf');
+relTypes.forEach(function(r){
+  var safe = r.replace(/\s/g,'_');
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer';
+  row.innerHTML = '<input type="checkbox" checked id="rt-'+safe+'" style="margin:0;cursor:pointer">'
+    +'<label for="rt-'+safe+'" style="color:#111;font-size:12px;cursor:pointer">'+r+'</label>';
+  row.querySelector('input').addEventListener('change',function(e){
+    e.target.checked ? hiddenRel.delete(r) : hiddenRel.add(r); applyFilters();
+  });
+  rfEl.appendChild(row);
+});
+
+function spreadNodes(){
+  var cx = W/2, cy = H/2;
+  nodes.forEach(function(n,i){
+    var a = (i/nodes.length)*2*Math.PI;
+    n.x = cx + Math.min(W,H)*0.33*Math.cos(a);
+    n.y = cy + Math.min(W,H)*0.33*Math.sin(a);
+    n.fx = null; n.fy = null;
+  });
+}
+spreadNodes();
+
+var sim = d3.forceSimulation(nodes)
+  .force('link', d3.forceLink(links).id(function(d){return d.id;}).distance(160).strength(0.45))
+  .force('charge', d3.forceManyBody().strength(-650))
+  .force('center', d3.forceCenter(W/2, H/2).strength(0.06))
+  .force('collision', d3.forceCollide(50))
+  .force('x', d3.forceX(W/2).strength(0.04))
+  .force('y', d3.forceY(H/2).strength(0.04));
+
+var svg = d3.select('#svg');
+
+var linkA = svg.select('#ll').selectAll('line.la').data(links).join('line')
+  .attr('class','la').attr('stroke','#ccc').attr('stroke-width',1);
+var linkB = svg.select('#ll').selectAll('line.lb').data(links).join('line')
+  .attr('class','lb').attr('stroke','#ccc').attr('stroke-width',1).attr('marker-end','url(#arr)');
+
+var relG = svg.select('#rl').selectAll('g').data(links).join('g').style('cursor','pointer');
+relG.append('circle').attr('r',RR).attr('fill','#222').attr('stroke','#fff').attr('stroke-width',1.5);
+relG.append('text')
+  .attr('text-anchor','middle').attr('dominant-baseline','central')
+  .attr('font-size',REL_FS).attr('font-weight','700').attr('fill','#fff').attr('pointer-events','none')
+  .text(function(d){return d.rel[0].toUpperCase();});
+
+var tip = document.getElementById('tip');
+relG.on('mouseover',function(event,d){
+    var s = d.sources.map(function(src,i){
+      return '<span style="display:block;padding-left:10px;text-indent:-10px"><b>['+(i+1)+']</b> '+src+'</span>';
+    }).join('');
+    tip.innerHTML = '<b style="font-size:12px;color:#111">'+d.rel+'</b><div style="margin-top:4px;color:#555;font-size:10.5px">'+s+'</div>';
+    tip.style.opacity = '1';
+  })
+  .on('mousemove',function(event){
+    var rc = wrap.getBoundingClientRect();
+    tip.style.left = (event.clientX-rc.left+12)+'px';
+    tip.style.top  = (event.clientY-rc.top-10)+'px';
+  })
+  .on('mouseout',function(){tip.style.opacity='0';});
+
+var nodeG = svg.select('#nl').selectAll('g').data(nodes).join('g')
+  .style('cursor','pointer')
+  .call(d3.drag()
+    .on('start',function(e){if(!e.active)sim.alphaTarget(0.3).restart();e.subject.fx=e.subject.x;e.subject.fy=e.subject.y;})
+    .on('drag', function(e){e.subject.fx=e.x;e.subject.fy=e.y;})
+    .on('end',  function(e){if(!e.active)sim.alphaTarget(0);e.subject.fx=null;e.subject.fy=null;}))
+  .on('click',function(event,d){event.stopPropagation();highlight(d);});
+
+nodeG.append('circle').attr('r',NR)
+  .attr('fill',function(d){return COLORS[d.type];}).attr('stroke','#fff').attr('stroke-width',2);
+nodeG.append('text')
+  .attr('text-anchor','middle').attr('dominant-baseline','central')
+  .attr('font-size',ICON_FS).attr('font-weight','700').attr('fill','#fff').attr('pointer-events','none')
+  .text(function(d){return ICONS[d.type];});
+nodeG.append('rect').attr('rx',3)
+  .attr('fill','#fff').attr('stroke','#ddd').attr('stroke-width',0.5).attr('pointer-events','none');
+nodeG.append('text')
+  .attr('x', NR + 5).attr('dominant-baseline','central')
+  .attr('font-size',LABEL_FS).attr('fill','#222').attr('pointer-events','none')
+  .text(function(d){return d.name;});
+
+document.getElementById('svg').addEventListener('click',function(){
+  closePanels(); clearHighlight();
+});
+
+sim.on('tick', tick);
+
+function shorten(x1,y1,x2,y2,r){
+  var dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+  return {x:x2-dx/len*r, y:y2-dy/len*r};
+}
+
+function tick(){
+  nodes.forEach(function(n){
+    n.x = Math.max(16, Math.min(W-190, n.x));
+    n.y = Math.max(16, Math.min(H-16,  n.y));
+  });
+  linkA.each(function(d){
+    var m={x:(d.source.x+d.target.x)/2,y:(d.source.y+d.target.y)/2};
+    var s=shorten(m.x,m.y,d.source.x,d.source.y,NR);
+    var e=shorten(d.source.x,d.source.y,m.x,m.y,RR);
+    d3.select(this).attr('x1',s.x).attr('y1',s.y).attr('x2',e.x).attr('y2',e.y);
+  });
+  linkB.each(function(d){
+    var m={x:(d.source.x+d.target.x)/2,y:(d.source.y+d.target.y)/2};
+    var s=shorten(d.target.x,d.target.y,m.x,m.y,RR);
+    var e=shorten(m.x,m.y,d.target.x,d.target.y,NR);
+    d3.select(this).attr('x1',s.x).attr('y1',s.y).attr('x2',e.x).attr('y2',e.y);
+  });
+  relG.attr('transform',function(d){
+    return 'translate('+(d.source.x+d.target.x)/2+','+(d.source.y+d.target.y)/2+')';
+  });
+  nodeG.attr('transform',function(d){return 'translate('+d.x+','+d.y+')';});
+  nodeG.each(function(){
+    var texts=d3.select(this).selectAll('text').nodes();
+    var lbl=texts[texts.length-1];
+    if(lbl){
+      var b=lbl.getBBox();
+      d3.select(this).select('rect')
+        .attr('x',b.x-3).attr('y',b.y-2)
+        .attr('width',b.width+6).attr('height',b.height+4);
+    }
+  });
+}
+
+function highlight(d){
+  var conn=new Set([d.id]);
+  links.forEach(function(l){
+    if(l.source.id===d.id) conn.add(l.target.id);
+    if(l.target.id===d.id) conn.add(l.source.id);
+  });
+  nodeG.attr('opacity',function(n){return conn.has(n.id)?1:0.1;});
+  linkA.attr('opacity',function(l){return l.source.id===d.id||l.target.id===d.id?1:0.05;});
+  linkB.attr('opacity',function(l){return l.source.id===d.id||l.target.id===d.id?1:0.05;});
+  relG.attr('opacity', function(l){return l.source.id===d.id||l.target.id===d.id?1:0.05;});
+}
+
+function clearHighlight(){
+  nodeG.attr('opacity',1);
+  linkA.attr('opacity',1); linkB.attr('opacity',1);
+  relG.attr('opacity',1);
+}
+
+function applyFilters(){
+  var tm={};
+  nodes.forEach(function(n){tm[n.id]=n.type;});
+  function hidden(l){
+    if(hiddenRel.has(l.rel)) return true;
+    var si=typeof l.source==='object'?l.source.id:l.source;
+    var ti=typeof l.target==='object'?l.target.id:l.target;
+    return hiddenEnt.has(tm[si])||hiddenEnt.has(tm[ti]);
+  }
+  nodeG.attr('display',function(d){return hiddenEnt.has(d.type)?'none':null;});
+  linkA.attr('display',function(l){return hidden(l)?'none':null;});
+  linkB.attr('display',function(l){return hidden(l)?'none':null;});
+  relG.attr('display', function(l){return hidden(l)?'none':null;});
+}
+
+function closePanels(){
+  document.getElementById('panel-entities').style.transform = 'translateX(100%)';
+  document.getElementById('panel-rels').style.transform     = 'translateX(100%)';
+  document.getElementById('btn-entities').style.background  = '#00883A';
+  document.getElementById('btn-rels').style.background      = '#00883A';
+}
+
+window.togglePanel = function(name, event){
+  if(event) event.stopPropagation();
+  var p = document.getElementById('panel-'+name);
+  var open = p.style.transform === 'translateX(0px)' || p.style.transform === 'translateX(0)';
+  closePanels();
+  if(!open){
+    p.style.transform = 'translateX(0)';
+    document.getElementById('btn-'+name).style.background = '#004d21';
+  }
+};
+
+window.relayout = function(event){
+  if(event) event.stopPropagation();
+  clearHighlight();
+  document.getElementById('search').value = '';
+  spreadNodes();
+  sim.alpha(1).restart();
+};
+
+window.doSearch = function(term){
+  term = term.toLowerCase().trim();
+  if(!term){ clearHighlight(); return; }
+  nodeG.attr('opacity',function(d){return d.name.toLowerCase().includes(term)?1:0.1;});
+  function linkMatch(l){
+    var sn=typeof l.source==='object'?l.source.name:l.source;
+    var tn=typeof l.target==='object'?l.target.name:l.target;
+    return sn.toLowerCase().includes(term)||tn.toLowerCase().includes(term);
+  }
+  linkA.attr('opacity',function(l){return linkMatch(l)?1:0.05;});
+  linkB.attr('opacity',function(l){return linkMatch(l)?1:0.05;});
+  relG.attr('opacity', function(l){return linkMatch(l)?1:0.05;});
+};
+
+})();
+</script>
