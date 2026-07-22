@@ -606,16 +606,67 @@ distinct-values(
 declare %templates:wrap function app:build-editor-list($node as node(), $model as map(*)){
     let $editors := doc($config:app-root || '/documentation/editors.xml')//tei:listPerson
     for $editor in app:get-editors()
-    let $name := 
+    let $name :=
         for $editor-name in $editors//tei:person[@xml:id = $editor]
         return concat($editor-name/tei:persName/tei:forename,' ',$editor-name/tei:persName/tei:addName,' ',$editor-name/tei:persName/tei:surname)
     let $sort-name :=
         for $editor-name in $editors//tei:person[@xml:id = $editor] return $editor-name/tei:persName/tei:surname
     order by $sort-name
     return
-        if($editor != '') then 
-            if(normalize-space($name) != '') then 
+        if($editor != '') then
+            if(normalize-space($name) != '') then
             <li>{normalize-space($name)}</li>
             else ''
-        else ''  
+        else ''
+};
+
+(:~
+ : Emit entity metadata as JavaScript for network visualization
+ : Extracts entity ID and type from the current TEI document
+ : and outputs JavaScript to initialize network visualization
+ : @param $node the HTML node
+ : @param $model the template model containing the TEI record
+:)
+declare %templates:wrap function app:entity-metadata($node as node(), $model as map(*)) {
+    try {
+        let $rec := $model("hits")/ancestor-or-self::tei:TEI
+        let $uri := $rec//tei:idno[@type='URI'][1]/text()
+        let $entity-type-singular :=
+            if(contains($uri, '/person/')) then 'person'
+            else if(contains($uri, '/place/')) then 'place'
+            else if(contains($uri, '/work/')) then 'work'
+            else if(contains($uri, '/manuscript/')) then 'manuscript'
+            else ''
+        let $entity-type-plural :=
+            if($entity-type-singular = 'person') then 'persons'
+            else if($entity-type-singular = 'place') then 'places'
+            else if($entity-type-singular = 'work') then 'works'
+            else if($entity-type-singular = 'manuscript') then 'manuscripts'
+            else ''
+        let $entity-id :=
+            if($uri and $entity-type-singular) then
+                let $after-type := substring-after($uri, concat('/', $entity-type-singular, '/'))
+                return
+                    if(contains($after-type, '/')) then
+                        substring-before($after-type, '/')
+                    else if(contains($after-type, '#')) then
+                        substring-before($after-type, '#')
+                    else
+                        normalize-space($after-type)
+            else ''
+        return
+            if($entity-type-singular and $entity-type-plural and $entity-id) then
+                element script {
+                    attribute type { 'text/javascript' },
+                    concat('console.log("Setting networkEntityData from XQuery"); window.networkEntityData = { id: "', $entity-id, '", type: "', $entity-type-plural, '", singular: "', $entity-type-singular, '", uri: "', $uri, '" }; console.log("networkEntityData:", window.networkEntityData);')
+                }
+            else (
+                element script {
+                    attribute type { 'text/javascript' },
+                    concat('console.log("Cannot extract entity metadata - singular:', $entity-type-singular, ', plural: ', $entity-type-plural, ', id: ', $entity-id, ', uri: ', $uri, '");')
+                }
+            )
+    } catch * {
+        ()
+    }
 };

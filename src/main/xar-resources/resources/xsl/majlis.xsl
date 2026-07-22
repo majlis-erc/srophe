@@ -306,6 +306,11 @@
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
+                <div class="btn-group" id="btn-network-group-manuscript" style="display:none;">
+                    <button aria-expanded="true" class="btn btn-default btn-grey btn-lg"
+                        data-toggle="collapse" href="#mainMenuNetwork" type="button"
+                        >Network Relationships</button>
+                </div>
                 <xsl:if
                     test="$Content/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
@@ -376,6 +381,9 @@
                 </div>
             </div>
             <div class="mainMenuContent">
+                <div id="network-viz-section-manuscript" style="display:none;">
+                    <xsl:call-template name="network-visualization"/>
+                </div>
                 <xsl:if
                     test="$Content/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$Content"/>
@@ -549,6 +557,11 @@
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
+                <div class="btn-group" id="btn-network-group-person" style="display:none;">
+                    <button aria-expanded="true" class="btn btn-default btn-grey btn-lg"
+                        data-toggle="collapse" href="#mainMenuNetwork" type="button"
+                        >Network Relationships</button>
+                </div>
                 <xsl:if
                     test="$majlisNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
@@ -627,6 +640,9 @@
                 </div>
             </div>
             <div class="mainMenuContent">
+                <div id="network-viz-section-person" style="display:none;">
+                    <xsl:call-template name="network-visualization"/>
+                </div>
                 <xsl:if
                     test="$majlisNames/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$majlisNames"/>
@@ -829,6 +845,11 @@
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
+                <div class="btn-group" id="btn-network-group-work" style="display:none;">
+                    <button aria-expanded="true" class="btn btn-default btn-grey btn-lg"
+                        data-toggle="collapse" href="#mainMenuNetwork" type="button"
+                        >Network Relationships</button>
+                </div>
                 <xsl:if
                     test="$title/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
@@ -899,6 +920,9 @@
                 </div>
             </div>
             <div class="mainMenuContent">
+                <div id="network-viz-section-work" style="display:none;">
+                    <xsl:call-template name="network-visualization"/>
+                </div>
                 <xsl:if
                     test="$title/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$title"/>
@@ -962,6 +986,11 @@
         </xsl:variable>
         <div id="mainMenu">
             <div class="btn-group btn-group-justified">
+                <div class="btn-group" id="btn-network-group-place" style="display:none;">
+                    <button aria-expanded="true" class="btn btn-default btn-grey btn-lg"
+                        data-toggle="collapse" href="#mainMenuNetwork" type="button"
+                        >Network Relationships</button>
+                </div>
                 <xsl:if
                     test="$names/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <div class="btn-group">
@@ -1011,6 +1040,9 @@
                 </div>
             </div>
             <div class="mainMenuContent">
+                <div id="network-viz-section-place" style="display:none;">
+                    <xsl:call-template name="network-visualization"/>
+                </div>
                 <xsl:if
                     test="$names/descendant::*:div[@class = 'whiteBoxwShadow']/*:div[string-length(normalize-space(string-join(descendant-or-self::text(), ''))) gt 2]">
                     <xsl:sequence select="$names"/>
@@ -3681,5 +3713,71 @@
     </xsl:template>
     <xsl:template match="text()" mode="note-inline">
         <xsl:value-of select="."/>
+    </xsl:template>
+    <!-- Network Visualization Collapsible Template -->
+    <xsl:template name="network-visualization">
+        <div class="whiteBoxwShadow">
+            <h3>
+                <a aria-expanded="false" data-toggle="collapse" href="#mainMenuNetwork">Network Relationships</a>
+            </h3>
+            <div class="collapse" id="mainMenuNetwork">
+                <div id="network-container" style="position:relative;width:100%;height:620px;background:#fff;overflow:hidden;font-family:sans-serif">
+
+                    <!-- Control buttons (top-left) -->
+                    <div style="position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:20">
+                        <button onclick="window.networkViz &amp;&amp; window.networkViz.togglePanel('entities',event)" id="btn-entities" title="Entities"
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#00883A;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
+                            ○
+                        </button>
+                        <button onclick="window.networkViz &amp;&amp; window.networkViz.togglePanel('rels',event)" id="btn-rels" title="Relationships"
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#00883A;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
+                            –
+                        </button>
+                        <button onclick="window.networkViz &amp;&amp; window.networkViz.relayout(event)" title="Refresh graph"
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#888;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin-top:6px">
+                            ↺
+                        </button>
+                    </div>
+
+                    <!-- Search input (top-left, next to buttons) -->
+                    <div style="position:absolute;top:8px;left:46px;z-index:20">
+                        <input id="network-search" type="text" placeholder="Search entities"
+                            style="width:200px;padding:5px 10px;font-size:12px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#111;outline:none"
+                            oninput="window.networkViz &amp;&amp; window.networkViz.doSearch(this.value)"/>
+                    </div>
+
+                    <!-- Entity types filter panel (right side, slides in) -->
+                    <div id="panel-entities"
+                        style="position:absolute;top:0;bottom:0;right:0;width:200px;background:#E6E6E7;border-left:1px solid #bbb;z-index:10;overflow-y:auto;transform:translateX(100%);transition:transform .2s"
+                        onclick="event.stopPropagation()">
+                        <div style="padding:9px 12px 7px;font-size:10px;font-weight:600;color:#111;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #bbb">Entities</div>
+                        <div id="ef"/>
+                    </div>
+
+                    <!-- Relationship types filter panel (right side, slides in) -->
+                    <div id="panel-rels"
+                        style="position:absolute;top:0;bottom:0;right:0;width:200px;background:#E6E6E7;border-left:1px solid #bbb;z-index:10;overflow-y:auto;transform:translateX(100%);transition:transform .2s"
+                        onclick="event.stopPropagation()">
+                        <div style="padding:9px 12px 7px;font-size:10px;font-weight:600;color:#111;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #bbb">Relationships</div>
+                        <div id="rf"/>
+                    </div>
+
+                    <!-- Tooltip -->
+                    <div id="network-tip" style="position:absolute;background:#fff;border:1px solid #ccc;border-radius:5px;padding:6px 10px;font-size:11px;pointer-events:none;opacity:0;z-index:40;max-width:270px;line-height:1.6;box-shadow:0 2px 8px rgba(0,0,0,.12)"/>
+
+                    <!-- SVG visualization -->
+                    <svg id="network-svg" style="position:absolute;top:0;left:0;width:100%;height:100%">
+                        <defs>
+                            <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M2 1.5L8 5L2 8.5" fill="none" stroke="#ccc" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </marker>
+                        </defs>
+                        <g id="ll"/>
+                        <g id="rl"/>
+                        <g id="nl"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
     </xsl:template>
 </xsl:stylesheet>
