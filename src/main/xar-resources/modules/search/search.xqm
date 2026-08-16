@@ -48,6 +48,11 @@ declare %templates:wrap function search:search-data(
       normalize-space(request:get-parameter('searchTerm_1',      '')) != '' or
       normalize-space(request:get-parameter('searchTerm_2',      '')) != '' or
       normalize-space(request:get-parameter('searchTerm_3',      '')) != '' or
+      (: entity_N alone (no term/date) must also trigger the entity-aware advanced query,
+         otherwise it silently falls back to the unfiltered default query below. :)
+      normalize-space(request:get-parameter('entity_1',          '')) != '' or
+      normalize-space(request:get-parameter('entity_2',          '')) != '' or
+      normalize-space(request:get-parameter('entity_3',          '')) != '' or
       normalize-space(request:get-parameter('notBefore_1',       '')) != '' or
       normalize-space(request:get-parameter('notAfter_1',        '')) != '' or
       normalize-space(request:get-parameter('when_1',            '')) != '' or

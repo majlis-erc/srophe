@@ -903,6 +903,11 @@ declare function data:create-advanced-query($collection as xs:string?) as xs:str
     normalize-space(request:get-parameter('searchTerm_1',      '')) != '' or
     normalize-space(request:get-parameter('searchTerm_2',      '')) != '' or
     normalize-space(request:get-parameter('searchTerm_3',      '')) != '' or
+    (: entity_N alone must also count as an advanced term, so it isn't diluted by an
+       unrelated generalKeyword value once we're already in the advanced-query path. :)
+    normalize-space(request:get-parameter('entity_1',          '')) != '' or
+    normalize-space(request:get-parameter('entity_2',          '')) != '' or
+    normalize-space(request:get-parameter('entity_3',          '')) != '' or
     normalize-space(request:get-parameter('notBefore_1',       '')) != '' or
     normalize-space(request:get-parameter('notAfter_1',        '')) != '' or
     normalize-space(request:get-parameter('when_1',            '')) != '' or
