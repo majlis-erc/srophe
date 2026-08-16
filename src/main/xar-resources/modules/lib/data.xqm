@@ -819,8 +819,11 @@ declare function data:date-predicate(
 };
 
 declare function data:advanced-block-query($n as xs:integer) as xs:string? {
-  let $term     := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
-  let $entity   := normalize-space(request:get-parameter(concat('entity_',     $n), ''))
+  let $term       := normalize-space(request:get-parameter(concat('searchTerm_', $n), ''))
+  let $entityParam := normalize-space(request:get-parameter(concat('entity_',     $n), ''))
+  (: "all" (the explicit "All Entities" option) reuses the existing empty-entity code path below,
+     which already searches across every entity type. :)
+  let $entity     := if($entityParam = 'all') then '' else $entityParam
   let $type     := normalize-space(request:get-parameter(concat('searchType_', $n), 'similar'))
   let $dateType := normalize-space(request:get-parameter(concat('dateType_',   $n), ''))
   let $fields   :=
