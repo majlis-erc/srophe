@@ -29,10 +29,30 @@
           </div>
 
 	  <br/>
-          <h3 class="search-section-title">Advanced Search</h3>
+          <h3 class="search-section-title">Advanced Search
+            <!-- Reuses the "Search Help" button/collapse pattern from bibl-search.xqm (glyphicon-question-sign +
+                 Bootstrap data-toggle="collapse"), scaled down to btn-xs since this is a quick inline tip rather
+                 than full search-syntax documentation. Bootstrap's collapse JS is already loaded app-wide, so no
+                 extra script is needed here. -->
+            <button type="button" class="btn btn-info btn-xs search-button" data-toggle="collapse" data-target="#advancedSearchTips">
+              Search Tips <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <!-- id is "advancedSearchTips", NOT "searchTips": app:pageination further down this page (see
+               data-template="search:search-data" below) can render its own #searchTips panel once a search
+               has run (see paging.xqm), so reusing that id here would create a duplicate id and break
+               data-target="#searchTips" on whichever panel toggles second. Content is hardcoded inline rather
+               than sourced from search-config.xml, since that file doesn't exist in this app. -->
+          <div class="panel panel-default collapse" id="advancedSearchTips">
+            <div class="panel-body">
+              <h4 class="panel-title">Search Tips</h4>
+              <p>Selecting an Entity (Person, Work, Manuscript, or Place) limits your results to that type, even without a Search Term.</p>
+              <p>Add a Search Term to search within specific Fields of that entity type. Use "Similar" for a fuzzy/full-text match, or "Exact" for a literal substring match.</p>
+            </div>
+          </div>
 	  <br/>
 	  <p class="search-page-intro">Search across manuscripts, works, persons, and places using keyword or advanced criteria.</p>
-	  
+
           <div id="criteriaContainer" class="criteria-container"></div>
 
           <div class="form-group add-criteria-row">
