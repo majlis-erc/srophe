@@ -3747,8 +3747,10 @@
                         </button>
                     </div>
 
-                    <!-- Search input (top-left, next to buttons) -->
-                    <div style="position:absolute;top:8px;left:46px;z-index:20">
+                    <!-- Search input (top-left, next to buttons).
+                         left moved from 46px to 60px to add a bit more space between this box
+                         and the control buttons to its left. -->
+                    <div style="position:absolute;top:8px;left:60px;z-index:20">
                         <input id="network-search" type="text" placeholder="Search entities"
                             style="width:200px;padding:5px 10px;font-size:12px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#111;outline:none"
                             oninput="window.networkViz &amp;&amp; window.networkViz.doSearch(this.value)"/>
