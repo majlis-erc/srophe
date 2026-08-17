@@ -177,3 +177,58 @@
 	font-weight: bold;
 	font-style: normal;
 }
+
+/* Amiri (Arabic) - SIL Open Font License 1.1, see resources/fonts/amiri-OFL.txt.
+   One 'Amiri' family with weight/style variants (unlike the Syriac fonts above,
+   which use a separate family name per style), so normal bold/italic markup
+   picks the right face automatically.
+
+   unicode-range scopes each face to the Arabic Unicode blocks only (Arabic,
+   Arabic Supplement, Arabic Extended-A, Arabic Presentation Forms A/B). This is
+   deliberate: with these fonts also added to the global body font stack (see
+   style.css), the browser substitutes Amiri per-character wherever an Arabic
+   codepoint occurs - regardless of any xml:lang/lang attribute, and correctly
+   switching mid-string for bilingual Arabic/Hebrew (or Arabic/Latin) text. This
+   is what makes Arabic render correctly everywhere in the app, not only where
+   the XSLT happens to emit lang="ar" (which isn't consistent across every
+   template - e.g. Explicit vs. Notes on manuscript pages). */
+@font-face {
+	font-family: 'Amiri';
+	src: url('../fonts/amiri-regular.woff2') format('woff2'), url('../fonts/amiri-regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;
+}
+@font-face {
+	font-family: 'Amiri';
+	src: url('../fonts/amiri-bold.woff2') format('woff2'), url('../fonts/amiri-bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+	unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;
+}
+@font-face {
+	font-family: 'Amiri';
+	src: url('../fonts/amiri-italic.woff2') format('woff2'), url('../fonts/amiri-italic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+	unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;
+}
+@font-face {
+	font-family: 'Amiri';
+	src: url('../fonts/amiri-bolditalic.woff2') format('woff2'), url('../fonts/amiri-bolditalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+	unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;
+}
+
+/* SBL Hebrew - free for non-commercial use under the SBL Font EULA,
+   see resources/fonts/SBLHebrew-EULA-NOTICE.txt for the license summary and source.
+   unicode-range scoped to the Hebrew block + Hebrew presentation forms, same
+   per-character substitution rationale as Amiri above. */
+@font-face {
+	font-family: 'SBL Hebrew';
+	src: url('../fonts/SBL_Hbrw.woff2') format('woff2'), url('../fonts/SBL_Hbrw.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}

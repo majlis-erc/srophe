@@ -70,7 +70,12 @@
   color:white;
 }
 
-body {font-family: arial, sans-serif; background-color:white;}
+/* Amiri and SBL Hebrew are unicode-range-scoped (see syr-font-families.css), so listing
+   them ahead of arial here does not affect Latin text: the browser only substitutes them
+   for characters that actually fall in the Arabic/Hebrew Unicode blocks, per character,
+   anywhere on the page - including bilingual lines that mix Arabic/Hebrew/Latin in a
+   single string, and content the XSLT doesn't tag with xml:lang="ar"/"he". */
+body {font-family: "Amiri", "SBL Hebrew", arial, sans-serif; background-color:white;}
 
 .whiteBoxwShadow {
   margin-left: 0;
@@ -256,7 +261,9 @@ img{ margin:0px }
 /* styles for languages and scripts */
 :lang(en) {
     font-size: 1em;
-	font-family: arial, sans-serif;
+    /* No font-family here on purpose. This rule is stronger than "body", so setting a
+       font-family here would block Arabic/Hebrew text inside this element from using
+       Amiri/SBL Hebrew. Let it use body's font-family instead. */
 }
 
 :lang(syr),:lang(syc) {
@@ -282,8 +289,15 @@ img{ margin:0px }
 }
 
 :lang(ar) {
- font-family: arial, sans-serif;
+ /* No font-family here on purpose. This rule is stronger than "body", so setting a
+    font-family here would block Hebrew text mixed in with Arabic (e.g. a bilingual
+    line) from using SBL Hebrew. Let it use body's font-family instead. */
  /* font-size:1.25em; */
+ line-height:1em;
+ }
+
+:lang(he) {
+ /* Same reason as :lang(ar) above, but for Hebrew text mixed with Arabic. */
  line-height:1em;
  }
 
