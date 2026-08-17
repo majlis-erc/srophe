@@ -3723,18 +3723,26 @@
             <div class="collapse" id="mainMenuNetwork">
                 <div id="network-container" style="position:relative;width:100%;height:620px;background:#fff;overflow:hidden;font-family:sans-serif">
 
-                    <!-- Control buttons (top-left) -->
+                    <!-- Control buttons (top-left).
+                         These buttons sit inside div#mainMenu (see line ~307). app.css and majlis.css
+                         both have a rule "#mainMenu button { background-color: ... !important; }" meant
+                         for the big pill-shaped section-toggle buttons, but it also matches these small
+                         buttons since it targets every <button> under #mainMenu. That rule used to win
+                         over our own background color no matter how dark we set it, because !important
+                         in a stylesheet beats a plain inline style. Adding !important here too fixes
+                         that, since an inline style with !important wins over a stylesheet rule with
+                         !important. -->
                     <div style="position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:20">
                         <button onclick="window.networkViz &amp;&amp; window.networkViz.togglePanel('entities',event)" id="btn-entities" title="Entities"
-                            style="width:28px;height:28px;border:none;border-radius:6px;background:#00883A;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#001F0C !important;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
                             ○
                         </button>
                         <button onclick="window.networkViz &amp;&amp; window.networkViz.togglePanel('rels',event)" id="btn-rels" title="Relationships"
-                            style="width:28px;height:28px;border:none;border-radius:6px;background:#00883A;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#001F0C !important;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
                             –
                         </button>
-                        <button onclick="window.networkViz &amp;&amp; window.networkViz.relayout(event)" title="Refresh graph"
-                            style="width:28px;height:28px;border:none;border-radius:6px;background:#888;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin-top:6px">
+                        <button onclick="window.networkViz &amp;&amp; window.networkViz.relayout(event)" id="btn-refresh" title="Refresh graph"
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#000 !important;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin-top:6px">
                             ↺
                         </button>
                     </div>
