@@ -3741,8 +3741,12 @@
                             style="width:28px;height:28px;border:none;border-radius:6px;background:#001F0C !important;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
                             –
                         </button>
+                        <!-- No extra margin-top here: the flex container's gap:4px already
+                             spaces every button evenly. The old margin-top:6px added on top of
+                             that gap, so this button sat further from button 2 than button 2
+                             sat from button 1. -->
                         <button onclick="window.networkViz &amp;&amp; window.networkViz.relayout(event)" id="btn-refresh" title="Refresh graph"
-                            style="width:28px;height:28px;border:none;border-radius:6px;background:#000 !important;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin-top:6px">
+                            style="width:28px;height:28px;border:none;border-radius:6px;background:#000 !important;color:#fff;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0">
                             ↺
                         </button>
                     </div>
