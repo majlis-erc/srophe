@@ -153,8 +153,12 @@
         .attr('text-anchor','middle').attr('dominant-baseline','central')
         .attr('font-size',REL_FS).attr('font-weight','700').attr('fill','#fff').attr('pointer-events','none')
         .text(function(d){
+          // If a link has no relation type, show nothing instead of a white dot ("•").
+          // The white dot used to land on or next to an entity circle (the one with
+          // M, P, L, ...) before the nodes spread apart, and looked like it was part
+          // of that entity circle.
           if(d.rel && d.rel.length > 0) return d.rel[0].toUpperCase();
-          return '•';
+          return '';
         });
 
       // Tooltip interactions
