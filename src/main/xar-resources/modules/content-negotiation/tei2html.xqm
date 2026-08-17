@@ -204,7 +204,7 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
 
       if ($birthPlace != '') then
         <span class="results-list-desc">
-          <span class="srp-label">Place of birth: </span> {$birthPlace}
+          <span class="srp-label">Place of birth: </span> {string-join($birthPlace, '/')}
         </span>
       else
         (),
