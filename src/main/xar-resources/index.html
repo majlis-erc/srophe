@@ -39,6 +39,11 @@
     <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Greek.min.js"></script>
     <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Russian.min.js"></script>
     <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Arabic.min.js"></script>
+    <!-- This file was missing. Without it, the "Hebrew" option in the keyboard dropdown had
+         no layout to switch to, so the popup showed an empty keyboard with just the cancel
+         button. Other pages did not have this problem because they use templates/page.html,
+         which already loads this same file. -->
+    <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Hebrew.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
@@ -216,11 +221,15 @@
                         <a href="/exist/apps/majlis/about.html" class="nav-text">About</a>
                     </li>
                     <li>
+                        <!-- This id used to be "keywordNav", the same id as the other search box
+                             higher up on this page. Two boxes with the same id confused the
+                             keyboard popup and made it move off the left side of the screen.
+                             Now it has its own id, "keywordNavHome", so it works on its own. -->
                         <div id="search-wrapper">
                             <form action="/exist/apps/majlis/search.html" class="navbar-form search-box" role="search" method="get">
                                 <div class="form-group">
-                                    <input type="text" class="form-control keyboard ui-keyboard-input ui-widget-content ui-corner-all" placeholder="search" name="keyword" id="keywordNav" aria-haspopup="true" role="textbox"/>
-                                    <span data-template="app:keyboard-select-menu" data-template-input-id="keywordNav"><span class="keyboard-menu">
+                                    <input type="text" class="form-control keyboard ui-keyboard-input ui-widget-content ui-corner-all" placeholder="search" name="keyword" id="keywordNavHome" aria-haspopup="true" role="textbox"/>
+                                    <span data-template="app:keyboard-select-menu" data-template-input-id="keywordNavHome"><span class="keyboard-menu">
                                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select Keyboard">
                 <span class="syriaca-icon syriaca-keyboard"> </span><span class="caret"></span></button>
                                         <ul class="dropdown-menu">

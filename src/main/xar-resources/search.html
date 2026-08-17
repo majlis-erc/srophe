@@ -95,9 +95,10 @@
     <div class="keyboard-body" id="keyboardBody"></div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <!-- Do not add jQuery or Bootstrap script tags here. templates/page.html already loads
+       jQuery, jQuery UI, and the keyboard plugin in <head> for every page. Adding a second
+       jQuery here used to replace the global $, which broke the on-screen keyboard with the
+       error "$(...).keyboard is not a function". -->
   <script><![CDATA[
     const maxEntities = 3;
     let criteriaCount = 0;
