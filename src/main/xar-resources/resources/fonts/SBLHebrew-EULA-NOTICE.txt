@@ -1,0 +1,28 @@
+SBL Hebrew font — license notice
+=================================
+
+Font: SBL Hebrew, Version 1.56a Build 016
+Publisher: Society of Biblical Literature (SBL)
+Designer/rights holder: Tiro Typeworks
+
+This font is distributed under the SBL Font End User License Agreement (EULA).
+The full, authoritative EULA is published by SBL at:
+  https://www.sbl-site.org/wp-content/uploads/2024/05/SBL_Font_End_User_License_Agreement.pdf
+
+Summary of the terms relevant to this app's use (see the EULA above for the
+full, controlling text):
+
+  - The unmodified font software may be redistributed free of charge, provided
+    all copyright and trademark notices remain intact and the font is
+    accompanied by a copy of this license agreement (this notice + the link
+    above).
+  - Modified versions of the font software may not be redistributed.
+  - The font may be embedded in non-commercial electronic documents, including
+    web pages, respecting the font's embedding permissions bit (set to
+    "Editable Embedding"). This application's use is non-commercial academic
+    publishing.
+  - Commercial use requires separate permission from SBL
+    (sblexec@sbl-site.org) or Tiro Typeworks (license@tiro.com).
+
+If this application's usage ever becomes commercial, contact SBL/Tiro
+Typeworks before continuing to ship this font.
