@@ -115,7 +115,14 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
         if(request:get-parameter('sort', '') != '') then request:get-parameter('sort', '') 
         else if(request:get-parameter('sort-element', '') != '') then request:get-parameter('sort-element', '')
         else ()  
-    let $hits := util:eval(data:build-collection-path($collection))[descendant::tei:body[ft:query(., (),sf:facet-query())]]                        
+    (: Match ft:query() directly against the tei:TEI element itself, not a tei:body descendant.
+       ft:facets() (used by sf:display for the facet sidebar) only works on nodes that were
+       themselves the direct subject of an ft:query() call - passing it an ancestor of a matched
+       node (the old behavior here) silently returns no facets, even when the facet index
+       configuration itself is correct. tei:TEI already has its own <text qname="tei:TEI"> full-text
+       index block in collection.xconf, so matching directly against it works the same for browse
+       (always an empty/match-all query, optionally filtered by selected facets). :)
+    let $hits := util:eval(data:build-collection-path($collection))[ft:query(., (), sf:facet-query())]
     return 
         if(request:get-parameter('view', '') = 'map') then $hits  
         else if(request:get-parameter('view', '') = 'timeline') then $hits
