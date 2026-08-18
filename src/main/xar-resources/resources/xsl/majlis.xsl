@@ -3580,7 +3580,11 @@
         concat($nav-base,substring-after(/descendant::t:idno[@type='URI'][1], $base-uri))
         -->
         <xsl:choose>
-            <xsl:when test="@ref">
+            <!-- @ref can be present but empty (ref=""), which still passes a plain test="@ref"
+                 check. That built an <a href=""> tag, and an empty href points back to the
+                 current page - so a title with no real reference looked like it linked to
+                 itself. Only build a link when @ref actually has a value. -->
+            <xsl:when test="normalize-space(@ref) != ''">
                 <xsl:variable name="link">
                     <xsl:choose>
                         <xsl:when test="starts-with(@ref, $base-uri)">
