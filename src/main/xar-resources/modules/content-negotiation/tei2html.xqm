@@ -209,27 +209,16 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
       else
         (),
 
-      if ($birth != '' or $death != '') then
+      if ($birth != '') then
         <span class="results-list-desc">
-          { 
-            if ($birth != '') then
-              (
-                <span class="srp-label">Date of birth: </span>,
-                $birth,
-                " "
-              )
-            else
-              ()
-          }
-          {
-            if ($death != '') then
-              (
-                <span class="srp-label">Date of death: </span>,
-                $death
-              )
-            else
-              ()
-          }
+          <span class="srp-label">Date of birth: </span> {$birth}
+        </span>
+      else
+        (),
+
+      if ($death != '') then
+        <span class="results-list-desc">
+          <span class="srp-label">Date of death: </span> {$death}
         </span>
       else
         (),
