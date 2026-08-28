@@ -195,7 +195,7 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
             return
               (
                 $role,
-                if ($pos != count($roles)) then text{", "} else ()
+                if ($pos != count($roles)) then text{"/"} else ()
               )
           }
         </span>
