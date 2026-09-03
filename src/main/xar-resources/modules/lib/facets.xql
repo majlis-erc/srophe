@@ -50,6 +50,45 @@ declare function sf:build-index(){
     <index xmlns="http://exist-db.org/collection-config/1.0" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:srophe="https://srophe.app">
         <lucene diacritics="no">
             <module uri="http://srophe.org/srophe/facets" prefix="sf" at="xmldb:exist:///{$config:app-root}/modules/lib/facets.xql"/>
+            (: data:get-records() (modules/lib/data.xqm) runs ft:query() directly against the
+               tei:TEI element itself so that ft:facets() computes facet counts correctly (see
+               commit 204d830) - that requires tei:TEI to carry its own <text> index block with
+               the same facet/field definitions as tei:body below. Keep the two blocks in sync. :)
+            <text qname="tei:TEI">
+            {
+            let $facets :=
+                for $f in collection($config:app-root)//facet:facet-definition
+                let $path := document-uri(root($f))
+                group by $facet-grp := $f/@name
+                return
+                    if($f[1]/facet:group-by/@function != '') then
+                       <facet dimension="{functx:words-to-camel-case($facet-grp)}" expression="sf:facet(descendant-or-self::tei:body, {concat("'",$path[1],"'")}, {concat("'",$facet-grp,"'")})"/>
+                    else if($f[1]/facet:range) then
+                       <facet dimension="{functx:words-to-camel-case($facet-grp)}" expression="sf:facet(descendant-or-self::tei:body, {concat("'",$path[1],"'")}, {concat("'",$facet-grp,"'")})"/>
+                    else
+                        <facet dimension="{functx:words-to-camel-case($facet-grp)}" expression="{replace($f[1]/facet:group-by/facet:sub-path/text(),"&#34;","'")}"/>
+            return
+                $facets
+            }
+            {
+                if($sf:sortFieldsConfig != '') then
+                    for $f in $sf:sortFieldsConfig
+                    return
+                    element field {
+                            attribute { "name" } {$f/text()},
+                            attribute { "expression" } {
+                                if($f/@xpath[. != '']) then
+                                    if(starts-with($f/@xpath,'tei:TEI')) then concat('ancestor-or-self::',$f/@xpath) else string($f/@xpath)
+                                else concat("sf:field(descendant-or-self::tei:body,'",$f/text(),"')")
+                            }
+                           }
+                else
+                   ( <field name="title" expression="sf:field(descendant-or-self::tei:body,'title')"/>,
+                    <field name="titleSyriac" expression="sf:field(descendant-or-self::tei:body, 'titleSyriac')"/>,
+                    <field name="titleArabic" expression="sf:field(descendant-or-self::tei:body, 'titleArabic')"/>,
+                    <field name="author" expression="sf:field(descendant-or-self::tei:body, 'author')"/>)
+            }
+            </text>
             <text qname="tei:body">
             {
             let $facets :=     
