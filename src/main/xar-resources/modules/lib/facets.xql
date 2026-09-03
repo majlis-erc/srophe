@@ -41,19 +41,20 @@ declare variable $sf:sortFields :=  let $fields :=
                                         else ("title", "author","titleSyriac","titleArabic")
                                     return map { "fields": $fields };
 
-(:~ 
+(:~
  : Build indexes for fields and facets as specified in facet-def.xml and search-config.xml files
  : Note: Hold off on fields until boost has been added. See: https://github.com/eXist-db/exist/issues/3403
+ :
+ : data:get-records() (modules/lib/data.xqm) runs ft:query() directly against the tei:TEI
+ : element itself so that ft:facets() computes facet counts correctly (see commit 204d830) -
+ : that requires tei:TEI to carry its own text index block below with the same facet/field
+ : definitions as the tei:body block. Keep the two blocks in sync.
 :)
 declare function sf:build-index(){
 <collection xmlns="http://exist-db.org/collection-config/1.0">
     <index xmlns="http://exist-db.org/collection-config/1.0" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:srophe="https://srophe.app">
         <lucene diacritics="no">
             <module uri="http://srophe.org/srophe/facets" prefix="sf" at="xmldb:exist:///{$config:app-root}/modules/lib/facets.xql"/>
-            (: data:get-records() (modules/lib/data.xqm) runs ft:query() directly against the
-               tei:TEI element itself so that ft:facets() computes facet counts correctly (see
-               commit 204d830) - that requires tei:TEI to carry its own <text> index block with
-               the same facet/field definitions as tei:body below. Keep the two blocks in sync. :)
             <text qname="tei:TEI">
             {
             let $facets :=

@@ -1,5 +1,7 @@
 # Browse-page facet index fix
 
+**Date:** 2026-09-03
+
 ## Problem
 
 Every browse page (manuscripts, places, persons, etc.) returned zero results on
