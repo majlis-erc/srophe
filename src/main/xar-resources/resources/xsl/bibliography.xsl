@@ -1207,7 +1207,23 @@
     <!--We are deactivating links to Zotero and the references in Srophé for now-->
     
     <xsl:template match="t:idno[@type = 'zotero' or contains(., 'zotero.org/') or contains(., 'jalit.org/')]" mode="links"/>
-    
+
+    <!-- Deactivate the external-link / book icons on person-page Bibliography items
+         (2026-09-04). Driven by the suppressBiblLinks tunnel param that majlis.xsl
+         sets in mode="person-bibliography". This override wins by priority; when the
+         param is not set (every other context - works, manuscripts, bibl records,
+         places, inline footnotes) it simply falls through via xsl:next-match, so
+         nothing else changes. The tunnel param reaches here even for bibl records
+         pulled in with document(), because it rides the template-call chain rather
+         than the node's tree.
+         To RE-ACTIVATE the icons: delete this whole template. -->
+    <xsl:template match="t:idno | t:ref | t:ptr" mode="links" priority="10">
+        <xsl:param name="suppressBiblLinks" as="xs:boolean" select="false()" tunnel="yes"/>
+        <xsl:if test="not($suppressBiblLinks)">
+            <xsl:next-match/>
+        </xsl:if>
+    </xsl:template>
+
     <xsl:template match="t:idno | t:ref | t:ptr" mode="links">
         <xsl:variable name="ref">
             <xsl:choose>
