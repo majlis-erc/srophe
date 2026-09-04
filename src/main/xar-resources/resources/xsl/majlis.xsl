@@ -1573,7 +1573,15 @@
                                 <xsl:value-of select="position()"/>
                             </div>-->
                             <div class="col-md-10 person-biblio">
-                                <xsl:apply-templates select="."/>
+                                <!-- suppressBiblLinks (2026-09-04): deactivate the
+                                     external-link / book icons on person-page
+                                     Bibliography items. This tunnel param reaches the
+                                     priority="10" mode="links" override in
+                                     bibliography.xsl. To RE-ACTIVATE the icons, remove
+                                     this xsl:with-param (or set it to false()). -->
+                                <xsl:apply-templates select=".">
+                                    <xsl:with-param name="suppressBiblLinks" select="true()" tunnel="yes"/>
+                                </xsl:apply-templates>
                                 <!--
                                 <xsl:choose>
                                     <xsl:when test="t:bibl/t:ptr[starts-with(@target, 'https://jalit.org/')]">
