@@ -163,6 +163,7 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
     let $birth := $nodes/descendant::tei:birth/tei:date/text()             
     let $death := $nodes/descendant::tei:death/tei:date/text()
     let $birthPlace := $nodes/descendant::tei:birth/tei:placeName/text()
+    let $deathPlace := $nodes/descendant::tei:death/tei:placeName/text()
     let $roles := $nodes/descendant::tei:state/tei:label/text()
     
     (: -- NEW: check for place of residence -- :)
@@ -216,6 +217,13 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
       else
         (),
 
+      if ($deathPlace != '') then
+        <span class="results-list-desc">
+          <span class="srp-label">Place of death: </span> {string-join($deathPlace, '/')}
+        </span>
+      else
+        (),
+
       if ($death != '') then
         <span class="results-list-desc">
           <span class="srp-label">Date of death: </span> {$death}
@@ -223,7 +231,7 @@ declare function tei2html:summary-view-persons($nodes as node()*, $id as xs:stri
       else
         (),
 
-      if ($birthPlace = '' and $birth = '' and $death = '') then
+      if ($birthPlace = '' and $deathPlace = '' and $birth = '' and $death = '') then
         (
           if ($residence != '') then
             <span class="results-list-desc">
