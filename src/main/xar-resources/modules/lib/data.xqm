@@ -10,6 +10,9 @@ import module namespace global="http://srophe.org/srophe/global" at "global.xqm"
 import module namespace facet="http://expath.org/ns/facet" at "facet.xqm";
 import module namespace sf="http://srophe.org/srophe/facets" at "facets.xql";
 import module namespace slider = "http://srophe.org/srophe/slider" at "date-slider.xqm";
+(: Year-range date matching for advanced search (see date-search.xqm); used here
+   only for ds:has-date-params() in the advanced-mode test below. :)
+import module namespace ds = "http://srophe.org/srophe/date-search" at "date-search.xqm";
 import module namespace functx="http://www.functx.com";
 
 declare namespace srophe="https://srophe.app";
@@ -759,6 +762,11 @@ declare function data:all-entity-fields-clause(
   return string-join($clauses, ' or ')
 };
 
+(: DEPRECATED (fix/search-date): data:date-single-block / data:date-predicate
+   built an exact attribute-equality XPath test (@notAfter = "1050") that almost
+   never matched real TEI dates. Year-range matching moved to date-search.xqm
+   (ds:filter). These are no longer called by data:advanced-block-query; kept for
+   reference only. :)
 declare function data:date-single-block(
   $path as xs:string,
   $nb as xs:string, $na as xs:string,
@@ -837,8 +845,14 @@ declare function data:advanced-block-query($n as xs:integer) as xs:string? {
       let $raw := normalize-space(request:get-parameter(concat('teiElements_', $n), ''))
       return if($raw = '') then () else tokenize($raw, ',\s*')
 
-  let $datePredicate := data:date-predicate($entity, $dateType, $n)
-  let $hasDate       := $datePredicate != ''
+  (: Date filtering is no longer compiled into the util:eval'd XPath. The old
+     data:date-predicate() emitted an exact attribute-equality test, e.g.
+     tei:death/tei:date[@notAfter = "1050"], which virtually never matched real
+     TEI dates (@when="1038", ISO dates, computed bounds...). Year-range
+     "interval overlap" matching now runs as an in-memory post-filter in
+     date-search.xqm (ds:filter, called from search:search-data). :)
+  let $datePredicate := ''
+  let $hasDate       := false()
 
   return
     if($term = '' and not($hasDate) and $entity = '') then ''
@@ -935,7 +949,10 @@ declare function data:create-advanced-query($collection as xs:string?) as xs:str
     normalize-space(request:get-parameter('floritNotBefore_2', '')) != '' or
     normalize-space(request:get-parameter('birthNotBefore_3',  '')) != '' or
     normalize-space(request:get-parameter('deathNotBefore_3',  '')) != '' or
-    normalize-space(request:get-parameter('floritNotBefore_3', '')) != ''
+    normalize-space(request:get-parameter('floritNotBefore_3', '')) != '' or
+    (: also cover the *NotAfter_ / *When_ / *ExactYear_ date variants the checks
+       above omit, so an advanced date-only search isn't diluted by generalKeyword :)
+    ds:has-date-params()
 
   let $general :=
     if($hasAdvancedTerms) then ''

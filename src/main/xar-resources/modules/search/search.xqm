@@ -18,6 +18,9 @@ import module namespace facet="http://expath.org/ns/facet" at "../lib/facet.xqm"
 import module namespace sf="http://srophe.org/srophe/facets" at "../lib/facets.xql";
 import module namespace page="http://srophe.org/srophe/page" at "../lib/paging.xqm";
 import module namespace slider = "http://srophe.org/srophe/slider" at "../lib/date-slider.xqm";
+(: Year-range date matching for the advanced search form (see date-search.xqm).
+   In-memory post-filter over the hit set - no collection.xconf / range-index change. :)
+import module namespace ds = "http://srophe.org/srophe/date-search" at "../lib/date-search.xqm";
 import module namespace tei2html="http://srophe.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
 
 (: Syriaca.org search modules :)
@@ -73,7 +76,12 @@ declare %templates:wrap function search:search-data(
       normalize-space(request:get-parameter('floritNotBefore_2', '')) != '' or
       normalize-space(request:get-parameter('birthNotBefore_3',  '')) != '' or
       normalize-space(request:get-parameter('deathNotBefore_3',  '')) != '' or
-      normalize-space(request:get-parameter('floritNotBefore_3', '')) != ''
+      normalize-space(request:get-parameter('floritNotBefore_3', '')) != '' or
+      (: The per-name checks above only cover the *NotBefore_ variants;
+         ds:has-date-params() also catches *NotAfter_ / *When_ / *ExactYear_
+         across all 3 blocks, so a "To (not after)" only search no longer falls
+         through to the unfiltered default query. :)
+      ds:has-date-params()
 
   let $queryExpr :=
       if($has-advanced)
@@ -87,6 +95,10 @@ declare %templates:wrap function search:search-data(
       )
 
   let $hits := data:search($collection, $queryExpr, $sort-element)
+  (: Year-range date filter (From/To on birth, death, floruit, work or manuscript
+     dates). Runs in memory over $hits so it needs no range index; a no-op when
+     the form carried no date parameters. See date-search.xqm. :)
+  let $hits := ds:filter($hits)
   let $entity-type := request:get-parameter('entity-type', '')
   let $filtered-hits :=
       if($entity-type != '')
