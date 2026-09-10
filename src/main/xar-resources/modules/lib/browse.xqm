@@ -30,35 +30,8 @@ declare variable $browse:view {request:get-parameter('view', '')};
 declare variable $browse:start {request:get-parameter('start', 1) cast as xs:integer};
 declare variable $browse:perpage {request:get-parameter('perpage', 25) cast as xs:integer};
 
-(:~
- : Sort key for a browse listing: plain text of the record's visible display name
- : - the bold green heading produced by tei2html:summary-view-* . Normalised,
- : lower-cased, with leading marks that are not a base letter or digit dropped
- : (transliteration prefixes ʿ ʾ, brackets, quotes, dashes...) so e.g. "ʿAzarya"
- : files under A. Precomposed accented letters (Ā, Š, ḥ ...) are kept.
- :
- : The element selection MUST stay in sync with the $title binding in
- : tei2html.xqm : summary-view-work (body/bibl/title, authorial then descriptive)
- : and summary-view-persons / -places / -generic / -bibl (which all fall through
- : to the English titleStmt/title[@level='a'], since the #syriaca-headword
- : selector matches nothing in majlis-data).
-:)
-declare function browse:display-title-key($hit as node()) as xs:string {
-    let $id := string(($hit/descendant::tei:idno[@type='URI'], $hit/descendant::tei:publicationStmt/tei:idno[1])[1])
-    let $title :=
-        if(contains($id,'/work/')) then
-            ($hit//tei:body/tei:bibl/tei:title[@type='authorial'][@xml:lang='en'],
-             $hit//tei:body/tei:bibl/tei:title[@type='authorial'],
-             $hit//tei:body/tei:bibl/tei:title[@type='descriptive'][@xml:lang='en'],
-             $hit//tei:body/tei:bibl/tei:title[@type='descriptive'],
-             $hit//tei:body/tei:bibl/tei:title)[1]
-        else
-            ($hit/descendant-or-self::*[@syriaca-tags='#syriaca-headword'][@xml:lang='en'],
-             $hit/descendant::tei:titleStmt/tei:title[@level='a'][@xml:lang='en'],
-             $hit/descendant::tei:titleStmt/tei:title[@level='a'],
-             $hit/descendant::tei:titleStmt/tei:title)[1]
-    return lower-case(replace(normalize-space(string($title)), '^[^\p{Lu}\p{Ll}\p{Lt}\p{N}]+', ''))
-};
+(: browse:display-title-key was moved to global:display-title-key so
+   data:get-records can share it for the A-Z letter filter. :)
 
 (:~
  : Build initial browse results based on parameters
@@ -75,7 +48,7 @@ declare function browse:get-all($node as node(), $model as map(*), $collection a
        places, manuscripts...), leaving the list effectively unsorted. :)
     let $sorted :=
         for $hit in $hits
-        let $key := browse:display-title-key($hit)
+        let $key := global:display-title-key($hit)
         (: records with no display title sort last, not first :)
         order by (if($key = '') then 1 else 0), $key collation "http://www.w3.org/2013/collation/UCA"
         return $hit
