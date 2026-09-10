@@ -1139,7 +1139,9 @@ pre {
   display: flex;
   align-items: flex-end;
   gap: 0.4rem;
-  flex-wrap: nowrap;
+  /* wrap so the From / To / Exact year trio degrades gracefully in a narrow
+     criteria card instead of overflowing */
+  flex-wrap: wrap;
 }
 
 .date-inputs-grid .form-group {
