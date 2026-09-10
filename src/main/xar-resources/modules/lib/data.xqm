@@ -132,9 +132,13 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
         else if($collection = 'manuscripts') then
             for $hit in $hits
             let $root := $hit/ancestor-or-self::tei:TEI
-            let $s := ft:field($hit, "mssSort")[1] 
-            order by number($s[1]) ascending  
-            (:where matches($s[1],global:get-alpha-filter()):)
+            let $s := ft:field($hit, "mssSort")[1]
+            order by number($s[1]) ascending
+            (: A-Z letter tabs now filter manuscripts too, on the same visible
+               display name browse:get-all sorts by (mssSort stays the tiebreak
+               order within a letter). :)
+            where request:get-parameter('alpha-filter', '') = ('', 'All', 'ALL', 'all')
+                  or matches(global:display-title-key($hit), global:get-alpha-filter(), 'i')
             return $root
         else if(request:get-parameter('alpha-filter', '') != '' 
             and request:get-parameter('alpha-filter', '') != 'All'
@@ -155,11 +159,18 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
                     else if(request:get-parameter('sort', '') != '' and request:get-parameter('sort', '') != 'title' and not(contains($sort, 'author'))) then
                         if($collection = 'bibl') then
                             data:add-sort-options-bibl($hit, $sort)
-                        else data:add-sort-options($hit, $sort) 
-                    else ft:field($hit, "title")  
-                    
+                        else data:add-sort-options($hit, $sort)
+                    (: default browse key = the visible display name (bold green
+                       heading), so the A-Z tabs bucket records the way they read.
+                       ft:field($hit,"title") is scoped to tei:body and is empty
+                       for header-titled records, which made every letter tab
+                       return nothing. :)
+                    else global:display-title-key($hit)
+
                 order by $s[1] collation 'http://www.w3.org/2013/collation/UCA'
-                where matches($s[1],global:get-alpha-filter())
+                (: 'i' flag: the key is lower-cased and global:get-alpha-filter()
+                   only lists an upper-case form for the non-special letters. :)
+                where matches($s[1],global:get-alpha-filter(),'i')
                 return $root
         else 
                 for $hit in $hits
