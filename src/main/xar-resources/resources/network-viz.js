@@ -1,5 +1,22 @@
 (function(){
   console.log('network-viz.js loaded');
+
+  // Turn a raw relationship name into a readable label for display:
+  //   "snap:motherInLawOf" -> "Mother in law of"
+  //   "majlis:relationWith" -> "Relation with"
+  // Drops the namespace prefix, splits camelCase, and Sentence-cases the result.
+  function formatRel(rel){
+    if(!rel) return '';
+    var s = String(rel)
+      .replace(/^[^:\s]*:/, '')          // drop "snap:" / "majlis:" ... prefix
+      .replace(/[_-]+/g, ' ')            // underscores / dashes -> spaces
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')  // camelCase -> "camel Case"
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+  }
+
   var networkViz = window.networkViz = {
     initialized: false,
     data: null,
@@ -106,10 +123,13 @@
         rfEl.innerHTML = '';
         relTypes.forEach(function(r){
           var safe = r.replace(/\s/g,'_');
+          // r stays the raw value (it is the filter key, matched against l.rel);
+          // only the visible label is prettified.
+          var label = formatRel(r) || r || '(unspecified)';
           var row = document.createElement('div');
           row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer';
           row.innerHTML = '<input type="checkbox" checked id="rt-'+safe+'" style="margin:0;cursor:pointer">'
-            +'<label for="rt-'+safe+'" style="color:#111;font-size:12px;cursor:pointer">'+r+'</label>';
+            +'<label for="rt-'+safe+'" style="color:#111;font-size:12px;cursor:pointer">'+label+'</label>';
           row.querySelector('input').addEventListener('change',function(e){
             e.target.checked ? self.hiddenRel.delete(r) : self.hiddenRel.add(r);
             self.applyFilters(self.hiddenEnt, self.hiddenRel);
@@ -173,12 +193,12 @@
         .attr('text-anchor','middle').attr('dominant-baseline','central')
         .attr('font-size',REL_FS).attr('font-weight','700').attr('fill','#fff').attr('pointer-events','none')
         .text(function(d){
-          // If a link has no relation type, show nothing instead of a white dot ("•").
-          // The white dot used to land on or next to an entity circle (the one with
-          // M, P, L, ...) before the nodes spread apart, and looked like it was part
-          // of that entity circle.
-          if(d.rel && d.rel.length > 0) return d.rel[0].toUpperCase();
-          return '';
+          // Initial of the formatted relationship (so "snap:fatherOf" shows "F",
+          // not "S" from the namespace prefix). If a link has no relation type,
+          // show nothing instead of a white dot ("•") that looked like part of a
+          // nearby entity circle.
+          var f = formatRel(d.rel);
+          return f ? f.charAt(0).toUpperCase() : '';
         });
 
       // Tooltip interactions
@@ -188,7 +208,7 @@
           var s = sources.map(function(src,i){
             return '<span style="display:block;padding-left:10px;text-indent:-10px"><b>['+(i+1)+']</b> '+src+'</span>';
           }).join('');
-          tip.innerHTML = '<b style="font-size:12px;color:#111">'+(d.rel||'relation')+'</b><div style="margin-top:4px;color:#555;font-size:10.5px">'+s+'</div>';
+          tip.innerHTML = '<b style="font-size:12px;color:#111">'+(formatRel(d.rel)||'relation')+'</b><div style="margin-top:4px;color:#555;font-size:10.5px">'+s+'</div>';
           tip.style.opacity = '1';
         })
         .on('mousemove',function(event){
