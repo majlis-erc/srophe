@@ -66,7 +66,11 @@
       console.log('Found network-container, size:', container.offsetWidth, 'x', container.offsetHeight);
 
       var W = container.offsetWidth || 720;
-      var H = 620;
+      // Height scales with the size of the network: a 2-3 node graph gets a short
+      // box, a busy one grows up to the cap. The 620px in the XSL is just a
+      // pre-JS fallback.
+      var H = Math.max(340, Math.min(720, 260 + this.nodes.length * 30));
+      container.style.height = H + 'px';
 
       var COLORS = {manuscript:'#00883A',person:'#009FE3',place:'#8C4091',work:'#F18700',org:'#C0392B'};
       var ICONS  = {manuscript:'M',person:'P',place:'L',work:'W',org:'O'};
@@ -114,23 +118,39 @@
         });
       }
 
-      // Initialize node positions in a circle
+      // Space the layout out to roughly fill the container: a small graph gets a
+      // much larger link distance / repulsion than a busy one. fitToContainer()
+      // below then pans+zooms whatever the simulation settles on to fill the box.
+      var N = Math.max(this.nodes.length, 2);
+      var usable = Math.max(1, (W - 60)) * Math.max(1, (H - 60));
+      // *0.8 (was 0.95) keeps small graphs compact enough that even a straight
+      // chain fits at scale 1, so fitToContainer never has to shrink them below
+      // native size (which made e.g. person/46 look tiny next to clustered graphs).
+      var linkDist = Math.max(110, Math.min(300, Math.sqrt(usable / N) * 0.8));
+      var chargeStr = -Math.max(500, Math.min(2600, linkDist * 7));
+      var collideR = Math.max(38, linkDist * 0.30);
+      this.spread = linkDist * 0.6;
+
+      // Seed positions on a wide, flat ellipse (not a circle): the container is
+      // wide but short, so a landscape layout fits the height without a taller box.
       var cx = W/2, cy = H/2;
       this.nodes.forEach(function(n,i){
         var a = (i/self.nodes.length)*2*Math.PI;
-        n.x = cx + Math.min(W,H)*0.33*Math.cos(a);
-        n.y = cy + Math.min(W,H)*0.33*Math.sin(a);
+        n.x = cx + self.spread*1.6*Math.cos(a);
+        n.y = cy + self.spread*0.65*Math.sin(a);
         n.fx = null; n.fy = null;
       });
 
-      // Create D3 force simulation
+      // Create D3 force simulation. forceY is much stronger than forceX so the
+      // graph settles as a short horizontal band that fits the container height;
+      // forceX is weak so it is free to spread across the (plentiful) width.
       var sim = this.sim = d3.forceSimulation(this.nodes)
-        .force('link', d3.forceLink(this.links).id(function(d){return d.id;}).distance(160).strength(0.45))
-        .force('charge', d3.forceManyBody().strength(-650))
-        .force('center', d3.forceCenter(W/2, H/2).strength(0.06))
-        .force('collision', d3.forceCollide(50))
-        .force('x', d3.forceX(W/2).strength(0.04))
-        .force('y', d3.forceY(H/2).strength(0.04));
+        .force('link', d3.forceLink(this.links).id(function(d){return d.id;}).distance(linkDist).strength(0.4))
+        .force('charge', d3.forceManyBody().strength(chargeStr))
+        .force('center', d3.forceCenter(W/2, H/2).strength(0.03))
+        .force('collision', d3.forceCollide(collideR))
+        .force('x', d3.forceX(W/2).strength(0.02))
+        .force('y', d3.forceY(H/2).strength(0.09));
 
       var svg = d3.select('#network-svg');
       console.log('SVG element selected:', svg.node() ? 'found' : 'NOT FOUND');
@@ -198,7 +218,11 @@
       this.nodeG.append('text')
         .attr('x', NR + 5).attr('dominant-baseline','central')
         .attr('font-size',LABEL_FS).attr('fill','#222').attr('pointer-events','none')
-        .text(function(d){return d.name;});
+        // Long names (e.g. full manuscript shelfmarks) are truncated so they
+        // don't run off the right edge / force the graph off-centre; the full
+        // name is on the <title> hover.
+        .text(function(d){ return d.name.length > 24 ? d.name.slice(0,23) + '…' : d.name; })
+        .append('title').text(function(d){return d.name;});
 
       // Click on SVG to deselect
       document.getElementById('network-svg').addEventListener('click',function(){
@@ -207,13 +231,19 @@
 
       // Animation loop
       sim.on('tick', function(){self.tick(W,H,NR,RR);});
+      sim.on('end',  function(){self.fitToContainer(W,H);});
+      this._W = W; this._H = H;
     },
 
     tick: function(W, H, NR, RR){
       var self = this;
+      // X is left loose (width is plentiful; fitToContainer() frames it). Y is
+      // held to a horizontal band ~0.72 of the container height, so a graph can
+      // never settle taller than the box - it just spreads sideways instead.
+      var yTop = 0.14*H, yBot = 0.86*H;
       this.nodes.forEach(function(n){
-        n.x = Math.max(16, Math.min(W-190, n.x));
-        n.y = Math.max(16, Math.min(H-16,  n.y));
+        n.x = Math.max(-0.3*W, Math.min(1.3*W, n.x));
+        n.y = Math.max(yTop, Math.min(yBot, n.y));
       });
 
       function shorten(x1,y1,x2,y2,r){
@@ -247,6 +277,46 @@
             .attr('width',b.width+6).attr('height',b.height+4);
         }
       });
+
+      this.fitToContainer(W, H);
+    },
+
+    // Pan + zoom the #network-viewport group so the whole graph is framed inside
+    // the container with a bit of padding. Scale is clamped (see below) so a
+    // sparse graph is enlarged only modestly and a dense one shrunk only as far
+    // as needed.
+    fitToContainer: function(W, H){
+      var self = this;
+      var vp = d3.select('#network-viewport');
+      if(!vp.node() || !this.nodes.length) return;
+      // frame only the visible nodes (fall back to all if a filter hid them all)
+      var vis = this.nodes.filter(function(n){ return !self.hiddenEnt.has(n.type); });
+      if(!vis.length) vis = this.nodes;
+      var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+      vis.forEach(function(n){
+        if(n.x<minX)minX=n.x; if(n.x>maxX)maxX=n.x;
+        if(n.y<minY)minY=n.y; if(n.y>maxY)maxY=n.y;
+      });
+      var bw=Math.max(1,maxX-minX), bh=Math.max(1,maxY-minY);
+      // Padding reserved for the overlay UI: the button column + search box
+      // (top-left) and the node name labels, which extend to the right of each
+      // circle and are not part of the x/y extent measured above.
+      var padT=54, padB=28, padL=60, padR=150;
+      var availW=Math.max(60, W-padL-padR), availH=Math.max(60, H-padT-padB);
+      var scale=Math.min(availW/bw, availH/bh);
+      // Small graphs render roughly 0.85x - 1.4x: kept close to native size for
+      // consistency across networks; larger graphs may zoom further out.
+      var small=this.nodes.length<=10;
+      scale=Math.max(small?0.85:0.35, Math.min(scale, small?1.4:1.8));
+      // Centre the node cluster on the container (nudged slightly left so the
+      // right-hand labels keep a little room), then push back in if an edge
+      // would land under the top-left controls / off the top or bottom.
+      var tx=(W/2 - 15) - (minX + bw/2)*scale;
+      var ty=(H/2)      - (minY + bh/2)*scale;
+      if(minX*scale + tx < padL) tx = padL - minX*scale;
+      if(minY*scale + ty < padT) ty = padT - minY*scale;
+      if(maxY*scale + ty > H-padB) ty = (H-padB) - maxY*scale;
+      vp.attr('transform','translate('+tx+','+ty+') scale('+scale+')');
     },
 
     highlight: function(d){
@@ -281,6 +351,8 @@
       this.linkA.attr('display',function(l){return hidden(l)?'none':null;});
       this.linkB.attr('display',function(l){return hidden(l)?'none':null;});
       this.relG.attr('display', function(l){return hidden(l)?'none':null;});
+      // re-frame on the now-visible subset
+      this.fitToContainer(this._W || 720, this._H || 620);
     },
 
     closePanels: function(){
@@ -307,14 +379,15 @@
       var searchInput = document.getElementById('network-search');
       if (searchInput) searchInput.value = '';
       var container = document.getElementById('network-container');
-      var W = container.offsetWidth || 720, H = 620;
-      var cx = W/2, cy = H/2;
+      var W = container.offsetWidth || 720, H = this._H || container.offsetHeight || 620;
+      var cx = W/2, cy = H/2, spread = this.spread || Math.min(W,H)*0.33;
       this.nodes.forEach(function(n,i){
         var a = (i/this.nodes.length)*2*Math.PI;
-        n.x = cx + Math.min(W,H)*0.33*Math.cos(a);
-        n.y = cy + Math.min(W,H)*0.33*Math.sin(a);
+        n.x = cx + spread*1.6*Math.cos(a);
+        n.y = cy + spread*0.65*Math.sin(a);
         n.fx = null; n.fy = null;
       }.bind(this));
+      d3.select('#network-viewport').attr('transform', null);
       this.sim.alpha(1).restart();
     },
 
