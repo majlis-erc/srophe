@@ -3798,9 +3798,13 @@
                                 <path d="M2 1.5L8 5L2 8.5" fill="none" stroke="#ccc" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                             </marker>
                         </defs>
-                        <g id="ll"/>
-                        <g id="rl"/>
-                        <g id="nl"/>
+                        <!-- network-viz.js pans/zooms this group so the graph fills most of
+                             the container even when it only has a few nodes. -->
+                        <g id="network-viewport">
+                            <g id="ll"/>
+                            <g id="rl"/>
+                            <g id="nl"/>
+                        </g>
                     </svg>
                 </div>
             </div>
