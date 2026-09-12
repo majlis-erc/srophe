@@ -17,6 +17,20 @@
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
   }
 
+  // Entity types that have a real page to link to (matches app:entity-metadata
+  // in app.xql, which only recognizes these). "org" nodes appear in the graph
+  // but have no known route, so they're excluded here.
+  var LINKABLE_TYPES = {manuscript:1, person:1, place:1, work:1};
+
+  // Build the URL for a node's entity page, e.g. node {id:"person10", type:"person"}
+  // -> "/exist/apps/majlis/person/10". Returns null for types with no known route.
+  function entityUrl(d) {
+    if (!d || !LINKABLE_TYPES[d.type]) return null;
+    var navBase = (window.networkEntityData && window.networkEntityData.navBase) || '';
+    var numericId = d.id.indexOf(d.type) === 0 ? d.id.slice(d.type.length) : d.id;
+    return navBase + '/' + d.type + '/' + numericId;
+  }
+
   var networkViz = window.networkViz = {
     initialized: false,
     data: null,
@@ -225,7 +239,15 @@
           .on('start',function(e){if(!e.active)sim.alphaTarget(0.3).restart();e.subject.fx=e.subject.x;e.subject.fy=e.subject.y;})
           .on('drag', function(e){e.subject.fx=e.x;e.subject.fy=e.y;})
           .on('end',  function(e){if(!e.active)sim.alphaTarget(0);e.subject.fx=null;e.subject.fy=null;}))
-        .on('click',function(event,d){event.stopPropagation();self.highlight(d);});
+        .on('click',function(event,d){
+          event.stopPropagation();
+          self.highlight(d);
+        })
+        .on('dblclick',function(event,d){
+          event.stopPropagation();
+          var url = entityUrl(d);
+          if (url) window.open(url, '_blank', 'noopener');
+        });
 
       this.nodeG.append('circle').attr('r',NR)
         .attr('fill',function(d){return COLORS[d.type];}).attr('stroke','#fff').attr('stroke-width',2);
@@ -242,7 +264,9 @@
         // don't run off the right edge / force the graph off-centre; the full
         // name is on the <title> hover.
         .text(function(d){ return d.name.length > 24 ? d.name.slice(0,23) + '…' : d.name; })
-        .append('title').text(function(d){return d.name;});
+        .append('title').text(function(d){
+          return LINKABLE_TYPES[d.type] ? d.name + ' (double-click to view page)' : d.name;
+        });
 
       // Click on SVG to deselect
       document.getElementById('network-svg').addEventListener('click',function(){

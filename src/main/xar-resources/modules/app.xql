@@ -658,7 +658,7 @@ declare %templates:wrap function app:entity-metadata($node as node(), $model as 
             if($entity-type-singular and $entity-type-plural and $entity-id) then
                 element script {
                     attribute type { 'text/javascript' },
-                    concat('console.log("Setting networkEntityData from XQuery"); window.networkEntityData = { id: "', $entity-id, '", type: "', $entity-type-plural, '", singular: "', $entity-type-singular, '", uri: "', $uri, '" }; console.log("networkEntityData:", window.networkEntityData);')
+                    concat('console.log("Setting networkEntityData from XQuery"); window.networkEntityData = { id: "', $entity-id, '", type: "', $entity-type-plural, '", singular: "', $entity-type-singular, '", uri: "', $uri, '", navBase: "', $config:nav-base, '" }; console.log("networkEntityData:", window.networkEntityData);')
                 }
             else (
                 element script {
