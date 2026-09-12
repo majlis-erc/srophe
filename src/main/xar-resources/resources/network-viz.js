@@ -242,6 +242,9 @@
         .on('click',function(event,d){
           event.stopPropagation();
           self.highlight(d);
+        })
+        .on('dblclick',function(event,d){
+          event.stopPropagation();
           var url = entityUrl(d);
           if (url) window.open(url, '_blank', 'noopener');
         });
@@ -261,7 +264,9 @@
         // don't run off the right edge / force the graph off-centre; the full
         // name is on the <title> hover.
         .text(function(d){ return d.name.length > 24 ? d.name.slice(0,23) + '…' : d.name; })
-        .append('title').text(function(d){return d.name;});
+        .append('title').text(function(d){
+          return LINKABLE_TYPES[d.type] ? d.name + ' (double-click to view page)' : d.name;
+        });
 
       // Click on SVG to deselect
       document.getElementById('network-svg').addEventListener('click',function(){
