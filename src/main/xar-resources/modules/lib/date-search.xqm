@@ -276,12 +276,10 @@ declare function ds:filter($hits as node()*) as node()* {
                 if (empty($active))
                 then $acc
                 else
-                    $acc[
-                        let $rec := .
-                        return
-                            every $g in $active
-                            satisfies ds:any-match(ds:dates($rec, $g?kind), $g?spec, $undated)
-                    ]
+                    filter($acc, function($rec as node()) as xs:boolean {
+                        every $g in $active
+                        satisfies ds:any-match(ds:dates($rec, $g?kind), $g?spec, $undated)
+                    })
         })
 };
 
