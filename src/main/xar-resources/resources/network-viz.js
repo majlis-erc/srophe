@@ -277,6 +277,13 @@
       sim.on('tick', function(){self.tick(W,H,NR,RR);});
       sim.on('end',  function(){self.fitToContainer(W,H);});
       this._W = W; this._H = H;
+
+      // d3's simulation timer fires the first 'tick' asynchronously (next
+      // animation frame), so without this, the just-created node/relation <g>
+      // elements have no transform yet and briefly sit stacked at (0,0) - a
+      // relation circle can flash on top of a node circle before that first
+      // tick runs. Position everything once, synchronously, before that gap.
+      this.tick(W, H, NR, RR);
     },
 
     tick: function(W, H, NR, RR){
