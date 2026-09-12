@@ -145,17 +145,20 @@
           <div class="date-inputs-grid">
             <div class="form-group">
               <label>From (not before)</label>
-              <input type="number" class="form-control" name="${nb}" placeholder="e.g. 900" min="1" max="${currentYear}"/>
+              <input type="number" class="form-control dateFrom" name="${nb}" placeholder="e.g. 900" min="1" max="${currentYear}"/>
             </div>
             <div class="form-group">
               <label>To (not after)</label>
-              <input type="number" class="form-control" name="${na}" placeholder="e.g. 1050" min="1" max="${currentYear}"/>
+              <input type="number" class="form-control dateTo" name="${na}" placeholder="e.g. 1050" min="1" max="${currentYear}"/>
             </div>
             <div class="form-group">
               <label>Exact year</label>
-              <input type="number" class="form-control" name="${ex}" placeholder="e.g. 1038" min="1" max="${currentYear}"/>
+              <input type="number" class="form-control dateExact" name="${ex}" placeholder="e.g. 1038" min="1" max="${currentYear}"/>
             </div>
           </div>
+          <p class="exact-year-active-hint text-muted" style="display:none;margin:2px 0 0;font-size:0.85em;">
+            Exact year is set - From/To above are ignored.
+          </p>
         </div>`;
     }
 
@@ -170,6 +173,16 @@
             Include undated records
           </label>
         </div>`;
+    }
+
+    // Exact year overrides From/To server-side (ds:spec in date-search.xqm) -
+    // reflect that live in the UI: grey out From/To and show a hint the moment
+    // Exact year has a value, so the override isn't a silent surprise.
+    function refreshExactYearState($dateGroup) {
+      const $exact = $dateGroup.find('.dateExact');
+      const active = $exact.val() !== '';
+      $dateGroup.find('.dateFrom, .dateTo').prop('disabled', active);
+      $dateGroup.find('.exact-year-active-hint').toggle(active);
     }
 
     // One-line reminder of how the From/To range behaves.
@@ -458,6 +471,12 @@
           if (params.get(`includeUndated_${i}`)) {
             $(`[name="includeUndated_${i}"]`).prop('checked', true);
           }
+
+          // Restored values are set via .val(), which doesn't fire 'input', so
+          // the From/To disabled state and hint need an explicit refresh here.
+          $block.find('.date-group').each(function() {
+            refreshExactYearState($(this));
+          });
         }
       }
     }
@@ -577,6 +596,10 @@
         }
 
         updateDateFilter(idx, ent);
+      });
+
+      $(document).on('input', '.dateExact', function() {
+        refreshExactYearState($(this).closest('.date-group'));
       });
 
       $(document).on('click', '.keyboard-trigger', function(e) {
